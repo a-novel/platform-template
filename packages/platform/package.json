@@ -91,7 +91,7 @@
   "peerDependencies": {
     "@a-novel-kit/nodelib-browser": "^1.3.28",
     "@a-novel/package-authentication": "^0.1.2",
-    "@a-novel/uikit": "^0.12.11",
+    "@a-novel/uikit": "^0.13.0",
     "@iconify/svelte": "^5.2.1",
     "@sveltejs/kit": "^2.55.0",
     "@tolgee/core": "^7.0.0",
