@@ -1,0 +1,109 @@
+services:
+  mailserver:
+    image: ghcr.io/axllent/mailpit:v1.28.0
+    ports:
+      - "${MAIL_UI_PORT}:8025"
+    networks:
+      - api
+    restart: unless-stopped
+    volumes:
+      - mailserver-data:/data
+    environment:
+      MP_MAX_MESSAGES: 5000
+      MP_SEND_API_AUTH_ACCEPT_ANY: true
+      MP_SMTP_AUTH_ACCEPT_ANY: true
+      MP_SMTP_AUTH_ALLOW_INSECURE: true
+      MP_SENDMAIL_FROM: noreply@agorastoryverse.com
+      MP_DISABLE_WAL: true
+      MP_VERBOSE: true
+
+  postgres-authentication:
+    image: ghcr.io/a-novel/service-authentication/database:v2.2.4
+    networks:
+      - api
+    environment:
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_DB: authentication
+      POSTGRES_HOST_AUTH_METHOD: scram-sha-256
+      POSTGRES_INITDB_ARGS: --auth=scram-sha-256
+    volumes:
+      - authentication-postgres-data:/var/lib/postgresql/
+
+  postgres-json-keys:
+    image: ghcr.io/a-novel/service-json-keys/database:v2.1.2
+    networks:
+      - api
+    environment:
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_DB: json-keys
+      POSTGRES_HOST_AUTH_METHOD: scram-sha-256
+      POSTGRES_INITDB_ARGS: --auth=scram-sha-256
+    volumes:
+      - json-keys-postgres-data:/var/lib/postgresql/
+
+  service-json-keys:
+    image: ghcr.io/a-novel/service-json-keys/standalone:v2.1.2
+    depends_on:
+      - postgres-json-keys
+    environment:
+      POSTGRES_DSN: postgres://postgres:postgres@postgres-json-keys:5432/json-keys?sslmode=disable
+      APP_MASTER_KEY: fec0681a2f57242211c559ca347721766f8a3acd8ed2e63b36b3768051c702ca
+    networks:
+      - api
+
+  service-authentication:
+    image: ghcr.io/a-novel/service-authentication/standalone:v2.2.4
+    ports:
+      - "${SERVICE_AUTHENTICATION_PORT}:8080"
+    depends_on:
+      - postgres-authentication
+      - service-json-keys
+      - mailserver
+    environment:
+      POSTGRES_DSN: postgres://postgres:postgres@postgres-authentication:5432/authentication?sslmode=disable
+      SERVICE_JSON_KEYS_PORT: 8080
+      SERVICE_JSON_KEYS_HOST: service-json-keys
+      SUPER_ADMIN_EMAIL: user@admin.com
+      SUPER_ADMIN_PASSWORD: admin
+      SMTP_SENDER_DOMAIN: mailserver
+      PLATFORM_AUTH_URL: "${PLATFORM_AUTH_URL}"
+      SMTP_ADDR: mailserver:1025
+      SMTP_SENDER_NAME: Agora Storyverse [noreply]
+      SMTP_SENDER_EMAIL: noreply@agorastoryverse.com
+      SMTP_SENDER_PASSWORD: noreply
+      SMTP_FORCE_UNENCRYPTED: true
+    networks:
+      - api
+
+  platform-template:
+    build:
+      context: ..
+      dockerfile: ./builds/platform.Dockerfile
+      secrets:
+        - npmrc
+    ports:
+      - "${PLATFORM_PORT}:3000"
+    depends_on:
+      - service-authentication
+    networks:
+      - api
+      - platform
+    environment:
+      PUBLIC_AUTHENTICATION_SERVICE_URL: "http://localhost:${SERVICE_AUTHENTICATION_PORT}"
+      PUBLIC_STUDIO_PLATFORM_URL: "http://localhost:${STUDIO_PLATFORM_PORT}"
+      PUBLIC_STORYVERSE_PLATFORM_URL: "http://localhost:${STUDIO_STORYVERSE_PORT}"
+
+networks:
+  api:
+  platform:
+
+volumes:
+  authentication-postgres-data:
+  json-keys-postgres-data:
+  mailserver-data:
+
+secrets:
+  npmrc:
+    file: "${NPMRC_PATH:-$HOME/.npmrc}"

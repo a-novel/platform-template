@@ -1,0 +1,72 @@
+{
+  "name": "platform-template-stories",
+  "version": "0.0.0",
+  "private": true,
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/a-novel/platform-template.git"
+  },
+  "license": "AGPL-3.0",
+  "sideEffects": [
+    "**/*.css"
+  ],
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "svelte": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "pnpm i && pnpm build:base && pnpm build:storybook",
+    "build:base": "vite build && npm run prepack",
+    "build:storybook": "storybook build",
+    "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
+    "preinstall": "npx only-allow pnpm",
+    "prepack": "svelte-kit sync && svelte-package && publint",
+    "prepare": "svelte-kit sync || echo ''",
+    "storybook": "storybook dev -p 6006"
+  },
+  "dependencies": {
+    "@a-novel-kit/nodelib-browser": "catalog:",
+    "@a-novel/package-authentication": "catalog:",
+    "@a-novel/platform-template": "catalog:",
+    "@a-novel/service-authentication-rest": "catalog:",
+    "@a-novel/uikit": "catalog:",
+    "@iconify/svelte": "^5.1.0",
+    "@sveltejs/kit": "catalog:",
+    "@tolgee/core": "catalog:",
+    "@tolgee/format-icu": "^7.0.0",
+    "@tolgee/svelte": "^7.0.0",
+    "@tolgee/web": "^7.0.0",
+    "svelte": "catalog:",
+    "zod": "^4.1.12"
+  },
+  "devDependencies": {
+    "@a-novel-kit/nodelib-config": "catalog:",
+    "@chromatic-com/storybook": "catalog:",
+    "@storybook/addon-a11y": "catalog:",
+    "@storybook/addon-docs": "catalog:",
+    "@storybook/addon-svelte-csf": "catalog:",
+    "@storybook/addon-themes": "catalog:",
+    "@storybook/addon-vitest": "catalog:",
+    "@storybook/sveltekit": "catalog:",
+    "@sveltejs/adapter-node": "catalog:",
+    "@sveltejs/package": "catalog:",
+    "@sveltejs/vite-plugin-svelte": "catalog:",
+    "@types/node": "^24.10.2",
+    "eslint-plugin-svelte": "catalog:",
+    "publint": "^0.3.15",
+    "react": "catalog:",
+    "storybook": "catalog:",
+    "svelte-check": "catalog:",
+    "typescript": "catalog:",
+    "typescript-eslint": "^8.48.1",
+    "vite": "catalog:"
+  },
+  "packageManager": "pnpm@10.33.0",
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  }
+}
