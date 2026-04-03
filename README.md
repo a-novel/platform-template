@@ -11,6 +11,6 @@ The authentication and account management platform for Agora.
 ![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/a-novel/platform-template)
 
 ![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/a-novel/platform-template/main.yaml)
-[![codecov](https://codecov.io/gh/a-novel/platform-template/graph/badge.svg?token=9YAFznYjYf)](https://codecov.io/gh/a-novel/platform-template)
+[![codecov](https://codecov.io/gh/a-novel/platform-template/graph/badge.svg?token=JbzZltAe4G)](https://codecov.io/gh/a-novel/platform-template)
 
-![Coverage graph](https://codecov.io/gh/a-novel/platform-template/graphs/sunburst.svg?token=9YAFznYjYf)
+![Coverage graph](https://codecov.io/gh/a-novel/platform-template/graphs/sunburst.svg?token=JbzZltAe4G)

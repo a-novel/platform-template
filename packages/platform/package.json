@@ -107,9 +107,9 @@
   },
   "tolgee": {
     "$schema": "https://docs.tolgee.io/cli-schema.json",
-    "projectId": 2,
+    "projectId": 1,
     "format": "JSON_ICU",
-    "defaultNamespace": "auth",
+    "defaultNamespace": "template",
     "patterns": [
       "./src/**/*.ts",
       "./src/**/*.svelte"
@@ -122,10 +122,7 @@
       ],
       "forceMode": "OVERRIDE",
       "namespaces": [
-        "auth.platform.page.validateEmail",
-        "auth.platform.page.passwordReset",
-        "auth.platform.page.manageAccount",
-        "auth.platform.page.register"
+        "template.common"
       ],
       "removeOtherKeys": true
     },

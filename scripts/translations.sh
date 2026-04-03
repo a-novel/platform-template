@@ -2,7 +2,7 @@
 
 set -e
 
-APP_NAME="auth-translations"
+APP_NAME="template-translations"
 PODMAN_FILE="$PWD/builds/podman-compose.tolgee.yaml"
 
 # Ensure containers are properly shut down when the program exits abnormally.

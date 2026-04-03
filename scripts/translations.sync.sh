@@ -11,7 +11,6 @@ while test $# -gt 0; do
     -p*|--package*)
       TARGET="$(echo "$1" | sed -e 's/^[^=]*=//g')"
       if [ "$TARGET" == "platform" ]; then PLATFORM="true"; fi
-      if [ "$TARGET" == "shared" ]; then SHARED="true"; fi
       shift
       ;;
     -a*|--action*)
@@ -24,12 +23,12 @@ while test $# -gt 0; do
   esac
 done
 
-APP_NAME="auth-translations"
+APP_NAME="template-translations"
 
 # Retrieve tolgee port from running pods.
 TOLGEE_PORT="$(podman port "${APP_NAME}_tolgee-app_1" 8080 | sed -e 's/^[^:]*://g')"
 
-export TOLGEE_PLATFORM_API_KEY="tgpak_gjptomtvgzuwk3trmvsgczdroazxgndlobxgimlqgy2dk"
+export TOLGEE_PLATFORM_API_KEY="tgpak_gfpw62dkoyzw4y3omeyxi5ltmzrwg4dcozvde5lvnjrxe"
 export TOLGEE_URL=${TOLGEE_URL:="http://localhost:${TOLGEE_PORT}"}
 
 runAction() {
