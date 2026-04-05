@@ -1,6 +1,6 @@
-# Platform Authentication
+# Platform Template
 
-The authentication and account management platform for Agora.
+A template repository for quickstarting frontend platforms.
 
 [![X (formerly Twitter) Follow](https://img.shields.io/twitter/follow/agorastoryverse)](https://twitter.com/agorastoryverse)
 [![Discord](https://img.shields.io/discord/1315240114691248138?logo=discord)](https://discord.gg/rp4Qr8cA)
