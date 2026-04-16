@@ -1,4 +1,4 @@
-FROM docker.io/library/node:24.14.1-alpine AS base
+FROM docker.io/library/node:24.15.0-alpine AS base
 
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
@@ -39,7 +39,7 @@ COPY --from=deps /usr/local/app/packages/platform/node_modules /app/packages/pla
 
 RUN pnpm build:platform
 
-FROM docker.io/library/node:24.14.1-alpine
+FROM docker.io/library/node:24.15.0-alpine
 
 WORKDIR /
 
