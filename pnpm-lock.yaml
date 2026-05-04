@@ -8,10 +8,10 @@ catalogs:
   default:
     '@a-novel-kit/nodelib-browser':
       specifier: ^1.3.22
-      version: 1.3.36
+      version: 1.3.37
     '@a-novel-kit/nodelib-config':
       specifier: ^1.3.22
-      version: 1.3.36
+      version: 1.3.37
     '@a-novel/package-authentication':
       specifier: ^0.1.2
       version: 0.1.2
@@ -168,7 +168,7 @@ importers:
     devDependencies:
       '@a-novel-kit/nodelib-config':
         specifier: 'catalog:'
-        version: 1.3.36(7fe4383f3c72b56871922a13430b0e5b)
+        version: 1.3.37(7fe4383f3c72b56871922a13430b0e5b)
       '@eslint/compat':
         specifier: 'catalog:'
         version: 2.0.5(eslint@10.3.0(jiti@2.6.1))
@@ -231,19 +231,19 @@ importers:
     devDependencies:
       '@a-novel-kit/nodelib-browser':
         specifier: 'catalog:'
-        version: 1.3.36(zod@4.4.3)
+        version: 1.3.37(zod@4.4.3)
       '@a-novel-kit/nodelib-config':
         specifier: 'catalog:'
-        version: 1.3.36(7fe4383f3c72b56871922a13430b0e5b)
+        version: 1.3.37(7fe4383f3c72b56871922a13430b0e5b)
       '@a-novel/package-authentication':
         specifier: 'catalog:'
-        version: 0.1.2(@a-novel-kit/nodelib-browser@1.3.36(zod@4.4.3))(@a-novel/service-authentication-rest@2.4.2(@a-novel-kit/nodelib-browser@1.3.36(zod@4.4.3))(zod@4.4.3))(@a-novel/uikit@0.13.0(739078891d7e58a5c3d0802faac90898))(@iconify/svelte@5.2.1(svelte@5.55.5(@typescript-eslint/types@8.59.1)))(@sveltejs/kit@2.59.0(@sveltejs/vite-plugin-svelte@7.0.0(svelte@5.55.5(@typescript-eslint/types@8.59.1))(vite@8.0.10(@types/node@24.12.2)(esbuild@0.27.7)(jiti@2.6.1)(yaml@2.8.3)))(svelte@5.55.5(@typescript-eslint/types@8.59.1))(typescript@6.0.3)(vite@8.0.10(@types/node@24.12.2)(esbuild@0.27.7)(jiti@2.6.1)(yaml@2.8.3)))(@tolgee/core@7.0.0)(@tolgee/format-icu@7.0.0)(@tolgee/svelte@7.0.0(svelte@5.55.5(@typescript-eslint/types@8.59.1)))(@tolgee/web@7.0.0)(svelte@5.55.5(@typescript-eslint/types@8.59.1))(zod@4.4.3)
+        version: 0.1.2(@a-novel-kit/nodelib-browser@1.3.37(zod@4.4.3))(@a-novel/service-authentication-rest@2.4.2(@a-novel-kit/nodelib-browser@1.3.37(zod@4.4.3))(zod@4.4.3))(@a-novel/uikit@0.13.0(b01664765c3e2b6a046c919bf2ca2599))(@iconify/svelte@5.2.1(svelte@5.55.5(@typescript-eslint/types@8.59.1)))(@sveltejs/kit@2.59.0(@sveltejs/vite-plugin-svelte@7.0.0(svelte@5.55.5(@typescript-eslint/types@8.59.1))(vite@8.0.10(@types/node@24.12.2)(esbuild@0.27.7)(jiti@2.6.1)(yaml@2.8.3)))(svelte@5.55.5(@typescript-eslint/types@8.59.1))(typescript@6.0.3)(vite@8.0.10(@types/node@24.12.2)(esbuild@0.27.7)(jiti@2.6.1)(yaml@2.8.3)))(@tolgee/core@7.0.0)(@tolgee/format-icu@7.0.0)(@tolgee/svelte@7.0.0(svelte@5.55.5(@typescript-eslint/types@8.59.1)))(@tolgee/web@7.0.0)(svelte@5.55.5(@typescript-eslint/types@8.59.1))(zod@4.4.3)
       '@a-novel/service-authentication-rest':
         specifier: 'catalog:'
-        version: 2.4.2(@a-novel-kit/nodelib-browser@1.3.36(zod@4.4.3))(zod@4.4.3)
+        version: 2.4.2(@a-novel-kit/nodelib-browser@1.3.37(zod@4.4.3))(zod@4.4.3)
       '@a-novel/uikit':
         specifier: 'catalog:'
-        version: 0.13.0(739078891d7e58a5c3d0802faac90898)
+        version: 0.13.0(b01664765c3e2b6a046c919bf2ca2599)
       '@eslint/compat':
         specifier: 'catalog:'
         version: 2.0.5(eslint@10.3.0(jiti@2.6.1))
@@ -357,19 +357,19 @@ importers:
     dependencies:
       '@a-novel-kit/nodelib-browser':
         specifier: 'catalog:'
-        version: 1.3.36(zod@4.4.3)
+        version: 1.3.37(zod@4.4.3)
       '@a-novel/package-authentication':
         specifier: 'catalog:'
-        version: 0.1.2(@a-novel-kit/nodelib-browser@1.3.36(zod@4.4.3))(@a-novel/service-authentication-rest@2.4.2(@a-novel-kit/nodelib-browser@1.3.36(zod@4.4.3))(zod@4.4.3))(@a-novel/uikit@0.13.0(739078891d7e58a5c3d0802faac90898))(@iconify/svelte@5.2.1(svelte@5.55.5(@typescript-eslint/types@8.59.1)))(@sveltejs/kit@2.59.0(@sveltejs/vite-plugin-svelte@7.0.0(svelte@5.55.5(@typescript-eslint/types@8.59.1))(vite@8.0.10(@types/node@24.12.2)(esbuild@0.27.7)(jiti@2.6.1)(yaml@2.8.3)))(svelte@5.55.5(@typescript-eslint/types@8.59.1))(typescript@6.0.3)(vite@8.0.10(@types/node@24.12.2)(esbuild@0.27.7)(jiti@2.6.1)(yaml@2.8.3)))(@tolgee/core@7.0.0)(@tolgee/format-icu@7.0.0)(@tolgee/svelte@7.0.0(svelte@5.55.5(@typescript-eslint/types@8.59.1)))(@tolgee/web@7.0.0)(svelte@5.55.5(@typescript-eslint/types@8.59.1))(zod@4.4.3)
+        version: 0.1.2(@a-novel-kit/nodelib-browser@1.3.37(zod@4.4.3))(@a-novel/service-authentication-rest@2.4.2(@a-novel-kit/nodelib-browser@1.3.37(zod@4.4.3))(zod@4.4.3))(@a-novel/uikit@0.13.0(b01664765c3e2b6a046c919bf2ca2599))(@iconify/svelte@5.2.1(svelte@5.55.5(@typescript-eslint/types@8.59.1)))(@sveltejs/kit@2.59.0(@sveltejs/vite-plugin-svelte@7.0.0(svelte@5.55.5(@typescript-eslint/types@8.59.1))(vite@8.0.10(@types/node@24.12.2)(esbuild@0.27.7)(jiti@2.6.1)(yaml@2.8.3)))(svelte@5.55.5(@typescript-eslint/types@8.59.1))(typescript@6.0.3)(vite@8.0.10(@types/node@24.12.2)(esbuild@0.27.7)(jiti@2.6.1)(yaml@2.8.3)))(@tolgee/core@7.0.0)(@tolgee/format-icu@7.0.0)(@tolgee/svelte@7.0.0(svelte@5.55.5(@typescript-eslint/types@8.59.1)))(@tolgee/web@7.0.0)(svelte@5.55.5(@typescript-eslint/types@8.59.1))(zod@4.4.3)
       '@a-novel/platform-template':
         specifier: 'catalog:'
         version: link:../platform
       '@a-novel/service-authentication-rest':
         specifier: 'catalog:'
-        version: 2.4.2(@a-novel-kit/nodelib-browser@1.3.36(zod@4.4.3))(zod@4.4.3)
+        version: 2.4.2(@a-novel-kit/nodelib-browser@1.3.37(zod@4.4.3))(zod@4.4.3)
       '@a-novel/uikit':
         specifier: 'catalog:'
-        version: 0.13.0(739078891d7e58a5c3d0802faac90898)
+        version: 0.13.0(b01664765c3e2b6a046c919bf2ca2599)
       '@iconify/svelte':
         specifier: ^5.1.0
         version: 5.2.1(svelte@5.55.5(@typescript-eslint/types@8.59.1))
@@ -397,7 +397,7 @@ importers:
     devDependencies:
       '@a-novel-kit/nodelib-config':
         specifier: 'catalog:'
-        version: 1.3.36(7fe4383f3c72b56871922a13430b0e5b)
+        version: 1.3.37(7fe4383f3c72b56871922a13430b0e5b)
       '@chromatic-com/storybook':
         specifier: 'catalog:'
         version: 5.1.2(storybook@10.3.6(@testing-library/dom@10.4.1)(prettier@3.8.3)(react-dom@19.2.5(react@19.2.5))(react@19.2.5))
@@ -458,32 +458,32 @@ importers:
 
 packages:
 
-  '@a-novel-kit/nodelib-browser@1.3.36':
-    resolution: {integrity: sha512-vwRfaUJV3MmfojXGKQ34zVg45mU8tZBZpBMLR5jxNmvL/jgdhyBf4VBz5I813+V5ifat7vNrLdc2kUt3+yxEWA==, tarball: https://npm.pkg.github.com/download/@a-novel-kit/nodelib-browser/1.3.36/8cdfea3959f718b3165d277e0b6be0c46a625c6a}
+  '@a-novel-kit/nodelib-browser@1.3.37':
+    resolution: {integrity: sha512-6KPoExzDWyWMa2XhzgUpdXX0x2TcKqD3CIv5Lu3+ulBfDgKha/viDjId+Fo2Tk09xpMrCeVdm/fueE2Qw0Xy9w==, tarball: https://npm.pkg.github.com/download/@a-novel-kit/nodelib-browser/1.3.37/5ed4c7ed8d0242487f8b07a8590ca3d99e7b5718}
     engines: {node: '>=24.0.0', npm: '>=10.9.2'}
     peerDependencies:
-      zod: ^4.3.6
+      zod: ^4.4.2
 
-  '@a-novel-kit/nodelib-config@1.3.36':
-    resolution: {integrity: sha512-4myCG+36JdQRonVVfd9wBWYIbYUqsiks6ALtE76evuNBA4gF2V4YyIWVU80nBnz0s5Yyhf8arVbiLCFtintpFw==, tarball: https://npm.pkg.github.com/download/@a-novel-kit/nodelib-config/1.3.36/525a917d2de2d71922d6733be4ea69039bdc4017}
+  '@a-novel-kit/nodelib-config@1.3.37':
+    resolution: {integrity: sha512-9Hv9/Mjl4s33RHIGRpeP1nh43nI3xR49ev6ku8V7GA2HTHIN3Sb8v7mYqxNaqLIGsrLWabH0uEnyaz8rY04G5Q==, tarball: https://npm.pkg.github.com/download/@a-novel-kit/nodelib-config/1.3.37/f74549aa59f5e1fa028f85f5b6b6577e327b761a}
     engines: {node: '>=24.0.0', npm: '>=10.9.2'}
     peerDependencies:
       '@eslint/compat': ^2.0.5
       '@eslint/js': ^10.0.1
-      '@sveltejs/kit': ^2.58.0
+      '@sveltejs/kit': ^2.59.0
       '@trivago/prettier-plugin-sort-imports': ^6.0.2
       '@types/node': ^24.12.2
-      eslint: ^10.2.1
+      eslint: ^10.3.0
       eslint-config-prettier: ^10.1.8
       eslint-plugin-prettier: ^5.5.5
-      eslint-plugin-storybook: ^10.3.5
+      eslint-plugin-storybook: ^10.3.6
       eslint-plugin-svelte: ^3.17.1
       prettier: ^3.8.3
       prettier-plugin-css-order: ^2.2.0
       prettier-plugin-packagejson: ^2.5.20 || ^3.0.0
       prettier-plugin-sql: ^0.20.0
       prettier-plugin-svelte: ^3.5.1
-      storybook: ^10.3.5
+      storybook: ^10.3.6
       svelte: ^5.55.5
       typescript: ^6.0.3
       typescript-eslint: ^8.59.1
@@ -3282,11 +3282,11 @@ packages:
 
 snapshots:
 
-  '@a-novel-kit/nodelib-browser@1.3.36(zod@4.4.3)':
+  '@a-novel-kit/nodelib-browser@1.3.37(zod@4.4.3)':
     dependencies:
       zod: 4.4.3
 
-  '@a-novel-kit/nodelib-config@1.3.36(7fe4383f3c72b56871922a13430b0e5b)':
+  '@a-novel-kit/nodelib-config@1.3.37(7fe4383f3c72b56871922a13430b0e5b)':
     dependencies:
       '@eslint/compat': 2.0.5(eslint@10.3.0(jiti@2.6.1))
       '@eslint/js': 10.0.1(eslint@10.3.0(jiti@2.6.1))
@@ -3308,11 +3308,11 @@ snapshots:
       typescript: 6.0.3
       typescript-eslint: 8.59.1(eslint@10.3.0(jiti@2.6.1))(typescript@6.0.3)
 
-  '@a-novel/package-authentication@0.1.2(@a-novel-kit/nodelib-browser@1.3.36(zod@4.4.3))(@a-novel/service-authentication-rest@2.4.2(@a-novel-kit/nodelib-browser@1.3.36(zod@4.4.3))(zod@4.4.3))(@a-novel/uikit@0.13.0(739078891d7e58a5c3d0802faac90898))(@iconify/svelte@5.2.1(svelte@5.55.5(@typescript-eslint/types@8.59.1)))(@sveltejs/kit@2.59.0(@sveltejs/vite-plugin-svelte@7.0.0(svelte@5.55.5(@typescript-eslint/types@8.59.1))(vite@8.0.10(@types/node@24.12.2)(esbuild@0.27.7)(jiti@2.6.1)(yaml@2.8.3)))(svelte@5.55.5(@typescript-eslint/types@8.59.1))(typescript@6.0.3)(vite@8.0.10(@types/node@24.12.2)(esbuild@0.27.7)(jiti@2.6.1)(yaml@2.8.3)))(@tolgee/core@7.0.0)(@tolgee/format-icu@7.0.0)(@tolgee/svelte@7.0.0(svelte@5.55.5(@typescript-eslint/types@8.59.1)))(@tolgee/web@7.0.0)(svelte@5.55.5(@typescript-eslint/types@8.59.1))(zod@4.4.3)':
+  '@a-novel/package-authentication@0.1.2(@a-novel-kit/nodelib-browser@1.3.37(zod@4.4.3))(@a-novel/service-authentication-rest@2.4.2(@a-novel-kit/nodelib-browser@1.3.37(zod@4.4.3))(zod@4.4.3))(@a-novel/uikit@0.13.0(b01664765c3e2b6a046c919bf2ca2599))(@iconify/svelte@5.2.1(svelte@5.55.5(@typescript-eslint/types@8.59.1)))(@sveltejs/kit@2.59.0(@sveltejs/vite-plugin-svelte@7.0.0(svelte@5.55.5(@typescript-eslint/types@8.59.1))(vite@8.0.10(@types/node@24.12.2)(esbuild@0.27.7)(jiti@2.6.1)(yaml@2.8.3)))(svelte@5.55.5(@typescript-eslint/types@8.59.1))(typescript@6.0.3)(vite@8.0.10(@types/node@24.12.2)(esbuild@0.27.7)(jiti@2.6.1)(yaml@2.8.3)))(@tolgee/core@7.0.0)(@tolgee/format-icu@7.0.0)(@tolgee/svelte@7.0.0(svelte@5.55.5(@typescript-eslint/types@8.59.1)))(@tolgee/web@7.0.0)(svelte@5.55.5(@typescript-eslint/types@8.59.1))(zod@4.4.3)':
     dependencies:
-      '@a-novel-kit/nodelib-browser': 1.3.36(zod@4.4.3)
-      '@a-novel/service-authentication-rest': 2.4.2(@a-novel-kit/nodelib-browser@1.3.36(zod@4.4.3))(zod@4.4.3)
-      '@a-novel/uikit': 0.13.0(739078891d7e58a5c3d0802faac90898)
+      '@a-novel-kit/nodelib-browser': 1.3.37(zod@4.4.3)
+      '@a-novel/service-authentication-rest': 2.4.2(@a-novel-kit/nodelib-browser@1.3.37(zod@4.4.3))(zod@4.4.3)
+      '@a-novel/uikit': 0.13.0(b01664765c3e2b6a046c919bf2ca2599)
       '@iconify/svelte': 5.2.1(svelte@5.55.5(@typescript-eslint/types@8.59.1))
       '@sveltejs/kit': 2.59.0(@sveltejs/vite-plugin-svelte@7.0.0(svelte@5.55.5(@typescript-eslint/types@8.59.1))(vite@8.0.10(@types/node@24.12.2)(esbuild@0.27.7)(jiti@2.6.1)(yaml@2.8.3)))(svelte@5.55.5(@typescript-eslint/types@8.59.1))(typescript@6.0.3)(vite@8.0.10(@types/node@24.12.2)(esbuild@0.27.7)(jiti@2.6.1)(yaml@2.8.3))
       '@tolgee/core': 7.0.0
@@ -3322,14 +3322,14 @@ snapshots:
       svelte: 5.55.5(@typescript-eslint/types@8.59.1)
       zod: 4.4.3
 
-  '@a-novel/service-authentication-rest@2.4.2(@a-novel-kit/nodelib-browser@1.3.36(zod@4.4.3))(zod@4.4.3)':
+  '@a-novel/service-authentication-rest@2.4.2(@a-novel-kit/nodelib-browser@1.3.37(zod@4.4.3))(zod@4.4.3)':
     dependencies:
-      '@a-novel-kit/nodelib-browser': 1.3.36(zod@4.4.3)
+      '@a-novel-kit/nodelib-browser': 1.3.37(zod@4.4.3)
       zod: 4.4.3
 
-  '@a-novel/uikit@0.13.0(739078891d7e58a5c3d0802faac90898)':
+  '@a-novel/uikit@0.13.0(b01664765c3e2b6a046c919bf2ca2599)':
     dependencies:
-      '@a-novel-kit/nodelib-browser': 1.3.36(zod@4.4.3)
+      '@a-novel-kit/nodelib-browser': 1.3.37(zod@4.4.3)
       '@iconify/svelte': 5.2.1(svelte@5.55.5(@typescript-eslint/types@8.59.1))
       '@storybook/addon-a11y': 10.3.6(storybook@10.3.6(@testing-library/dom@10.4.1)(prettier@3.8.3)(react-dom@19.2.5(react@19.2.5))(react@19.2.5))
       '@storybook/addon-docs': 10.3.6(@types/react@19.2.14)(esbuild@0.27.7)(rollup@4.60.1)(storybook@10.3.6(@testing-library/dom@10.4.1)(prettier@3.8.3)(react-dom@19.2.5(react@19.2.5))(react@19.2.5))(vite@8.0.10(@types/node@24.12.2)(esbuild@0.27.7)(jiti@2.6.1)(yaml@2.8.3))
