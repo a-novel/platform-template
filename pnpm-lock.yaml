@@ -77,7 +77,7 @@ catalogs:
       version: 2.16.1
     '@tolgee/core':
       specifier: ^7.0.0
-      version: 7.0.0
+      version: 7.0.1
     '@trivago/prettier-plugin-sort-imports':
       specifier: ^6.0.0
       version: 6.0.2
@@ -239,13 +239,13 @@ importers:
         version: 1.3.38(5f36294a92d5e0f39a9ba470ff70b339)
       '@a-novel/package-authentication':
         specifier: 'catalog:'
-        version: 0.1.2(@a-novel-kit/nodelib-browser@1.3.38(zod@4.4.3))(@a-novel/service-authentication-rest@2.4.2(@a-novel-kit/nodelib-browser@1.3.38(zod@4.4.3))(zod@4.4.3))(@a-novel/uikit@0.13.0(48dba3faf4792dbbd415ee47928fc833))(@iconify/svelte@5.2.1(svelte@5.55.8(@typescript-eslint/types@8.59.4)))(@sveltejs/kit@2.60.1(@sveltejs/vite-plugin-svelte@7.1.2(svelte@5.55.8(@typescript-eslint/types@8.59.4))(vite@8.0.14(@types/node@24.12.4)(esbuild@0.27.7)(jiti@2.7.0)(yaml@2.8.3)))(svelte@5.55.8(@typescript-eslint/types@8.59.4))(typescript@6.0.3)(vite@8.0.14(@types/node@24.12.4)(esbuild@0.27.7)(jiti@2.7.0)(yaml@2.8.3)))(@tolgee/core@7.0.0)(@tolgee/format-icu@7.0.0)(@tolgee/svelte@7.0.0(svelte@5.55.8(@typescript-eslint/types@8.59.4)))(@tolgee/web@7.0.0)(svelte@5.55.8(@typescript-eslint/types@8.59.4))(zod@4.4.3)
+        version: 0.1.2(@a-novel-kit/nodelib-browser@1.3.38(zod@4.4.3))(@a-novel/service-authentication-rest@2.4.2(@a-novel-kit/nodelib-browser@1.3.38(zod@4.4.3))(zod@4.4.3))(@a-novel/uikit@0.13.0(7d7957ba2d82fc62a42e339839415487))(@iconify/svelte@5.2.1(svelte@5.55.8(@typescript-eslint/types@8.59.4)))(@sveltejs/kit@2.60.1(@sveltejs/vite-plugin-svelte@7.1.2(svelte@5.55.8(@typescript-eslint/types@8.59.4))(vite@8.0.14(@types/node@24.12.4)(esbuild@0.27.7)(jiti@2.7.0)(yaml@2.8.3)))(svelte@5.55.8(@typescript-eslint/types@8.59.4))(typescript@6.0.3)(vite@8.0.14(@types/node@24.12.4)(esbuild@0.27.7)(jiti@2.7.0)(yaml@2.8.3)))(@tolgee/core@7.0.1)(@tolgee/format-icu@7.0.0)(@tolgee/svelte@7.0.0(svelte@5.55.8(@typescript-eslint/types@8.59.4)))(@tolgee/web@7.0.0)(svelte@5.55.8(@typescript-eslint/types@8.59.4))(zod@4.4.3)
       '@a-novel/service-authentication-rest':
         specifier: 'catalog:'
         version: 2.4.2(@a-novel-kit/nodelib-browser@1.3.38(zod@4.4.3))(zod@4.4.3)
       '@a-novel/uikit':
         specifier: 'catalog:'
-        version: 0.13.0(48dba3faf4792dbbd415ee47928fc833)
+        version: 0.13.0(7d7957ba2d82fc62a42e339839415487)
       '@eslint/compat':
         specifier: 'catalog:'
         version: 2.1.0(eslint@10.4.0(jiti@2.7.0))
@@ -281,7 +281,7 @@ importers:
         version: 2.16.1(jiti@2.7.0)(typescript@6.0.3)
       '@tolgee/core':
         specifier: 'catalog:'
-        version: 7.0.0
+        version: 7.0.1
       '@tolgee/format-icu':
         specifier: ^7.0.0
         version: 7.0.0
@@ -362,7 +362,7 @@ importers:
         version: 1.3.38(zod@4.4.3)
       '@a-novel/package-authentication':
         specifier: 'catalog:'
-        version: 0.1.2(@a-novel-kit/nodelib-browser@1.3.38(zod@4.4.3))(@a-novel/service-authentication-rest@2.4.2(@a-novel-kit/nodelib-browser@1.3.38(zod@4.4.3))(zod@4.4.3))(@a-novel/uikit@0.13.0(48dba3faf4792dbbd415ee47928fc833))(@iconify/svelte@5.2.1(svelte@5.55.8(@typescript-eslint/types@8.59.4)))(@sveltejs/kit@2.60.1(@sveltejs/vite-plugin-svelte@7.1.2(svelte@5.55.8(@typescript-eslint/types@8.59.4))(vite@8.0.14(@types/node@24.12.4)(esbuild@0.27.7)(jiti@2.7.0)(yaml@2.8.3)))(svelte@5.55.8(@typescript-eslint/types@8.59.4))(typescript@6.0.3)(vite@8.0.14(@types/node@24.12.4)(esbuild@0.27.7)(jiti@2.7.0)(yaml@2.8.3)))(@tolgee/core@7.0.0)(@tolgee/format-icu@7.0.0)(@tolgee/svelte@7.0.0(svelte@5.55.8(@typescript-eslint/types@8.59.4)))(@tolgee/web@7.0.0)(svelte@5.55.8(@typescript-eslint/types@8.59.4))(zod@4.4.3)
+        version: 0.1.2(@a-novel-kit/nodelib-browser@1.3.38(zod@4.4.3))(@a-novel/service-authentication-rest@2.4.2(@a-novel-kit/nodelib-browser@1.3.38(zod@4.4.3))(zod@4.4.3))(@a-novel/uikit@0.13.0(7d7957ba2d82fc62a42e339839415487))(@iconify/svelte@5.2.1(svelte@5.55.8(@typescript-eslint/types@8.59.4)))(@sveltejs/kit@2.60.1(@sveltejs/vite-plugin-svelte@7.1.2(svelte@5.55.8(@typescript-eslint/types@8.59.4))(vite@8.0.14(@types/node@24.12.4)(esbuild@0.27.7)(jiti@2.7.0)(yaml@2.8.3)))(svelte@5.55.8(@typescript-eslint/types@8.59.4))(typescript@6.0.3)(vite@8.0.14(@types/node@24.12.4)(esbuild@0.27.7)(jiti@2.7.0)(yaml@2.8.3)))(@tolgee/core@7.0.1)(@tolgee/format-icu@7.0.0)(@tolgee/svelte@7.0.0(svelte@5.55.8(@typescript-eslint/types@8.59.4)))(@tolgee/web@7.0.0)(svelte@5.55.8(@typescript-eslint/types@8.59.4))(zod@4.4.3)
       '@a-novel/platform-template':
         specifier: 'catalog:'
         version: link:../platform
@@ -371,7 +371,7 @@ importers:
         version: 2.4.2(@a-novel-kit/nodelib-browser@1.3.38(zod@4.4.3))(zod@4.4.3)
       '@a-novel/uikit':
         specifier: 'catalog:'
-        version: 0.13.0(48dba3faf4792dbbd415ee47928fc833)
+        version: 0.13.0(7d7957ba2d82fc62a42e339839415487)
       '@iconify/svelte':
         specifier: ^5.1.0
         version: 5.2.1(svelte@5.55.8(@typescript-eslint/types@8.59.4))
@@ -380,7 +380,7 @@ importers:
         version: 2.60.1(@sveltejs/vite-plugin-svelte@7.1.2(svelte@5.55.8(@typescript-eslint/types@8.59.4))(vite@8.0.14(@types/node@24.12.4)(esbuild@0.27.7)(jiti@2.7.0)(yaml@2.8.3)))(svelte@5.55.8(@typescript-eslint/types@8.59.4))(typescript@6.0.3)(vite@8.0.14(@types/node@24.12.4)(esbuild@0.27.7)(jiti@2.7.0)(yaml@2.8.3))
       '@tolgee/core':
         specifier: 'catalog:'
-        version: 7.0.0
+        version: 7.0.1
       '@tolgee/format-icu':
         specifier: ^7.0.0
         version: 7.0.0
@@ -1818,6 +1818,9 @@ packages:
 
   '@tolgee/core@7.0.0':
     resolution: {integrity: sha512-dK1LTl7SAQCiR8559jTCz6MXTPIoPVcs+x1y1ZJr8V0tg6zpZOG1ZNyhABXXYZFUK3TblRVtKYRRDkNzQKdK/g==}
+
+  '@tolgee/core@7.0.1':
+    resolution: {integrity: sha512-SFIQpxjkdF7A/4K0dfbePzAtV1DkvPXsylhmMclpMOT2GwOakKajw680VgfWVfhqvOhJX9n311gc+rdCD9TGHg==}
 
   '@tolgee/format-icu@7.0.0':
     resolution: {integrity: sha512-SfeOzFF2n0iLSDs2Y3tDlJBwQa4UneK+RABgiH5M27Uwlk2TWM3+qdvc5SHhh/HGEvdgvZjHwSwQuBK+4y8mZw==}
@@ -3570,14 +3573,14 @@ snapshots:
       typescript: 6.0.3
       typescript-eslint: 8.59.4(eslint@10.4.0(jiti@2.7.0))(typescript@6.0.3)
 
-  '@a-novel/package-authentication@0.1.2(@a-novel-kit/nodelib-browser@1.3.38(zod@4.4.3))(@a-novel/service-authentication-rest@2.4.2(@a-novel-kit/nodelib-browser@1.3.38(zod@4.4.3))(zod@4.4.3))(@a-novel/uikit@0.13.0(48dba3faf4792dbbd415ee47928fc833))(@iconify/svelte@5.2.1(svelte@5.55.8(@typescript-eslint/types@8.59.4)))(@sveltejs/kit@2.60.1(@sveltejs/vite-plugin-svelte@7.1.2(svelte@5.55.8(@typescript-eslint/types@8.59.4))(vite@8.0.14(@types/node@24.12.4)(esbuild@0.27.7)(jiti@2.7.0)(yaml@2.8.3)))(svelte@5.55.8(@typescript-eslint/types@8.59.4))(typescript@6.0.3)(vite@8.0.14(@types/node@24.12.4)(esbuild@0.27.7)(jiti@2.7.0)(yaml@2.8.3)))(@tolgee/core@7.0.0)(@tolgee/format-icu@7.0.0)(@tolgee/svelte@7.0.0(svelte@5.55.8(@typescript-eslint/types@8.59.4)))(@tolgee/web@7.0.0)(svelte@5.55.8(@typescript-eslint/types@8.59.4))(zod@4.4.3)':
+  '@a-novel/package-authentication@0.1.2(@a-novel-kit/nodelib-browser@1.3.38(zod@4.4.3))(@a-novel/service-authentication-rest@2.4.2(@a-novel-kit/nodelib-browser@1.3.38(zod@4.4.3))(zod@4.4.3))(@a-novel/uikit@0.13.0(7d7957ba2d82fc62a42e339839415487))(@iconify/svelte@5.2.1(svelte@5.55.8(@typescript-eslint/types@8.59.4)))(@sveltejs/kit@2.60.1(@sveltejs/vite-plugin-svelte@7.1.2(svelte@5.55.8(@typescript-eslint/types@8.59.4))(vite@8.0.14(@types/node@24.12.4)(esbuild@0.27.7)(jiti@2.7.0)(yaml@2.8.3)))(svelte@5.55.8(@typescript-eslint/types@8.59.4))(typescript@6.0.3)(vite@8.0.14(@types/node@24.12.4)(esbuild@0.27.7)(jiti@2.7.0)(yaml@2.8.3)))(@tolgee/core@7.0.1)(@tolgee/format-icu@7.0.0)(@tolgee/svelte@7.0.0(svelte@5.55.8(@typescript-eslint/types@8.59.4)))(@tolgee/web@7.0.0)(svelte@5.55.8(@typescript-eslint/types@8.59.4))(zod@4.4.3)':
     dependencies:
       '@a-novel-kit/nodelib-browser': 1.3.38(zod@4.4.3)
       '@a-novel/service-authentication-rest': 2.4.2(@a-novel-kit/nodelib-browser@1.3.38(zod@4.4.3))(zod@4.4.3)
-      '@a-novel/uikit': 0.13.0(48dba3faf4792dbbd415ee47928fc833)
+      '@a-novel/uikit': 0.13.0(7d7957ba2d82fc62a42e339839415487)
       '@iconify/svelte': 5.2.1(svelte@5.55.8(@typescript-eslint/types@8.59.4))
       '@sveltejs/kit': 2.60.1(@sveltejs/vite-plugin-svelte@7.1.2(svelte@5.55.8(@typescript-eslint/types@8.59.4))(vite@8.0.14(@types/node@24.12.4)(esbuild@0.27.7)(jiti@2.7.0)(yaml@2.8.3)))(svelte@5.55.8(@typescript-eslint/types@8.59.4))(typescript@6.0.3)(vite@8.0.14(@types/node@24.12.4)(esbuild@0.27.7)(jiti@2.7.0)(yaml@2.8.3))
-      '@tolgee/core': 7.0.0
+      '@tolgee/core': 7.0.1
       '@tolgee/format-icu': 7.0.0
       '@tolgee/svelte': 7.0.0(svelte@5.55.8(@typescript-eslint/types@8.59.4))
       '@tolgee/web': 7.0.0
@@ -3589,7 +3592,7 @@ snapshots:
       '@a-novel-kit/nodelib-browser': 1.3.38(zod@4.4.3)
       zod: 4.4.3
 
-  '@a-novel/uikit@0.13.0(48dba3faf4792dbbd415ee47928fc833)':
+  '@a-novel/uikit@0.13.0(7d7957ba2d82fc62a42e339839415487)':
     dependencies:
       '@a-novel-kit/nodelib-browser': 1.3.38(zod@4.4.3)
       '@iconify/svelte': 5.2.1(svelte@5.55.8(@typescript-eslint/types@8.59.4))
@@ -3600,7 +3603,7 @@ snapshots:
       '@storybook/addon-vitest': 10.4.0(@vitest/browser@4.1.7)(@vitest/runner@4.1.7)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(storybook@10.4.0(@emnapi/core@1.10.0)(@emnapi/runtime@1.10.0)(@testing-library/dom@10.4.1)(@types/react@19.2.14)(prettier@3.8.3)(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(vitest@4.1.7)
       '@storybook/sveltekit': 10.4.0(@sveltejs/vite-plugin-svelte@7.1.2(svelte@5.55.8(@typescript-eslint/types@8.59.4))(vite@8.0.14(@types/node@24.12.4)(esbuild@0.27.7)(jiti@2.7.0)(yaml@2.8.3)))(esbuild@0.27.7)(rollup@4.60.1)(storybook@10.4.0(@emnapi/core@1.10.0)(@emnapi/runtime@1.10.0)(@testing-library/dom@10.4.1)(@types/react@19.2.14)(prettier@3.8.3)(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(svelte@5.55.8(@typescript-eslint/types@8.59.4))(vite@8.0.14(@types/node@24.12.4)(esbuild@0.27.7)(jiti@2.7.0)(yaml@2.8.3))
       '@sveltejs/kit': 2.60.1(@sveltejs/vite-plugin-svelte@7.1.2(svelte@5.55.8(@typescript-eslint/types@8.59.4))(vite@8.0.14(@types/node@24.12.4)(esbuild@0.27.7)(jiti@2.7.0)(yaml@2.8.3)))(svelte@5.55.8(@typescript-eslint/types@8.59.4))(typescript@6.0.3)(vite@8.0.14(@types/node@24.12.4)(esbuild@0.27.7)(jiti@2.7.0)(yaml@2.8.3))
-      '@tolgee/core': 7.0.0
+      '@tolgee/core': 7.0.1
       '@tolgee/format-icu': 7.0.0
       '@tolgee/svelte': 7.0.0(svelte@5.55.8(@typescript-eslint/types@8.59.4))
       '@tolgee/web': 7.0.0
@@ -4589,6 +4592,8 @@ snapshots:
       - utf-8-validate
 
   '@tolgee/core@7.0.0': {}
+
+  '@tolgee/core@7.0.1': {}
 
   '@tolgee/format-icu@7.0.0': {}
 
