@@ -69,7 +69,7 @@
     "prettier": "catalog:",
     "prettier-plugin-css-order": "catalog:",
     "prettier-plugin-packagejson": "catalog:",
-    "prettier-plugin-svelte": "^3.4.1",
+    "prettier-plugin-svelte": "^4.0.0",
     "typescript-eslint": "^8.51.0",
     "vite": "catalog:",
     "vitest": "^4.0.16"

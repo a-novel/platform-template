@@ -76,7 +76,7 @@
     "globals": "catalog:",
     "jsdom": "catalog:",
     "prettier": "catalog:",
-    "prettier-plugin-svelte": "^3.4.0",
+    "prettier-plugin-svelte": "^4.0.0",
     "publint": "^0.3.16",
     "sharp": "catalog:",
     "svelte": "catalog:",
