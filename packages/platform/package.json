@@ -95,7 +95,7 @@
     "@iconify/svelte": "^5.2.1",
     "@sveltejs/kit": "^2.61.1",
     "@tolgee/core": "^7.1.0",
-    "@tolgee/format-icu": "^7.0.1",
+    "@tolgee/format-icu": "^7.1.0",
     "@tolgee/svelte": "^7.1.0",
     "@tolgee/web": "^7.1.0",
     "svelte": "^5.55.8",
