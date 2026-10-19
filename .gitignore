@@ -1,0 +1,30 @@
+/node_modules/
+/.pnpm-store/
+
+# Generated output
+/.svelte-kit
+/build
+/coverage
+/storybook-static
+
+# Tooling
+*.log
+vite.config.js.timestamp-*
+vite.config.ts.timestamp-*
+
+# Local environment
+.env
+.env.*
+!.env.local
+!.env.test
+
+# Editors and operating systems
+.DS_Store
+Thumbs.db
+
+# Browser integration reports
+/playwright-report/
+/test-results/
+/.vitest/
+
+.visual/
