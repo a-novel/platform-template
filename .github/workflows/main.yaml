@@ -1,0 +1,222 @@
+name: main
+
+on:
+  push:
+    tags-ignore:
+      - "**"
+    branches:
+      - master
+  pull_request:
+    types: [opened, synchronize, reopened, labeled, unlabeled]
+  merge_group:
+
+# A pull request's newer run supersedes the older one, which could otherwise post a stale screenshot
+# verdict last; other runs each get their own group and always finish.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.run_id }}
+  cancel-in-progress: true
+
+jobs:
+  lint-node:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: read
+    steps:
+      - uses: a-novel-kit/workflows/node-actions/lint-node@v1.63.0
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          lint_action: "lint:eslint"
+
+  lint-style:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: read
+    steps:
+      - uses: a-novel-kit/workflows/node-actions/lint-node@v1.63.0
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          lint_action: "lint:stylecheck"
+
+  lint-types:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: read
+    steps:
+      - uses: a-novel-kit/workflows/node-actions/lint-node@v1.63.0
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          lint_action: "lint:typecheck"
+
+  lint-translations:
+    # Gaps and drift are measured against master, so master has nothing to compare.
+    if: github.ref != 'refs/heads/master'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: read
+      pull-requests: read
+    steps:
+      - uses: a-novel-kit/workflows/node-actions/lint-translations@v1.63.0
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+
+  lint-dockerfile:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: a-novel-kit/workflows/generic-actions/lint-dockerfile@v1.63.0
+        with:
+          version: "2.14.0"
+
+  scan-secrets:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: a-novel-kit/workflows/security-actions/scan-secrets@v1.63.0
+        with:
+          config: .gitleaks.toml
+          # renovate: datasource=github-releases depName=gitleaks/gitleaks
+          version: "8.30.1"
+
+  lint-workflows:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: a-novel-kit/workflows/security-actions/lint-workflows@v1.63.0
+        with:
+          # renovate: datasource=docker depName=ghcr.io/zizmorcore/zizmor
+          version: "1.31.1"
+
+  test-unit:
+    needs: [build-node, lint-types]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: read
+    outputs:
+      artifact-id: ${{ steps.test.outputs.artifact-id }}
+    steps:
+      - uses: a-novel-kit/workflows/node-actions/test-node@v1.63.0
+        id: test
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          test_action: "test:unit"
+          coverage_artifact: unitcover
+          coverage_file: coverage/unit/lcov.info
+
+  test-browser:
+    needs: [build-node, lint-types]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    permissions:
+      contents: read
+      packages: read
+      actions: read
+      pull-requests: read
+      statuses: write
+      id-token: write
+    env:
+      COMPOSE_PROJECT_NAME: template-e2e-${{ github.run_id }}-${{ github.run_attempt }}
+    outputs:
+      artifact-id: ${{ steps.test.outputs.artifact-id }}
+    steps:
+      - uses: a-novel-kit/workflows/node-actions/test-playwright@v1.63.0
+        id: test
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          compose_file: builds/compose.e2e.yaml
+          report_artifact: template-browser-report
+          drive_ci_provider: ${{ vars.VISUAL_CI_PROVIDER }}
+          drive_ci_account: ${{ vars.VISUAL_CI_ACCOUNT }}
+          drive_maintenance_provider: ${{ vars.VISUAL_MAINTENANCE_PROVIDER }}
+          drive_maintenance_account: ${{ vars.VISUAL_MAINTENANCE_ACCOUNT }}
+          references_folder: ${{ vars.VISUAL_REFERENCES_FOLDER }}
+          results_folder: ${{ vars.VISUAL_RESULTS_FOLDER }}
+          seed_sha: ${{ vars.VISUAL_SEED_SHA }}
+
+  test-storybook:
+    needs: [build-node, lint-types]
+    runs-on: ubuntu-latest
+    container:
+      # renovate: datasource=npm depName=playwright
+      image: mcr.microsoft.com/playwright:v1.64.1-noble
+    permissions:
+      contents: read
+      packages: read
+    outputs:
+      artifact-id: ${{ steps.test.outputs.artifact-id }}
+    steps:
+      - uses: a-novel-kit/workflows/node-actions/test-node@v1.63.0
+        id: test
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          test_action: "test:storybook"
+          coverage_artifact: storybookcover
+          coverage_file: coverage/storybook/lcov.info
+
+  report-codecov:
+    runs-on: ubuntu-latest
+    needs: [test-unit, test-browser, test-storybook]
+    permissions:
+      contents: read
+    steps:
+      - uses: a-novel-kit/workflows/generic-actions/codecov@v1.63.0
+        with:
+          codecov_token: ${{ secrets.CODECOV_TOKEN }}
+          coverage_files: unitcover/lcov.info,browsercover/lcov.info,storybookcover/lcov.info
+          coverage_artifact_ids: ${{ needs.test-unit.outputs.artifact-id }},${{ needs.test-browser.outputs.artifact-id }},${{ needs.test-storybook.outputs.artifact-id }}
+
+  audit-node:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: read
+    steps:
+      - uses: a-novel-kit/workflows/node-actions/setup-node@v1.63.0
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Audit production and development dependencies
+        run: pnpm run audit
+
+  build-node:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: read
+    steps:
+      - uses: a-novel-kit/workflows/node-actions/build-node@v1.63.0
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          build_action: "build:ci"
+
+  build-platform:
+    needs: [build-node, lint-types]
+    runs-on: ubuntu-latest
+    permissions:
+      attestations: write
+      contents: read
+      id-token: write
+      packages: write
+    steps:
+      - uses: a-novel-kit/workflows/build-actions/docker@v1.63.0
+        with:
+          file: Dockerfile
+          image_name: ${{ github.repository }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          secrets: |
+            npm_token=${{ secrets.GITHUB_TOKEN }}

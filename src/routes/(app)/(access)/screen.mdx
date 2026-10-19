@@ -1,0 +1,92 @@
+import * as AccessStories from "./screen.stories.svelte";
+
+import { Meta, ResponsiveStoryPair } from "@a-novel-kit/uikit-storybook";
+
+<Meta of={AccessStories} />
+
+# Protected pages
+
+Page-wide feedback uses the same UIKit status pattern as other authentication outcomes.
+These previews hold each decision fixed; server guards and return destinations are covered by tests.
+
+## Setup once
+
+The application layout creates one authorization controller from server-returned page data and installs
+one `AuthorizationProvider`. The authentication SDK is used only by server modules; UIKit receives
+a decision, never credentials or an API client.
+
+## Protect a route
+
+Call `requireAuthorization(event)` in **each** protected server load and mutation. A layout check
+alone does not protect child loads or form actions. An optional predicate further restricts the
+verified account:
+
+```ts
+import { requireAuthorization } from "#lib/server/auth/authorization.js";
+
+import type { PageServerLoad } from "./$types";
+
+import { Role } from "@a-novel/service-authentication-rest";
+
+export const load: PageServerLoad = async (event) => {
+  await requireAuthorization(event, (session) => session.claims.roles?.includes(Role.Admin) ?? false);
+  return { authorization: "allowed" as const };
+};
+```
+
+Anonymous requests open the existing login modal with a sanitized return destination. Denied accounts
+receive HTTP 403; failed verification receives HTTP 503 without discarding the session.
+
+The route's UI uses `screen.svelte` from this directory as its protected-page wrapper. It inherits
+the provider, while `when` can further restrict access and `controller` can supply a fixed preview state.
+Its `unavailable` snippet is an explicit escape hatch for **public** content only. The account page
+uses it for the failed recap and its logout form, and the logout action performs its own server
+work.
+
+## Conditional content
+
+Use the shared boundary for a fragment, or the hook for logic that needs the inherited decision.
+Neither creates another application provider:
+
+```svelte
+<script lang="ts">
+  import { AuthorizationBoundary } from "@a-novel-kit/uikit";
+  import { useAuthorization } from "@a-novel-kit/uikit/authorization";
+
+  const access = useAuthorization();
+</script>
+
+<AuthorizationBoundary>
+  <!-- Account-only content; not instantiated while access is unresolved or denied. -->
+</AuthorizationBoundary>
+```
+
+Read `access.state.status` reactively; do not copy it into a second state store.
+
+## Checking access
+
+<ResponsiveStoryPair
+  desktop={AccessStories.CheckingAccess}
+  mobile={AccessStories.CheckingAccess}
+  meta={AccessStories}
+/>
+
+## Account required
+
+<ResponsiveStoryPair
+  desktop={AccessStories.AccountRequired}
+  mobile={AccessStories.AccountRequired}
+  meta={AccessStories}
+/>
+
+## Access denied
+
+<ResponsiveStoryPair desktop={AccessStories.AccessDenied} mobile={AccessStories.AccessDenied} meta={AccessStories} />
+
+## Service unavailable
+
+<ResponsiveStoryPair
+  desktop={AccessStories.ServiceUnavailable}
+  mobile={AccessStories.ServiceUnavailable}
+  meta={AccessStories}
+/>

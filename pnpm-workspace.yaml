@@ -1,0 +1,15 @@
+packages:
+  - "."
+
+autoInstallPeers: false
+engineStrict: true
+saveExact: true
+strictPeerDependencies: false
+
+allowBuilds:
+  "@swc/core": true
+  esbuild: true
+
+minimumReleaseAgeExclude:
+  - "@a-novel-kit/*"
+  - "@a-novel/*"

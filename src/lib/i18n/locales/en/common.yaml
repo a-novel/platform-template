@@ -1,0 +1,87 @@
+access:
+  anonymous:
+    description: Log in to view this page.
+    title: Agora account required
+  downtime:
+    title: Maintenance in progress
+  error:
+    description: This page could not be displayed.
+    title: Page unavailable
+  forbidden:
+    description: Your account does not have permission to view this page.
+    title: Access denied
+  home: Return home
+  notFound:
+    description: This address doesn’t match any page.
+    title: Page not found
+  pending:
+    title: Checking access
+  retry: Reload page
+  unavailable:
+    description: Your session has been kept. Please reload this page in a few minutes.
+    title: Access temporarily unavailable
+authFlow:
+  expiryUnavailable: Not provided
+  feedback:
+    invalidCredentials: The email address or password is incorrect.
+    serviceUnavailable: Please try again in a few minutes.
+    sessionUnavailable: We couldn’t verify your session. Please reload the page in a few minutes.
+    tooManyAttempts: Too many attempts. Please wait a few minutes before trying again.
+  validation:
+    email: Enter a valid email address.
+    maxLength_one: Use no more than {{count}} character.
+    maxLength_other: Use no more than {{count}} characters.
+    minLength_one: Use at least {{count}} character.
+    minLength_other: Use at least {{count}} characters.
+    password: Enter your password.
+authUi:
+  account:
+    claims:
+      accessExpiresAt: Access expires
+      noRoles: No roles assigned
+      refreshExpiresAt: Session expires
+      roles: Roles
+      title: Your session
+      userId: Account ID
+    description: The session open on this device.
+    loadErrorTitle: Session details unavailable
+    loadingTitle: Loading session
+    logout:
+      description: You’ll be logged out on this device.
+      submit: Log out
+      submitting: Logging out…
+    title: Your account
+  authentication:
+    emailLabel: Email address
+    journeys:
+      login:
+        submit: Log in
+        submitting: Logging in…
+    passwordLabel: Password
+  serviceUnavailable: Temporarily unavailable
+pageTitles:
+  account: Account
+  brand: Agora
+  withState: "{{title}}: {{status}}"
+shell:
+  accountFallback: Account
+  auth:
+    login:
+      title: Log in
+  brand: Agora
+  closeAuthentication: Close dialog
+  closeNavigation: Close navigation
+  collapseNavigation: Collapse navigation
+  expandNavigation: Expand navigation
+  home: Home
+  homeTitle: Home
+  logout: Log out
+  manageAccount: Manage your account
+  manageAccountFor: Manage account for {{name}}
+  navigation: Agora navigation
+  openNavigation: Open navigation
+  sessionDowntime: Account unavailable during maintenance.
+  sessionLoading: Loading account
+  sessionUnavailable: Account details are unavailable.
+  signIn: Log in
+  skipToContent: Skip to content

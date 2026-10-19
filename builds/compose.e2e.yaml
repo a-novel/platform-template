@@ -1,0 +1,85 @@
+name: template-e2e
+
+x-postgres-environment: &postgres-environment
+  POSTGRES_PASSWORD: postgres
+  POSTGRES_USER: postgres
+  POSTGRES_DB: postgres
+  POSTGRES_HOST_AUTH_METHOD: scram-sha-256
+  POSTGRES_INITDB_ARGS: --auth=scram-sha-256
+
+x-postgres-healthcheck: &postgres-healthcheck
+  test: ["CMD", "pg_isready", "-U", "postgres"]
+  interval: 1s
+  timeout: 5s
+  retries: 30
+
+services:
+  postgres-authentication:
+    image: ghcr.io/a-novel/service-authentication/database:v2.14.0
+    environment: *postgres-environment
+    healthcheck: *postgres-healthcheck
+
+  postgres-json-keys:
+    image: ghcr.io/a-novel/service-json-keys/database:v2.10.4
+    environment: *postgres-environment
+    healthcheck: *postgres-healthcheck
+
+  mailserver:
+    image: ghcr.io/axllent/mailpit:v1.31.6
+    ports:
+      - "127.0.0.1:14825:8025"
+    environment:
+      MP_SMTP_AUTH_ACCEPT_ANY: "true"
+      MP_SMTP_AUTH_ALLOW_INSECURE: "true"
+      MP_DISABLE_WAL: "true"
+
+  service-json-keys:
+    image: ghcr.io/a-novel/service-json-keys/standalone-grpc:v2.10.4
+    healthcheck:
+      test: ["CMD", "grpcurl", "--plaintext", "-d", "", "localhost:8080", "grpc.health.v1.Health/Check"]
+      interval: 1s
+      timeout: 5s
+      retries: 30
+    depends_on:
+      postgres-json-keys:
+        condition: service_healthy
+    environment:
+      POSTGRES_DSN: postgres://postgres:postgres@postgres-json-keys:5432/postgres?sslmode=disable
+      APP_MASTER_KEY: fec0681a2f57242211c559ca347721766f8a3acd8ed2e63b36b3768051c702ca
+
+  authentication:
+    image: ghcr.io/a-novel/service-authentication/standalone-rest:v2.14.0
+    ports:
+      - "127.0.0.1:14100:8080"
+    healthcheck:
+      test: ["CMD", "wget", "-qO", "/dev/null", "http://localhost:8080/v2/ping"]
+      interval: 1s
+      timeout: 5s
+      retries: 30
+    depends_on:
+      postgres-authentication:
+        condition: service_healthy
+      service-json-keys:
+        condition: service_healthy
+      mailserver:
+        condition: service_started
+    command:
+      - sh
+      - -c
+      - >-
+        /migrations &&
+        /maintenance account-role --email admin@template.test --role auth:superadmin --lang en &&
+        exec /rest
+    environment:
+      POSTGRES_DSN: postgres://postgres:postgres@postgres-authentication:5432/postgres?sslmode=disable
+      SERVICE_JSON_KEYS_HOST: service-json-keys
+      SERVICE_JSON_KEYS_PORT: 8080
+      PLATFORM_AUTH_URL: http://127.0.0.1:4173
+      SMTP_SENDER_DOMAIN: mailserver
+      SMTP_ADDR: mailserver:1025
+      SMTP_SENDER_NAME: Template integration tests
+      SMTP_SENDER_EMAIL: noreply@template.test
+      SMTP_SENDER_PASSWORD: test-only
+      SMTP_FORCE_UNENCRYPTED: "true"
+      # Every journey comes from one address and mints its own anonymous session.
+      REST_RATE_LIMITS_ENABLED: "false"

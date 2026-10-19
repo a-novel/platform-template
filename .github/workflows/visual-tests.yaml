@@ -1,0 +1,56 @@
+name: visual-tests
+run-name: Visual approval ${{ github.event.pull_request.number }} ${{ github.event.pull_request.head.sha }} ${{ github.event.pull_request.base.ref }} ${{ github.event.action }}
+
+on: # zizmor: ignore[dangerous-triggers] Trusted approval and storage maintenance; never checks out or runs PR code.
+  workflow_run:
+    workflows: [main]
+    types: [completed]
+  pull_request_target:
+    types: [labeled, unlabeled, synchronize, opened, reopened, closed]
+  delete:
+  schedule:
+    - cron: "23 4 * * *"
+
+jobs:
+  approval:
+    if: >-
+      ${{ vars.VISUAL_CI_PROVIDER != '' && (github.event_name == 'pull_request_target' ||
+      (github.event.workflow_run.event == 'pull_request' &&
+      github.event.workflow_run.head_repository.full_name == github.repository)) }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    concurrency:
+      # A completion event names no PR, so each one gets its own group.
+      group: visual-approval-${{ github.event.pull_request.number || github.run_id }}
+      cancel-in-progress: false
+    permissions:
+      contents: read
+      actions: write
+      statuses: write
+      # Removes the screenshot label a push made stale.
+      pull-requests: write
+    steps:
+      - uses: a-novel-kit/workflows/generic-actions/approve-playwright@v1.63.0
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+
+  cleanup:
+    if: ${{ vars.VISUAL_MAINTENANCE_PROVIDER != '' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    concurrency:
+      group: visual-maintenance
+      cancel-in-progress: false
+    permissions:
+      contents: read
+      actions: read
+      pull-requests: read
+      id-token: write
+    steps:
+      - uses: a-novel-kit/workflows/generic-actions/maintain-playwright@v1.63.0
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          identity_provider: ${{ vars.VISUAL_MAINTENANCE_PROVIDER }}
+          service_account: ${{ vars.VISUAL_MAINTENANCE_ACCOUNT }}
+          references_folder: ${{ vars.VISUAL_REFERENCES_FOLDER }}
+          results_folder: ${{ vars.VISUAL_RESULTS_FOLDER }}

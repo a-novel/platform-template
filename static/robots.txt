@@ -1,0 +1,3 @@
+# The platform is an application, not a crawlable public site.
+User-agent: *
+Disallow: /

@@ -1,0 +1,12 @@
+import * as HomeStories from "./screen.stories.svelte";
+
+import { Meta, ResponsiveStoryPair } from "@a-novel-kit/uikit-storybook";
+
+<Meta of={HomeStories} />
+
+# Empty home
+
+The home page is empty until a platform fills it. Its title stays available to assistive technology
+while the canvas stays clear.
+
+<ResponsiveStoryPair desktop={HomeStories.DefaultDesktop} mobile={HomeStories.DefaultMobile} meta={HomeStories} />
