@@ -1,0 +1,31 @@
+name: storybook
+
+on:
+  push:
+    branches:
+      - master
+  workflow_dispatch:
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  publish-storybook:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.publish.outputs.page_url }}
+    permissions:
+      contents: read
+      id-token: write
+      packages: read
+      pages: write
+    steps:
+      - id: publish
+        uses: a-novel-kit/workflows/github-pages-actions/publish-storybook@v1.63.0
+        with:
+          build_action: build:storybook
+          build_path: storybook-static
+          working_directory: .
+          github_token: ${{ secrets.GITHUB_TOKEN }}

@@ -1,0 +1,89 @@
+access:
+  anonymous:
+    description: Connectez-vous pour consulter cette page.
+    title: Compte Agora requis
+  downtime:
+    title: Maintenance en cours
+  error:
+    description: Cette page n’a pas pu être affichée.
+    title: Page indisponible
+  forbidden:
+    description: Votre compte ne permet pas de consulter cette page.
+    title: Accès refusé
+  home: Revenir à l’accueil
+  notFound:
+    description: Cette adresse ne correspond à aucune page.
+    title: Page introuvable
+  pending:
+    title: Vérification de l’accès
+  retry: Recharger la page
+  unavailable:
+    description: Votre session est conservée. Veuillez recharger cette page dans quelques minutes.
+    title: Accès temporairement indisponible
+authFlow:
+  expiryUnavailable: Non renseignée
+  feedback:
+    invalidCredentials: Le courriel ou le mot de passe est incorrect.
+    serviceUnavailable: Veuillez réessayer dans quelques minutes.
+    sessionUnavailable: Impossible de vérifier votre session. Veuillez recharger la page dans quelques minutes.
+    tooManyAttempts: Trop de tentatives. Veuillez patienter quelques minutes avant de réessayer.
+  validation:
+    email: Saisissez un courriel valide.
+    maxLength_one: Utilisez au maximum {{count}} caractère.
+    maxLength_many: Utilisez au maximum {{count}} caractères.
+    maxLength_other: Utilisez au maximum {{count}} caractères.
+    minLength_one: Utilisez au moins {{count}} caractère.
+    minLength_many: Utilisez au moins {{count}} caractères.
+    minLength_other: Utilisez au moins {{count}} caractères.
+    password: Saisissez votre mot de passe.
+authUi:
+  account:
+    claims:
+      accessExpiresAt: Expiration de l’accès
+      noRoles: Aucun rôle attribué
+      refreshExpiresAt: Expiration de la session
+      roles: Rôles
+      title: Votre session
+      userId: Identifiant du compte
+    description: La session ouverte sur cet appareil.
+    loadErrorTitle: Détails de la session indisponibles
+    loadingTitle: Chargement de la session
+    logout:
+      description: Vous serez déconnecté sur cet appareil.
+      submit: Se déconnecter
+      submitting: Déconnexion…
+    title: Votre compte
+  authentication:
+    emailLabel: Courriel
+    journeys:
+      login:
+        submit: Se connecter
+        submitting: Connexion…
+    passwordLabel: Mot de passe
+  serviceUnavailable: Temporairement indisponible
+pageTitles:
+  account: Compte
+  brand: Agora
+  withState: "{{title}}: {{status}}"
+shell:
+  accountFallback: Compte
+  auth:
+    login:
+      title: Connectez-vous
+  brand: Agora
+  closeAuthentication: Fermer la fenêtre
+  closeNavigation: Fermer la navigation
+  collapseNavigation: Réduire la navigation
+  expandNavigation: Développer la navigation
+  home: Accueil
+  homeTitle: Accueil
+  logout: Se déconnecter
+  manageAccount: Gérer votre compte
+  manageAccountFor: Gérer le compte de {{name}}
+  navigation: Navigation d’Agora
+  openNavigation: Ouvrir la navigation
+  sessionDowntime: Compte indisponible pendant la maintenance.
+  sessionLoading: Chargement du compte
+  sessionUnavailable: Informations du compte indisponibles.
+  signIn: Se connecter
+  skipToContent: Aller au contenu

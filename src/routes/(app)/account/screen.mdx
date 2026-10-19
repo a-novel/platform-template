@@ -1,0 +1,57 @@
+import * as AccountStories from "./screen.stories.svelte";
+
+import { Meta, ResponsiveStoryPair } from "@a-novel-kit/uikit-storybook";
+
+<Meta of={AccountStories} />
+
+# Account screen
+
+The account screen is the template's sample authenticated route. It recaps the verified session and
+ends it. Session details sit directly on the page background, and a retrieval failure never blocks
+the logout form.
+
+## Account status
+
+### Ready
+
+<ResponsiveStoryPair desktop={AccountStories.ReadyDesktop} mobile={AccountStories.ReadyMobile} meta={AccountStories} />
+
+### Loading
+
+<ResponsiveStoryPair
+  desktop={AccountStories.Loading}
+  mobile={AccountStories.Loading}
+  meta={AccountStories}
+  startAt="account-claims"
+/>
+
+### Load error
+
+<ResponsiveStoryPair
+  desktop={AccountStories.LoadError}
+  mobile={AccountStories.LoadError}
+  meta={AccountStories}
+  startAt="account-claims"
+/>
+
+## Session
+
+### Logout submitting
+
+<ResponsiveStoryPair
+  desktop={AccountStories.LogoutSubmitting}
+  mobile={AccountStories.LogoutSubmitting}
+  meta={AccountStories}
+  startAt="account-session"
+/>
+
+## Responsive content
+
+### Long content
+
+<ResponsiveStoryPair
+  desktop={AccountStories.LongContentMobile}
+  mobile={AccountStories.LongContentMobile}
+  meta={AccountStories}
+  startAt="account-claims"
+/>

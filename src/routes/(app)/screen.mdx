@@ -1,0 +1,106 @@
+import * as ShellStories from "./screen.stories.svelte";
+
+import { Meta, ResponsiveStoryPair } from "@a-novel-kit/uikit-storybook";
+
+<Meta of={ShellStories} />
+
+# Platform shell
+
+The shell frames every page with navigation, the account entry and the login dialog. Each preview
+renders in its own desktop and mobile document. Dialogs and menus are locked in the state each story
+names, so dismissing a preview leaves the page around it unchanged.
+
+Expanded headers show the Agora wordmark, and the compact rail shows its icon. On mobile, the
+wordmark and the menu control keep their place between the closed header and the open menu.
+
+Dialog titles and fields share a leading edge. UIKit owns the header controls, the fullscreen menu,
+compact navigation and action spacing. Service errors sit just above the submit button, which spans
+the form on mobile and keeps its natural width on desktop.
+
+Validation previews come from the same API schemas as the controllers. Invalid credentials read
+differently from a service outage, and a successful login redirects. Tests cover the controller
+transitions and duplicate-submission guards.
+
+## Navigation and account
+
+### Anonymous — expanded
+
+<ResponsiveStoryPair
+  desktop={ShellStories.ExpandedAnonymousDesktop}
+  mobile={ShellStories.ExpandedAnonymousMobile}
+  meta={ShellStories}
+/>
+
+### Anonymous — collapsed
+
+<ResponsiveStoryPair
+  desktop={ShellStories.CollapsedAnonymous}
+  mobile={ShellStories.CollapsedAnonymousMobile}
+  meta={ShellStories}
+/>
+
+### Authenticated
+
+<ResponsiveStoryPair
+  desktop={ShellStories.Authenticated}
+  mobile={ShellStories.AuthenticatedMobile}
+  meta={ShellStories}
+/>
+
+### Loading account
+
+<ResponsiveStoryPair
+  desktop={ShellStories.LoadingAccount}
+  mobile={ShellStories.LoadingAccountMobile}
+  meta={ShellStories}
+/>
+
+### Account unavailable
+
+<ResponsiveStoryPair desktop={ShellStories.AccountError} mobile={ShellStories.AccountErrorMobile} meta={ShellStories} />
+
+### Long account name
+
+<ResponsiveStoryPair
+  desktop={ShellStories.LongAccountName}
+  mobile={ShellStories.LongAccountNameMobile}
+  meta={ShellStories}
+/>
+
+## Login
+
+### Default
+
+<ResponsiveStoryPair
+  desktop={ShellStories.LoginModalDesktop}
+  mobile={ShellStories.LoginModalMobile}
+  meta={ShellStories}
+/>
+
+### Submitting
+
+<ResponsiveStoryPair desktop={ShellStories.LoginSubmitting} mobile={ShellStories.LoginSubmitting} meta={ShellStories} />
+
+### Validation errors
+
+<ResponsiveStoryPair
+  desktop={ShellStories.LoginValidationError}
+  mobile={ShellStories.LoginValidationError}
+  meta={ShellStories}
+/>
+
+### Invalid credentials
+
+<ResponsiveStoryPair
+  desktop={ShellStories.LoginServiceError}
+  mobile={ShellStories.LoginServiceError}
+  meta={ShellStories}
+/>
+
+### Service unavailable
+
+<ResponsiveStoryPair
+  desktop={ShellStories.LoginServiceUnavailable}
+  mobile={ShellStories.LoginServiceUnavailable}
+  meta={ShellStories}
+/>
