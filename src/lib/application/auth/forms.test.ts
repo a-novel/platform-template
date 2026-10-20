@@ -1,14 +1,9 @@
 import { validateLogin } from "./forms";
+import { formData } from "./forms.fixture";
 
 import { describe, expect, it } from "vitest";
 
 import { PasswordSchema, TokenCreateRequestSchema } from "@a-novel/service-authentication-rest";
-
-function form(values: Record<string, string>) {
-  const data = new FormData();
-  for (const [name, value] of Object.entries(values)) data.set(name, value);
-  return data;
-}
 
 const passwordLengths = [
   0,
@@ -25,16 +20,16 @@ describe("service-derived login validation", () => {
     expect(PasswordSchema.minLength).toBeGreaterThan(0);
     expect(PasswordSchema.maxLength).toBeGreaterThan(Number(PasswordSchema.minLength));
     const values = { email: "creator@example.test", password: "x".repeat(length) };
-    expect(validateLogin(form(values)).success).toBe(TokenCreateRequestSchema.safeParse(values).success);
+    expect(validateLogin(formData(values)).success).toBe(TokenCreateRequestSchema.safeParse(values).success);
   });
 
   it.each(emails)("matches the service email check for %s", (email) => {
     const values = { email, password: "x".repeat(Number(PasswordSchema.minLength)) };
-    expect(validateLogin(form(values)).success).toBe(TokenCreateRequestSchema.safeParse(values).success);
+    expect(validateLogin(formData(values)).success).toBe(TokenCreateRequestSchema.safeParse(values).success);
   });
 
   it("normalizes email and preserves password whitespace", () => {
-    expect(validateLogin(form({ email: "  Creator@Example.com ", password: "  pass  " }))).toEqual({
+    expect(validateLogin(formData({ email: "  Creator@Example.com ", password: "  pass  " }))).toEqual({
       success: true,
       value: { email: "creator@example.com", password: "  pass  " },
     });
@@ -42,7 +37,7 @@ describe("service-derived login validation", () => {
 
   it("returns API bounds as translation values without echoing credentials", () => {
     const tooLong = validateLogin(
-      form({ email: "creator@example.test", password: "s".repeat(Number(PasswordSchema.maxLength) + 1) })
+      formData({ email: "creator@example.test", password: "s".repeat(Number(PasswordSchema.maxLength) + 1) })
     );
     expect(tooLong).toEqual({
       success: false,
@@ -50,7 +45,9 @@ describe("service-derived login validation", () => {
     });
     expect(JSON.stringify(tooLong)).not.toContain("ssss");
     expect(
-      validateLogin(form({ email: "creator@example.test", password: "x".repeat(Number(PasswordSchema.minLength) - 1) }))
+      validateLogin(
+        formData({ email: "creator@example.test", password: "x".repeat(Number(PasswordSchema.minLength) - 1) })
+      )
     ).toEqual({
       success: false,
       issues: [{ field: "password", feedback: "minLength", limit: PasswordSchema.minLength }],
