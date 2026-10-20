@@ -21,6 +21,7 @@ function accountModel(claims: AccountClaimsState): AccountScreenModel {
   return { claims, logoutState: "ready" };
 }
 
+/** Loads the account recap. An authentication outage still renders the logout form. */
 export const loadAccount = async (event: AuthenticationEvent & Pick<RequestEvent, "locals">) => {
   const { locals } = event;
   const t = locals.i18n.getFixedT(locals.locale, "common");
@@ -39,7 +40,7 @@ export const loadAccount = async (event: AuthenticationEvent & Pick<RequestEvent
       }),
     };
   } catch (error) {
-    // A planned downtime renders as maintenance rather than as the account's own outage state.
+    // A planned downtime renders as the maintenance page.
     if (isRedirect(error) || isHttpError(error, 403) || (isHttpError(error, 503) && error.body.downtime)) throw error;
 
     return {

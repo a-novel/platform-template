@@ -16,12 +16,14 @@ const refreshTokenCookie = "template_refresh_token";
 const identityHandleCookie = "template_identity_handle";
 const rejectedSessionStatuses = [401, 403] as const;
 
+/** SessionCookies is the part of SvelteKit's `Cookies` API the session uses. */
 export interface SessionCookies {
   get(name: string): string | undefined;
   set(name: string, value: string, options: Parameters<Cookies["set"]>[2]): void;
   delete(name: string, options: Parameters<Cookies["delete"]>[1]): void;
 }
 
+/** SessionClient is the part of the authentication API the session calls. */
 export interface SessionClient {
   claims(accessToken: string): Promise<Claims>;
   createAnonymous(): Promise<Token>;
@@ -29,6 +31,7 @@ export interface SessionClient {
   refresh(token: Token): Promise<Token>;
 }
 
+/** ResolvedSession is what the session cookies prove about a visitor once Authentication has checked them. */
 export type ResolvedSession =
   | { status: "none" }
   | { status: "unavailable" }
@@ -40,10 +43,12 @@ export type ResolvedSession =
       identityHandle?: string;
       claims: Claims;
     };
+/** AuthenticatedSession is an available session that belongs to a user account. */
 export type AuthenticatedSession = Omit<Extract<ResolvedSession, { status: "available" }>, "claims"> & {
   claims: Claims & { userID: string };
 };
 
+/** AuthenticationUnavailableError is thrown when Authentication cannot check a session that may be valid. */
 export class AuthenticationUnavailableError extends Error {
   constructor() {
     super("The authentication service is unavailable.");
@@ -51,6 +56,7 @@ export class AuthenticationUnavailableError extends Error {
   }
 }
 
+/** AuthenticationDowntimeError is thrown when Authentication refuses a check during a planned downtime. */
 export class AuthenticationDowntimeError extends Error {
   constructor() {
     super("The authentication service is in a planned downtime.");
@@ -58,6 +64,7 @@ export class AuthenticationDowntimeError extends Error {
   }
 }
 
+/** AuthenticationSession keeps a visitor's tokens in HttpOnly cookies and refreshes them on demand. */
 export class AuthenticationSession {
   constructor(
     private readonly client: SessionClient,
@@ -65,6 +72,7 @@ export class AuthenticationSession {
     private readonly requestUrl: URL
   ) {}
 
+  /** Checks the session cookies, refreshing a rejected access token. An outage keeps the cookies. */
   async current(): Promise<ResolvedSession> {
     const accessToken = this.cookies.get(accessTokenCookie);
     const refreshToken = this.cookies.get(refreshTokenCookie);
@@ -117,6 +125,7 @@ export class AuthenticationSession {
     }
   }
 
+  /** Returns the visitor's account session, or null for an anonymous visitor. An outage throws. */
   async authenticated(): Promise<AuthenticatedSession | null> {
     const session = await this.current();
 
@@ -128,6 +137,7 @@ export class AuthenticationSession {
     return userID ? { ...session, claims: { ...session.claims, userID } } : null;
   }
 
+  /** Returns the current access token, creating an anonymous session when the visitor has none. */
   async anonymousAccessToken(): Promise<string> {
     const session = await this.current();
 
@@ -140,10 +150,12 @@ export class AuthenticationSession {
     return token.accessToken;
   }
 
+  /** Signs the visitor in and remembers the handle of their email address for the shell. */
   async login(email: string, password: string): Promise<void> {
     this.accept(await this.client.login(email, password), email);
   }
 
+  /** Stores a token pair from the service, with the identity it belongs to when known. */
   accept(token: Token, identityEmail?: string): void {
     const options = this.cookieOptions();
     // An anonymous token outlives the browser session, so a browser restart doesn't spend the
@@ -160,6 +172,7 @@ export class AuthenticationSession {
     if (identityEmail) this.rememberIdentity(identityEmail);
   }
 
+  /** Keeps the local part of an email address as the shell's display handle. */
   rememberIdentity(email: string): void {
     const separator = email.lastIndexOf("@");
     const handle = separator > 0 ? email.slice(0, separator) : "";
@@ -172,6 +185,7 @@ export class AuthenticationSession {
     this.cookies.set(identityHandleCookie, handle, this.cookieOptions());
   }
 
+  /** Removes every session cookie, which signs the visitor out locally. */
   clear(): void {
     this.cookies.delete(accessTokenCookie, { path: "/" });
     this.cookies.delete(refreshTokenCookie, { path: "/" });
@@ -193,6 +207,7 @@ export class AuthenticationSession {
   }
 }
 
+/** Binds the session API to an authentication client. */
 export function createSessionClient(api: AuthenticationApi): SessionClient {
   return {
     claims: async (accessToken) => await claimsGet(api, accessToken),
@@ -202,6 +217,7 @@ export function createSessionClient(api: AuthenticationApi): SessionClient {
   };
 }
 
+/** Reads the expiry of a JWT without verifying it, or null when the token carries no valid one. */
 export function readTokenExpiry(token: string): Date | null {
   if (token.length > 4096) return null;
 

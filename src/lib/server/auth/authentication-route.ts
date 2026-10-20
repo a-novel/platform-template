@@ -21,6 +21,7 @@ function loginFailure(error: unknown) {
   return failLogin(503, { status: "service-error", feedback: "serviceUnavailable" });
 }
 
+/** The shell dialog's form action, which logs the visitor in and returns them to a safe page. */
 export const authenticationActions = {
   default: async (event: RequestEvent) => {
     await refuseDuringDowntime();

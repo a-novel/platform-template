@@ -68,6 +68,7 @@
     if (!controller.logout()) event.preventDefault();
   }
 
+  /** Runs a link's transition in place on a plain primary click, and leaves other clicks to the browser. */
   function navigate(event: MouseEvent, transition: () => void) {
     if (
       event.defaultPrevented ||
@@ -137,7 +138,7 @@
           <InlineMessage tone={sessionNotice.tone} aria-label={sessionNotice.message} />
         </div>
       {:else}
-        <!-- No title: a heading would crowd the narrow rail. -->
+        <!-- A title crowds the narrow rail, so the alert has none. -->
         <Alert tone={sessionNotice.tone}>{sessionNotice.message}</Alert>
       {/if}
     {:else if authenticatedSession}
