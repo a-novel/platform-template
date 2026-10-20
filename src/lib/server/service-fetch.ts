@@ -6,7 +6,10 @@ const identityTokenTtlMs = 55 * 60 * 1000;
 
 const identityTokens = new Map<string, { token: Promise<string>; expiresAt: number }>();
 
-async function readIdentityToken(response: Response): Promise<string> {
+async function fetchIdentityToken(audience: string): Promise<string> {
+  const response = await fetch(`${identityUrl}?audience=${encodeURIComponent(audience)}`, {
+    headers: { "Metadata-Flavor": "Google" },
+  });
   if (!response.ok) throw new Error(`The platform's identity token is unavailable: HTTP ${response.status}`);
   return await response.text();
 }
@@ -15,11 +18,8 @@ function identityToken(audience: string): Promise<string> {
   const cached = identityTokens.get(audience);
   if (cached && cached.expiresAt > Date.now()) return cached.token;
 
-  const token = fetch(`${identityUrl}?audience=${encodeURIComponent(audience)}`, {
-    headers: { "Metadata-Flavor": "Google" },
-  }).then(readIdentityToken);
-
-  // Concurrent calls share one request; a failed one is retried by the next call.
+  const token = fetchIdentityToken(audience);
+  // Concurrent calls share one request. The next call retries a failed one.
   identityTokens.set(audience, { token, expiresAt: Date.now() + identityTokenTtlMs });
   token.catch(() => identityTokens.delete(audience));
 
