@@ -1,8 +1,9 @@
 import type { AccountClaimsState, AccountScreenModel } from "#lib/application/auth/types.js";
-import { requireAuthorization } from "#lib/server/auth/authorization.js";
-import type { AuthenticationEvent } from "#lib/server/auth/context.js";
-import { logoutAuthentication } from "#lib/server/auth/logout.js";
-import { readTokenExpiry } from "#lib/server/auth/session.js";
+
+import { requireAuthorization } from "./authorization";
+import type { AuthenticationEvent } from "./context";
+import { logoutAuthentication } from "./logout";
+import { readTokenExpiry } from "./session";
 
 import type { RequestEvent } from "@sveltejs/kit";
 import { isHttpError, isRedirect } from "@sveltejs/kit";

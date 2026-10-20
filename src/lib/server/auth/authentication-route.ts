@@ -1,8 +1,9 @@
 import { validateLogin } from "#lib/application/auth/forms.js";
 import { safeReturnTo } from "#lib/application/auth/navigation.js";
 import type { AuthenticationPanelModel } from "#lib/application/auth/types.js";
-import { createAuthenticationContext } from "#lib/server/auth/context.js";
-import { refuseDuringDowntime } from "#lib/server/downtime.js";
+
+import { refuseDuringDowntime } from "../downtime";
+import { createAuthenticationContext } from "./context";
 
 import { isHttpStatusError } from "@a-novel-kit/nodelib-browser/http";
 

@@ -1,8 +1,9 @@
 import { accountDisplayFromHandle } from "#lib/application/shell/account-display.js";
 import type { ShellSession } from "#lib/application/shell/types.js";
-import { type AuthenticationEvent, createAuthenticationContext } from "#lib/server/auth/context.js";
-import type { ResolvedSession } from "#lib/server/auth/session.js";
-import { readPlatformDowntime } from "#lib/server/downtime.js";
+
+import { readPlatformDowntime } from "../downtime";
+import { type AuthenticationEvent, createAuthenticationContext } from "./context";
+import type { ResolvedSession } from "./session";
 
 import { isDowntimeStarted } from "@a-novel-kit/nodelib-server";
 import type { AuthorizationStatus } from "@a-novel-kit/uikit/authorization";
