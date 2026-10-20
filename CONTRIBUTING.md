@@ -9,14 +9,17 @@ sets up the workspace and its shared commands.
 A feature spans the runtime layers it needs, and dependencies point inward. Routes compose the layers.
 Client and server code depend on application contracts. Application code stays framework-free.
 
-| Folder                | Owns                                                  | Never imports                               |
-| --------------------- | ----------------------------------------------------- | ------------------------------------------- |
-| `src/routes`          | URLs, layouts, loads, form actions, and wiring        |                                             |
-| `src/lib/ui`          | Product-specific presentational components            | Environment, services, storage, navigation  |
-| `src/lib/application` | Types, state codecs, validation, and use-case logic   | SvelteKit, browser APIs, UI, client, server |
-| `src/lib/client`      | Browser adapters, such as local-storage preferences   | Server code                                 |
-| `src/lib/server`      | Sessions, service clients, and private configuration  | Client and UI code                          |
-| `src/lib/i18n`        | Locale policy, YAML catalogs, and generated key types |                                             |
+| Folder                | Owns                                                                           | Never imports                               |
+| --------------------- | ------------------------------------------------------------------------------ | ------------------------------------------- |
+| `src/routes`          | URLs, layouts, loads, form actions, and wiring                                 |                                             |
+| `src/lib/ui`          | Product-specific presentational components                                     | Environment, services, storage, navigation  |
+| `src/lib/application` | Types, state codecs, validation, and use-case logic                            | SvelteKit, browser APIs, UI, client, server |
+| `src/lib/client`      | Browser adapters, such as local-storage preferences                            | Server code                                 |
+| `src/lib/server`      | Sessions, service clients, and private configuration                           | Client and UI code                          |
+| `src/lib/i18n`        | Locale policy, YAML catalogs, generated key types, and stable-code translators |                                             |
+
+Inside `src/lib`, a module imports from its own top-level folder, such as `src/lib/server`, by a
+relative path, and from any other folder through `#lib/`.
 
 Reusable controls belong in UIKit and reusable runtime helpers in nodelib. The platform keeps screen
 composition and product behavior.
@@ -44,6 +47,10 @@ screen a fixed-state controller for Storybook. The account page is the worked ex
 Build the screen first, with one story per meaningful state, such as loading, error, success, long
 content and mobile. `pnpm storybook` then shows it without live services. Unit-test the controller
 next, and wire the route last.
+
+Each test sits beside the file it covers and takes its name, such as `controller.test.ts` for
+`controller.svelte.ts`. Helpers shared between tests live in `*.fixture.ts` modules, which coverage
+leaves out.
 
 Layouts follow these rules:
 
