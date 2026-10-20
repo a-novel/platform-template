@@ -3,7 +3,7 @@
 
   import type { Snippet } from "svelte";
 
-  /** Props for the pure, application-agnostic shell surface. */
+  /** Props for the pure platform shell. */
   export interface ShellProps {
     controller: ShellController;
     children?: Snippet;

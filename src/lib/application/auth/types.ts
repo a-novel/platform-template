@@ -21,6 +21,7 @@ export type FormState<Field extends string> =
 /** The journeys the shell authentication dialog offers. */
 export type AuthenticationJourney = "login";
 
+/** The fields of the shell authentication forms. */
 export type AuthenticationField = "email" | "password";
 
 /** Pure login form state, the only journey of the shell authentication dialog. */

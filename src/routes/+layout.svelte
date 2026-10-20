@@ -9,7 +9,8 @@
 
   let { children, data } = $props();
 
-  // The shell and standalone pages place the banner where it doesn't push navigation away.
+  // The shell places the banner where it leaves its navigation in place, so the root layout only
+  // shares the downtime.
   setPlatformDowntime(createPlatformDowntime(() => data));
 </script>
 

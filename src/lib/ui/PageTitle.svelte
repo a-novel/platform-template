@@ -1,5 +1,5 @@
 <script module lang="ts">
-  /** Supplies the active dialog title without replacing the underlying route's title. */
+  /** Supplies the open authentication dialog's title, which the tab shows in place of the route's own. */
   export const authenticationTitleContext = Symbol("authenticationTitle");
 </script>
 

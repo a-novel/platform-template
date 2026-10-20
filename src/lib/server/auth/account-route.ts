@@ -41,7 +41,7 @@ export const loadAccount = async (event: AuthenticationEvent & Pick<RequestEvent
       }),
     };
   } catch (error) {
-    // A planned downtime renders as the maintenance page.
+    // Redirects, refusals and planned downtimes render their own pages. Any other failure keeps the logout form.
     if (isRedirect(error) || isHttpError(error, 403) || (isHttpError(error, 503) && error.body.downtime)) throw error;
 
     return {
@@ -51,6 +51,7 @@ export const loadAccount = async (event: AuthenticationEvent & Pick<RequestEvent
   }
 };
 
+/** The account page's form actions. Logout clears the session cookies without calling the service. */
 export const accountActions = {
   logout: logoutAuthentication,
 };

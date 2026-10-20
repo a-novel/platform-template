@@ -1,5 +1,5 @@
-<!-- Renders the root error page inside the shell, for an error in a page under it. -->
 <script lang="ts">
+  // The shell frames the same error page the routes outside it show.
   import ErrorPage from "../+error.svelte";
 </script>
 
