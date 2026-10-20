@@ -1,3 +1,5 @@
+/* Each masked expiry value fills its row in the narrow account layout, so the mask keeps one size
+   whatever the length of the date. */
 .session-expiry dd {
   flex: 1;
 }
