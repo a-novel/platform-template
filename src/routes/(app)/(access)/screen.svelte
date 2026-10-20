@@ -8,10 +8,10 @@
   interface Props {
     /** Inherits the layout provider unless a fixed or custom decision is supplied. */
     controller?: AuthorizationController;
-    /** Further restricts an allowed decision; never grants access by itself. */
+    /** Further restricts an allowed decision. It never grants access by itself. */
     when?: boolean;
     children?: Snippet;
-    /** Only for content safe to display without verified account information. */
+    /** Content safe to display without verified account information. */
     unavailable?: Snippet;
     /** Local, sanitized destinations supplied by the route. */
     loginHref: string;

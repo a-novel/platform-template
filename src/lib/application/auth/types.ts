@@ -18,11 +18,15 @@ export type FormState<Field extends string> =
   | { status: "validation-error"; issues: readonly FormIssue<Field>[] }
   | { status: "service-error"; feedback: AuthenticationFeedback };
 
+/** The journeys the shell authentication dialog offers. */
+export type AuthenticationJourney = "login";
+
+/** The fields of the shell authentication forms. */
 export type AuthenticationField = "email" | "password";
 
 /** Pure login form state, the only journey of the shell authentication dialog. */
 export interface AuthenticationPanelModel {
-  journey: "login";
+  journey: AuthenticationJourney;
   state: FormState<AuthenticationField>;
 }
 

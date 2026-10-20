@@ -10,6 +10,14 @@ async function login(page: Page, account: { email: string; password: string }) {
   await page.getByRole("dialog").getByRole("button", { name: "Log in", exact: true }).click();
 }
 
+async function authenticationResponds(): Promise<boolean> {
+  try {
+    return (await fetch("http://127.0.0.1:14100/v2/ping")).ok;
+  } catch {
+    return false;
+  }
+}
+
 test("login returns to the protected account, survives reload and logout protects it again", async ({
   page,
   context,
@@ -31,11 +39,10 @@ test("login returns to the protected account, survives reload and logout protect
   await page.reload();
   await expect(page.getByText("auth:user", { exact: true })).toBeVisible();
   await expect(page).toHaveTitle("Account — Agora");
-  await screenshot(page, info, "authenticated-account", [
-    ...["Account ID", "Access expires", "Session expires"].map((label) =>
-      page.getByText(label, { exact: true }).locator("+ dd")
-    ),
-  ]);
+  const perRunValues = ["Account ID", "Access expires", "Session expires"].map((label) =>
+    page.getByText(label, { exact: true }).locator("+ dd")
+  );
+  await screenshot(page, info, "authenticated-account", perRunValues);
   await page.getByRole("button", { name: "Log out", exact: true }).last().click();
   await expect(page).toHaveURL("/");
   await expect(page).toHaveTitle("Home — Agora");
@@ -110,18 +117,7 @@ test("an authentication outage preserves the session and recovers after reload",
     await screenshot(page, info, "recoverable-service-outage");
   } finally {
     await compose("start", "authentication");
-    await expect
-      .poll(
-        async () => {
-          try {
-            return (await fetch("http://127.0.0.1:14100/v2/ping")).ok;
-          } catch {
-            return false;
-          }
-        },
-        { timeout: 30_000 }
-      )
-      .toBe(true);
+    await expect.poll(authenticationResponds, { timeout: 30_000 }).toBe(true);
   }
   await page.reload();
   await expect(page.getByText("auth:user", { exact: true })).toBeVisible();

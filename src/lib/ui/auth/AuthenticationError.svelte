@@ -1,4 +1,4 @@
-<!-- @component Shared form-level feedback; field validation stays with the corresponding input. -->
+<!-- @component Form-level authentication feedback. Field validation stays with its input. -->
 <script lang="ts">
   import type { AuthenticationFeedback } from "#lib/application/auth/types.js";
   import { translateAuthenticationFeedback } from "#lib/i18n/auth-feedback.js";

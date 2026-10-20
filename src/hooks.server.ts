@@ -3,6 +3,7 @@ import { createI18n } from "#lib/i18n/instance.js";
 
 import type { Handle } from "@sveltejs/kit/hooks";
 
+/** Gives each request its own locale and translations. */
 export const handle: Handle = async ({ event, resolve }) => {
   const locale = resolveLocale(event.request.headers.get("accept-language"));
 

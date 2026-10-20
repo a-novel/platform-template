@@ -16,15 +16,15 @@ function validationMessage(issue: z.core.$ZodIssue, empty: boolean): Authenticat
   return { feedback: issue.path[0] === "email" ? "email" : "password" };
 }
 
-/** Reads a form control as text; a missing or file control reads as empty. */
-function textValue(form: FormData, name: string): [string, string] {
+/** Reads a form control as text. A missing or file control reads as empty. */
+function textValue(form: FormData, name: string): string {
   const value = form.get(name);
-  return [name, typeof value === "string" ? value : ""];
+  return typeof value === "string" ? value : "";
 }
 
 function formValidator<Value, Field extends string>(schema: z.ZodType<Value>, fields: Record<string, Field>) {
   return (form: FormData): ValidationResult<Value, Field> => {
-    const values = Object.fromEntries(Object.keys(fields).map((name) => textValue(form, name)));
+    const values = Object.fromEntries(Object.keys(fields).map((name) => [name, textValue(form, name)]));
     const parsed = schema.safeParse(values);
     if (parsed.success) return { success: true, value: parsed.data };
 

@@ -6,14 +6,14 @@ import { Meta, ResponsiveStoryPair } from "@a-novel-kit/uikit-storybook";
 
 # Protected pages
 
-Page-wide feedback uses the same UIKit status pattern as other authentication outcomes.
-These previews hold each decision fixed; server guards and return destinations are covered by tests.
+A protected page shows its access decision with the same UIKit status pattern as other
+authentication outcomes. Each preview holds one decision fixed.
 
 ## Setup once
 
 The application layout creates one authorization controller from server-returned page data and installs
-one `AuthorizationProvider`. The authentication SDK is used only by server modules; UIKit receives
-a decision, never credentials or an API client.
+one `AuthorizationProvider`. Only server modules use the authentication SDK. UIKit receives a
+decision, never credentials or an API client.
 
 ## Protect a route
 
@@ -35,13 +35,12 @@ export const load: PageServerLoad = async (event) => {
 ```
 
 Anonymous requests open the existing login modal with a sanitized return destination. Denied accounts
-receive HTTP 403; failed verification receives HTTP 503 without discarding the session.
+receive HTTP 403. A failed verification receives HTTP 503 and keeps the session.
 
-The route's UI uses `screen.svelte` from this directory as its protected-page wrapper. It inherits
-the provider, while `when` can further restrict access and `controller` can supply a fixed preview state.
-Its `unavailable` snippet is an explicit escape hatch for **public** content only. The account page
-uses it for the failed recap and its logout form, and the logout action performs its own server
-work.
+A protected route wraps its UI in `screen.svelte` from this directory. The wrapper inherits the
+provider. Its `when` prop further restricts access, and its `controller` prop supplies a fixed
+preview state. Its `unavailable` snippet renders **public** content only. The account page uses it
+for the failed recap and its logout form, and the logout action does its own server work.
 
 ## Conditional content
 
@@ -57,11 +56,11 @@ Neither creates another application provider:
 </script>
 
 <AuthorizationBoundary>
-  <!-- Account-only content; not instantiated while access is unresolved or denied. -->
+  <!-- Account-only content. It is not instantiated while access is unresolved or denied. -->
 </AuthorizationBoundary>
 ```
 
-Read `access.state.status` reactively; do not copy it into a second state store.
+Read `access.state.status` reactively. Do not copy it into a second state store.
 
 ## Checking access
 

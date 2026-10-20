@@ -1,11 +1,12 @@
 import { requireAuthorization } from "./authorization";
 import { createAuthenticationContext } from "./context";
+import { stubAuthenticationContext } from "./context.fixture";
 import { AuthenticationSession } from "./session";
 import type { AuthenticatedSession } from "./session";
 
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { AuthenticationApi, Role } from "@a-novel/service-authentication-rest";
+import { Role } from "@a-novel/service-authentication-rest";
 
 import type { RequestEvent } from "@sveltejs/kit";
 
@@ -27,14 +28,7 @@ const session = {
 describe("protected operations", () => {
   beforeEach(() => {
     vi.resetAllMocks();
-    vi.mocked(createAuthenticationContext).mockReturnValue({
-      api: new AuthenticationApi("https://auth.example.test"),
-      session: new AuthenticationSession(
-        { claims: vi.fn(), login: vi.fn(), refresh: vi.fn(), createAnonymous: vi.fn() },
-        cookies,
-        event.url
-      ),
-    });
+    vi.mocked(createAuthenticationContext).mockReturnValue(stubAuthenticationContext(cookies, event.url));
   });
 
   it("returns server credentials only after a verified account satisfies the rule", async () => {

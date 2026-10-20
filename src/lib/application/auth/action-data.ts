@@ -1,12 +1,15 @@
-import type { AuthDialogView } from "#lib/application/shell/types.js";
+import type { AuthenticationJourney, AuthenticationPanelModel } from "./types";
 
-import type { AuthenticationPanelModel } from "./types";
-
+/** AuthenticationActionData is the result the shell dialog's action returns to the page. */
 export interface AuthenticationActionData {
   authentication?: AuthenticationPanelModel;
 }
 
-export function readAuthenticationActionModel(data: unknown, journey: AuthDialogView): AuthenticationPanelModel | null {
+/** Returns the dialog state an action left for a journey, or null for another journey or malformed data. */
+export function readAuthenticationActionModel(
+  data: unknown,
+  journey: AuthenticationJourney
+): AuthenticationPanelModel | null {
   if (!data || typeof data !== "object" || !("authentication" in data)) return null;
 
   const model = (data as AuthenticationActionData).authentication;

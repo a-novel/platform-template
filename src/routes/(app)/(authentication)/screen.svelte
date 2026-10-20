@@ -9,7 +9,7 @@
 
 <script lang="ts">
   import type { AuthenticationField } from "#lib/application/auth/types.js";
-  import { translateAuthenticationValidation } from "#lib/i18n/auth-feedback.js";
+  import { translateFieldIssue } from "#lib/i18n/auth-feedback.js";
   import AuthenticationError from "#lib/ui/auth/AuthenticationError.svelte";
 
   import { tick } from "svelte";
@@ -29,10 +29,7 @@
   const submitting = $derived(model.state.status === "submitting");
   const issues = $derived(model.state.status === "validation-error" ? model.state.issues : []);
 
-  function fieldError(field: AuthenticationField): string | undefined {
-    const issue = issues.find((candidate) => candidate.field === field);
-    return issue ? translateAuthenticationValidation(t, issue) : undefined;
-  }
+  const fieldError = (field: AuthenticationField) => translateFieldIssue(t, issues, field);
 
   async function submit(event: SubmitEvent) {
     const form = event.currentTarget as HTMLFormElement;

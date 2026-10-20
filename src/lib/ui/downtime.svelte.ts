@@ -12,9 +12,10 @@ export interface PlatformDowntime {
   readonly timeZone: string;
 }
 
+/** Reads, installs and detects the downtime tracking that the root layout installs for every page. */
 export const [getPlatformDowntime, setPlatformDowntime, hasPlatformDowntime] = createContext<PlatformDowntime>();
 
-// setTimeout fires at once past this delay; a page left open that long picks the start up on reload.
+// setTimeout fires at once past this delay. A page left open that long picks the start up on reload.
 const maxTimerDelay = 2 ** 31 - 1;
 
 /**

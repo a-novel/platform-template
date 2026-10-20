@@ -25,7 +25,7 @@ const locales = [
   },
 ] as const;
 
-/** Fixed checkpoint names, so a copy change shows as a diff rather than a renamed screenshot. */
+/** Fixed checkpoint names, so a copy change shows as a reviewable diff. */
 const checkpoints: Partial<Record<string, string>> = {
   "/": "home",
   "/?auth=login": "login",

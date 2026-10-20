@@ -6,20 +6,18 @@ import { Meta, ResponsiveStoryPair } from "@a-novel-kit/uikit-storybook";
 
 # Platform shell
 
-The shell frames every page with navigation, the account entry and the login dialog. Each preview
-renders in its own desktop and mobile document. Dialogs and menus are locked in the state each story
-names, so dismissing a preview leaves the page around it unchanged.
+The shell frames every page with its navigation, its account controls and the login dialog. Each
+preview holds one state fixed, so dismissing a dialog or a menu leaves it as it was.
 
 Expanded headers show the Agora wordmark, and the compact rail shows its icon. On mobile, the
 wordmark and the menu control keep their place between the closed header and the open menu.
 
 Dialog titles and fields share a leading edge. UIKit owns the header controls, the fullscreen menu,
-compact navigation and action spacing. Service errors sit just above the submit button, which spans
-the form on mobile and keeps its natural width on desktop.
+the compact navigation and the action spacing. Service errors sit just above the submit button, which
+spans the form on mobile and keeps its natural width on desktop.
 
-Validation previews come from the same API schemas as the controllers. Invalid credentials read
-differently from a service outage, and a successful login redirects. Tests cover the controller
-transitions and duplicate-submission guards.
+Validation previews use the same API schemas as the controllers. Invalid credentials read apart from
+a service outage, and a successful login redirects.
 
 ## Navigation and account
 

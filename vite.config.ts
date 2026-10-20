@@ -8,7 +8,7 @@ export default SvelteKitVite(
     },
     plugins: [Yaml()],
   },
-  // Deployments derive the origin from each request; a build for a known address, such as the
+  // Deployments derive the origin from each request. A build for a known address, such as the
   // Playwright server, trusts ORIGIN instead.
   { paths: { origin: process.env.ORIGIN }, tracing: { server: true } }
 );

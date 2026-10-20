@@ -8,6 +8,7 @@ export const defaultNamespace = "common";
 export type Locale = (typeof supportedLocales)[number];
 export type Namespace = (typeof namespaces)[number];
 
+/** Picks the supported locale an `Accept-Language` header prefers, or the default one. */
 export function resolveLocale(acceptLanguage: string | null): Locale {
   return resolveAcceptLanguage(acceptLanguage, supportedLocales, defaultLocale);
 }

@@ -1,7 +1,9 @@
 import type { AccountClaimsState, AccountScreenModel } from "#lib/application/auth/types.js";
-import { requireAuthorization } from "#lib/server/auth/authorization.js";
-import { logoutAuthentication } from "#lib/server/auth/logout.js";
-import { readTokenExpiry } from "#lib/server/auth/session.js";
+
+import { requireAuthorization } from "./authorization";
+import type { AuthenticationEvent } from "./context";
+import { logoutAuthentication } from "./logout";
+import { readTokenExpiry } from "./session";
 
 import type { RequestEvent } from "@sveltejs/kit";
 import { isHttpError, isRedirect } from "@sveltejs/kit";
@@ -20,7 +22,8 @@ function accountModel(claims: AccountClaimsState): AccountScreenModel {
   return { claims, logoutState: "ready" };
 }
 
-export const loadAccount = async (event: Pick<RequestEvent, "cookies" | "getClientAddress" | "locals" | "url">) => {
+/** Loads the account recap. An authentication outage still renders the logout form. */
+export const loadAccount = async (event: AuthenticationEvent & Pick<RequestEvent, "locals">) => {
   const { locals } = event;
   const t = locals.i18n.getFixedT(locals.locale, "common");
 
@@ -38,7 +41,7 @@ export const loadAccount = async (event: Pick<RequestEvent, "cookies" | "getClie
       }),
     };
   } catch (error) {
-    // A planned downtime renders as maintenance rather than as the account's own outage state.
+    // Redirects, refusals and planned downtimes render their own pages. Any other failure keeps the logout form.
     if (isRedirect(error) || isHttpError(error, 403) || (isHttpError(error, 503) && error.body.downtime)) throw error;
 
     return {
@@ -48,6 +51,7 @@ export const loadAccount = async (event: Pick<RequestEvent, "cookies" | "getClie
   }
 };
 
+/** The account page's form actions. Logout clears the session cookies without calling the service. */
 export const accountActions = {
   logout: logoutAuthentication,
 };

@@ -1,6 +1,6 @@
 import type { ShellViewModel } from "#lib/application/shell/types.js";
-import I18nProvider from "#lib/i18n/I18nProvider.svelte";
 import { createI18n } from "#lib/i18n/instance.js";
+import { withLocale } from "#lib/i18n/provider.fixture.js";
 
 import { createAuthenticationPanelController } from "./(authentication)/controller.svelte";
 import { createShellController, readyAuthenticationModel } from "./controller.svelte";
@@ -43,10 +43,19 @@ function controller(patch: Partial<ShellViewModel> = {}) {
   });
 }
 
-function withLocale(locale: "en" | "fr" = "en") {
+/** Reads the styles that tell a control's states apart, once its transitions have settled. */
+async function settledStyle(element: Element) {
+  await new Promise(requestAnimationFrame);
+  for (const animation of element.getAnimations()) animation.finish();
+  await new Promise(requestAnimationFrame);
+  const style = getComputedStyle(element);
   return {
-    wrapper: I18nProvider,
-    wrapperProps: { locale },
+    background: style.backgroundColor,
+    color: style.color,
+    opacity: style.opacity,
+    weight: style.fontWeight,
+    lineHeight: style.lineHeight,
+    padding: style.padding,
   };
 }
 
@@ -146,25 +155,11 @@ describe("shell screen", () => {
           })
         );
 
-        const styles = async (element: Element) => {
-          await new Promise(requestAnimationFrame);
-          for (const animation of element.getAnimations()) animation.finish();
-          await new Promise(requestAnimationFrame);
-          const style = getComputedStyle(element);
-          return {
-            background: style.backgroundColor,
-            color: style.color,
-            opacity: style.opacity,
-            weight: style.fontWeight,
-            lineHeight: style.lineHeight,
-            padding: style.padding,
-          };
-        };
-        const resting = await Promise.all(controls.map((control) => styles(control.element())));
+        const resting = await Promise.all(controls.map((control) => settledStyle(control.element())));
         const hovered = [];
         for (const control of controls) {
           await control.hover();
-          hovered.push(await styles(control.element()));
+          hovered.push(await settledStyle(control.element()));
         }
         if (status === "authenticated") {
           expect(hovered[1]?.background).toBe(hovered[2]?.background);

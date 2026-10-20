@@ -1,5 +1,7 @@
-/** Authentication views represented in the shareable URL state. */
-export type AuthDialogView = "login";
+import type { AuthenticationJourney } from "../auth/types";
+
+/** The view the authentication dialog shows, kept in the URL state. Each authentication journey has its own. */
+export type AuthDialogView = AuthenticationJourney;
 
 /** Session states the shell can render without owning session logic. */
 export type ShellSession =

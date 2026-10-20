@@ -1,4 +1,4 @@
-import I18nProvider from "#lib/i18n/I18nProvider.svelte";
+import { withLocale } from "#lib/i18n/provider.fixture.js";
 
 import Screen from "./screen.svelte";
 
@@ -8,14 +8,7 @@ import { page } from "vitest/browser";
 
 describe("Screen", () => {
   it("keeps an accessible title on the intentionally empty workspace", async () => {
-    render(
-      Screen,
-      {},
-      {
-        wrapper: I18nProvider,
-        wrapperProps: { locale: "en" },
-      }
-    );
+    render(Screen, {}, withLocale());
 
     await expect.element(page.getByRole("heading", { name: "Home" })).toBeInTheDocument();
   });

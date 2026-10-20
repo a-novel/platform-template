@@ -20,7 +20,7 @@ const env = vi.hoisted(() => ({
 
 vi.mock("$app/env/private", () => env);
 
-// The planned downtime the published document announces; none unless a test sets one.
+// The planned downtime the published document announces. A test sets one when it needs it.
 const published = vi.hoisted(() => ({ downtime: null as { components: string[]; start: Date; end: Date } | null }));
 
 vi.mock("@a-novel-kit/nodelib-server", async (importOriginal) => ({

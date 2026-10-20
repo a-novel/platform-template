@@ -1,79 +1,9 @@
-import { validateLogin } from "#lib/application/auth/forms.js";
-import type { AccountScreenModel } from "#lib/application/auth/types.js";
-
 import { createAuthenticationPanelController } from "./(authentication)/controller.svelte";
-import { createAccountScreenController } from "./account/controller.svelte";
 import { createShellController, readyAuthenticationModel } from "./controller.svelte";
 
 import { describe, expect, it, vi } from "vitest";
 
-const unavailableAccount: AccountScreenModel = {
-  claims: { status: "error", feedback: "sessionUnavailable" },
-  logoutState: "ready",
-};
-
-function validForm() {
-  const form = new FormData();
-  form.set("email", "creator@example.test");
-  form.set("password", "new-password");
-  return form;
-}
-
-describe("platform controllers", () => {
-  it("returns shared validation before accepting corrected input", () => {
-    const controller = createAuthenticationPanelController({ model: readyAuthenticationModel("login"), action: "/" });
-    const invalid = new FormData();
-    const expected = validateLogin(invalid);
-    expect(controller.submit(invalid)).toBe(false);
-    if (expected.success) throw new Error("Expected invalid form");
-    expect(controller.state.model.state).toEqual({ status: "validation-error", issues: expected.issues });
-    expect(controller.submit(validForm())).toBe(true);
-    expect(controller.state.model.state).toEqual({ status: "submitting" });
-    expect(JSON.stringify(controller.state)).not.toContain("new-password");
-  });
-
-  it("owns authentication submission without owning form fields", () => {
-    const controller = createAuthenticationPanelController({
-      model: readyAuthenticationModel("login"),
-      action: "/auth",
-      allowNativeSubmission: false,
-    });
-
-    expect(controller.submit(validForm())).toBe(false);
-    expect(controller.state.model).toEqual({ journey: "login", state: { status: "submitting" } });
-    expect(controller.submit(validForm())).toBe(false);
-
-    controller.synchronize(
-      { journey: "login", state: { status: "service-error", feedback: "serviceUnavailable" } },
-      "/retry"
-    );
-    expect(controller.submit(validForm())).toBe(false);
-    expect(controller.state).toEqual({
-      model: { journey: "login", state: { status: "submitting" } },
-      action: "/retry",
-    });
-  });
-
-  it("locks the account logout once while the recap is unavailable", () => {
-    const controller = createAccountScreenController({ model: unavailableAccount, logoutAction: "?/logout" });
-    expect(controller.submitLogout()).toBe(true);
-    expect(controller.submitLogout()).toBe(false);
-    expect(controller.state.model).toEqual({ ...unavailableAccount, logoutState: "submitting" });
-
-    controller.synchronize(unavailableAccount);
-    expect(controller.state).toEqual({ model: unavailableAccount, logoutAction: "?/logout" });
-  });
-
-  it("owns account logout without native submission", () => {
-    const controller = createAccountScreenController({
-      model: unavailableAccount,
-      logoutAction: "?/logout",
-      allowNativeSubmission: false,
-    });
-    expect(controller.submitLogout()).toBe(false);
-    expect(controller.state.model.logoutState).toBe("submitting");
-  });
-
+describe("createShellController", () => {
   it("accepts semantic shell transitions", () => {
     const onAuthViewChange = vi.fn();
     const onRailChange = vi.fn();

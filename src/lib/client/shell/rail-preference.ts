@@ -1,5 +1,6 @@
 const preferenceVersion = 1;
 
+/** The local-storage key of the navigation-rail preference. */
 export const railPreferenceKey = "a-novel.template.shell";
 
 interface StorageReader {

@@ -23,8 +23,8 @@ README shows the standard platform README your fork inherits.
 [repository runbook](https://a-novel-kit.github.io/stack/sysadmins/create-repository), which creates a
 `platform-*` repository from this template.
 
-**2. Rename the platform.** Replace `platform-template` with the new repository's name, then the
-`template` placeholders below. This command lists both:
+**2. Rename the platform.** Replace `platform-template` with the new repository's name, then each
+placeholder below. This command lists every `template` occurrence:
 
 ```bash
 git grep -n -i template -- . ':!pnpm-lock.yaml'
@@ -36,17 +36,18 @@ git grep -n -i template -- . ':!pnpm-lock.yaml'
 | Rail preference key | `src/lib/client/shell/rail-preference.ts`                           | Local storage is shared across that origin too.                                        |
 | Product name        | `src/lib/i18n/locales/*/common.yaml`                                | `pageTitles.brand`, `shell.brand` and `shell.navigation` name the product users see.   |
 | Test placeholders   | `builds/compose.e2e.yaml`, the tests, `.github/workflows/main.yaml` | Test accounts, project names and report names follow the platform name.                |
+| Product logo        | `src/routes/+layout.svelte`, `src/routes/(app)/screen.svelte`       | The favicon, banner and icon show the Agora logo until the product has its own.        |
 
 **3. Replace the sample route.** The account page under `src/routes/(app)/account/` is the sample
-authenticated route. Its server module is `src/lib/server/auth/account-route.ts`, its copy sits under
-`authUi.account` in the catalogs, and `tests/e2e/authentication.spec.ts` covers it end to end. Copy
+authenticated route. Its server module is `src/lib/server/auth/account-route.ts`, and its copy sits
+under `authUi.account` in the catalogs. `tests/e2e/authentication.spec.ts` covers it end to end. Copy
 its shape for your first screen, then remove what you no longer use.
 
-**4. Keep the foundations.** The shell, login and session handling, localization, tracing, health
-probes, planned downtime, the container, CI and the test setup stay as they are.
-[CONTRIBUTING.md](./CONTRIBUTING.md) says where each one lives.
+**4. Keep the foundations.** The foundations every platform shares stay as they are, along with the
+container, CI and the test setup. The [contribution guide](./CONTRIBUTING.md#where-code-goes) names
+the home of each foundation.
 
-**5. Verify.** Run the checks, then delete this section and describe the new platform in this README:
+**5. Verify.** Run the checks:
 
 ```bash
 pnpm format
@@ -55,28 +56,31 @@ a-novel test --type=pnpm -y
 a-novel build -y
 ```
 
+Then delete this section and describe the new platform in this README.
+
 ## What it does
 
 A platform is one of the A-Novel browser applications. Its SvelteKit server renders the pages and
-is the only caller of the platform services, so session tokens stay in server-set cookies and never
+is the only caller of the platform services. Session tokens stay in server-set cookies and never
 reach browser code.
 
 This one is a working skeleton: a navigation shell, a login dialog and a protected account page,
-backed by the authentication service. It ships as one container image. Every screen state is also on
-display in the [published Storybook](https://a-novel.github.io/platform-template/).
+backed by the authentication service. The template ships as one container image. The
+[published Storybook](https://a-novel.github.io/platform-template/) shows every screen state.
 
 ## Deploying
 
 Run a tag from the [latest release](https://github.com/a-novel/platform-template/releases/latest) and
-point it at the authentication service.
+point it at the authentication service. The image runs as a non-root user on port `3000`, and its
+container healthcheck calls `/ping`.
 
 ```bash
+PLATFORM_TEMPLATE_VERSION="vX.Y.Z"
+AUTHENTICATION_SERVICE_URL="https://authentication.example.com"
 podman run --detach --name platform-template --publish 3000:3000 \
-  --env AUTHENTICATION_SERVICE_URL \
+  --env AUTHENTICATION_SERVICE_URL="$AUTHENTICATION_SERVICE_URL" \
   ghcr.io/a-novel/platform-template:"$PLATFORM_TEMPLATE_VERSION"
 ```
-
-The image runs as a non-root user on port `3000`, and its container healthcheck calls `/ping`.
 
 ### Configuration
 
@@ -104,8 +108,9 @@ browser bundle.
 
 ## Running locally
 
-Configure pnpm for GitHub Packages with a token that can read packages, then start the
-authentication service and the platform:
+Installing the platform's packages needs your
+[GitHub Packages token](https://a-novel-kit.github.io/stack/dependencies/node#configure). Start the
+authentication service, then the platform:
 
 ```bash
 a-novel run start service-authentication/rest

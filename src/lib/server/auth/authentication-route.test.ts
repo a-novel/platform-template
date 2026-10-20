@@ -1,11 +1,11 @@
 import { authenticationActions } from "./authentication-route";
 import { createAuthenticationContext } from "./context";
+import { stubAuthenticationContext } from "./context.fixture";
 import { AuthenticationSession } from "./session";
 
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { HttpError } from "@a-novel-kit/nodelib-browser/http";
-import { AuthenticationApi } from "@a-novel/service-authentication-rest";
 
 import type { RequestEvent } from "@sveltejs/kit";
 
@@ -20,14 +20,7 @@ function event(
     cookies: { get: vi.fn(), set: vi.fn(), delete: vi.fn() },
     request: new Request(url, { method: "POST", body: new URLSearchParams(fields) }),
   } as unknown as RequestEvent;
-  vi.mocked(createAuthenticationContext).mockReturnValue({
-    api: new AuthenticationApi("https://auth.example.test"),
-    session: new AuthenticationSession(
-      { claims: vi.fn(), login: vi.fn(), refresh: vi.fn(), createAnonymous: vi.fn() },
-      request.cookies,
-      url
-    ),
-  });
+  vi.mocked(createAuthenticationContext).mockReturnValue(stubAuthenticationContext(request.cookies, url));
   return request;
 }
 

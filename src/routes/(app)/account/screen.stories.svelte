@@ -1,12 +1,13 @@
 <script module lang="ts">
   import type { AccountScreenModel } from "#lib/application/auth/types.js";
-  import { createStorybookTranslator } from "#lib/i18n/storybook.js";
+  import { createStorybookTranslator, storybookLocale } from "#lib/i18n/storybook.js";
 
   import StoryHarness from "./story.svelte";
 
   import { reviewStoryGlobals } from "@a-novel-kit/uikit-storybook";
 
   import { defineMeta } from "@storybook/addon-svelte-csf";
+  import type { StoryContext } from "@storybook/sveltekit";
   import { expect, within } from "storybook/test";
 
   const ready = {
@@ -28,10 +29,7 @@
     },
   });
 
-  interface PlayContext {
-    canvasElement: HTMLElement;
-    globals: Record<string, unknown>;
-  }
+  type PlayContext = Pick<StoryContext, "canvasElement" | "globals">;
 
   async function verifySessionFits({ canvasElement, globals }: PlayContext) {
     const t = createStorybookTranslator(globals);
@@ -53,8 +51,7 @@
     await verifySessionFits({ canvasElement, globals });
     await expect(canvas.getByRole("heading", { name: t("authUi.account.title"), level: 1 })).toBeVisible();
     await expect(canvas.getByText("2f798f4a-0694-4f68-9928-42f3e906e871")).toBeVisible();
-    const locale = globals.locale === "fr" ? "fr" : "en";
-    const accessExpiry = new Intl.DateTimeFormat(locale, {
+    const accessExpiry = new Intl.DateTimeFormat(storybookLocale(globals), {
       dateStyle: "medium",
       timeStyle: "short",
       timeZone: "UTC",

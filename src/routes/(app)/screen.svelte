@@ -3,7 +3,7 @@
 
   import type { Snippet } from "svelte";
 
-  /** Props for the pure, application-agnostic shell surface. */
+  /** Props for the pure platform shell. */
   export interface ShellProps {
     controller: ShellController;
     children?: Snippet;
@@ -52,6 +52,13 @@
   const compactRail = $derived(model.rail === "collapsed");
   const { t } = getI18nContext();
   const authenticatedSession = $derived(model.session.status === "authenticated" ? model.session : null);
+  /** The account widget's notice while the session is loading, unavailable or stopped for maintenance. */
+  const sessionNotice = $derived.by(() => {
+    if (model.session.status === "loading") return { tone: "loading", message: t("shell.sessionLoading") } as const;
+    if (model.session.status === "error") return { tone: "error", message: t("shell.sessionUnavailable") } as const;
+    if (model.session.status === "downtime") return { tone: "warning", message: t("shell.sessionDowntime") } as const;
+    return null;
+  });
 
   function closeDrawerAfterNavigation(event: MouseEvent) {
     if (event.target instanceof Element && event.target.closest("a")) controller.navigationDialog.close();
@@ -61,16 +68,14 @@
     if (!controller.logout()) event.preventDefault();
   }
 
+  /** Tells whether a click asks for another tab or window, which the browser opens from the link itself. */
+  function opensElsewhere(event: MouseEvent): boolean {
+    return event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey;
+  }
+
+  /** Runs a shell transition in place of a plain link click. The link's own URL serves every other click. */
   function navigate(event: MouseEvent, transition: () => void) {
-    if (
-      event.defaultPrevented ||
-      event.button !== 0 ||
-      event.metaKey ||
-      event.ctrlKey ||
-      event.shiftKey ||
-      event.altKey
-    )
-      return;
+    if (event.defaultPrevented || opensElsewhere(event)) return;
     event.preventDefault();
     transition();
   }
@@ -124,21 +129,14 @@
 
 {#snippet accountWidget(compact: boolean)}
   <div class="account-widget" data-session={model.session.status}>
-    {#if model.session.status === "loading" || model.session.status === "error" || model.session.status === "downtime"}
-      {@const tone = model.session.status === "downtime" ? "warning" : model.session.status}
-      {@const message =
-        model.session.status === "loading"
-          ? t("shell.sessionLoading")
-          : model.session.status === "downtime"
-            ? t("shell.sessionDowntime")
-            : t("shell.sessionUnavailable")}
+    {#if sessionNotice}
       {#if compact}
-        <div class="compact-status" title={message}>
-          <InlineMessage {tone} aria-label={message} />
+        <div class="compact-status" title={sessionNotice.message}>
+          <InlineMessage tone={sessionNotice.tone} aria-label={sessionNotice.message} />
         </div>
       {:else}
-        <!-- No title: a heading would crowd the narrow rail. -->
-        <Alert {tone}>{message}</Alert>
+        <!-- A title crowds the narrow rail, so the alert has none. -->
+        <Alert tone={sessionNotice.tone}>{sessionNotice.message}</Alert>
       {/if}
     {:else if authenticatedSession}
       <NavList

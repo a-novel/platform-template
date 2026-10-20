@@ -1,12 +1,12 @@
-import { getRuntimeConfig } from "#lib/server/runtime-config.server.js";
-import { serviceFetch } from "#lib/server/service-fetch.js";
-
+import { getRuntimeConfig } from "../runtime-config.server";
+import { serviceFetch } from "../service-fetch";
 import { AuthenticationSession, createSessionClient } from "./session";
 
 import { AuthenticationApi } from "@a-novel/service-authentication-rest";
 
 import type { RequestEvent } from "@sveltejs/kit";
 
+/** AuthenticationContext is the authentication client and session of one request. */
 export interface AuthenticationContext {
   api: AuthenticationApi;
   session: AuthenticationSession;
