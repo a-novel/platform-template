@@ -1,6 +1,5 @@
 <script lang="ts">
   import { readAuthenticationActionModel } from "#lib/application/auth/action-data.js";
-  import type { AuthenticationPanelModel } from "#lib/application/auth/types.js";
   import {
     normalizeAuthUrl,
     readAuthView,
@@ -16,7 +15,10 @@
   import { resolve } from "$app/paths";
   import { page } from "$app/state";
 
-  import { createAuthenticationPanelController } from "./(authentication)/controller.svelte";
+  import {
+    type AuthenticationPanelControllerState,
+    createAuthenticationPanelController,
+  } from "./(authentication)/controller.svelte";
   import { createShellController, readyAuthenticationModel } from "./controller.svelte";
   import Screen from "./screen.svelte";
 
@@ -34,20 +36,17 @@
 
   let currentHref = $state(page.url.href);
   const initialRoute = untrack(() => ({
-    href: currentHref,
-    activeNavigation: data.activeNavigation === "home" ? ("home" as const) : null,
+    parameters: new URL(currentHref).searchParams,
+    activeNavigation: data.activeNavigation,
     session: data.session,
   }));
-  const initialAuthView = readAuthView(new URL(initialRoute.href).searchParams);
-  const authentication = createAuthenticationPanelController({
-    model: authenticationModel(initialAuthView ?? "login"),
-    action: authenticationAction(initialAuthView ?? "login"),
-  });
+  const initialAuthView = readAuthView(initialRoute.parameters);
+  const authentication = createAuthenticationPanelController(authenticationState(initialAuthView ?? "login"));
   const controller = createShellController({
     model: {
       activeNavigation: initialRoute.activeNavigation,
       authView: initialAuthView,
-      drawerOpen: readNavigationOpen(new URL(initialRoute.href).searchParams),
+      drawerOpen: readNavigationOpen(initialRoute.parameters),
       rail: "expanded",
       session: initialRoute.session,
     },
@@ -55,18 +54,10 @@
     accountHref: resolve("account"),
     logoutAction: resolve("auth/logout"),
     authentication,
-    resolveAuthentication: (view) => ({
-      model: authenticationModel(view),
-      action: authenticationAction(view),
-    }),
+    resolveAuthentication: authenticationState,
     onAuthViewChange: changeAuthView,
     getUrl: () => new URL(currentHref),
-    onDrawerChange: (open) => {
-      const next = withNavigationOpen(new URL(window.location.href), open);
-      // eslint-disable-next-line svelte/no-navigation-without-resolve -- Shallow routing edits the current, resolved URL.
-      goto(next, { shallow: true, replace: true, state: page.state });
-      currentHref = next.href;
-    },
+    onDrawerChange: (open) => showShallow(withNavigationOpen(new URL(window.location.href), open)),
     onRailChange: (rail) => writeRailCollapsed(window.localStorage, rail === "collapsed"),
   });
 
@@ -77,22 +68,17 @@
   );
 
   $effect(() => {
-    const authView = readAuthView(new URL(currentHref).searchParams);
-    const activeNavigation = data.activeNavigation === "home" ? "home" : null;
-    const session = data.session;
-    const routeAuthentication = authView
-      ? { model: authenticationModel(authView), action: authenticationAction(authView) }
-      : undefined;
+    const parameters = new URL(currentHref).searchParams;
+    const authView = readAuthView(parameters);
+    const route = {
+      activeNavigation: data.activeNavigation,
+      session: data.session,
+      authView,
+      drawerOpen: readNavigationOpen(parameters),
+      authentication: authView ? authenticationState(authView) : undefined,
+    };
 
-    untrack(() =>
-      controller.synchronizeRoute({
-        activeNavigation,
-        session,
-        authView,
-        drawerOpen: readNavigationOpen(new URL(currentHref).searchParams),
-        authentication: routeAuthentication,
-      })
-    );
+    untrack(() => controller.synchronizeRoute(route));
   });
 
   afterNavigate(async ({ complete, shallow }) => {
@@ -111,17 +97,25 @@
     return () => window.removeEventListener("popstate", synchronizeUrl);
   });
 
-  function synchronizeUrl() {
-    const normalized = normalizeAuthUrl(new URL(window.location.href));
-    if (normalized.href !== window.location.href) {
-      // eslint-disable-next-line svelte/no-navigation-without-resolve -- Shallow routing edits the current, resolved URL.
-      goto(normalized, { shallow: true, replace: true, state: page.state });
-    }
-    currentHref = normalized.href;
+  /** Shows a URL change without loading the page, and makes it the shell's current URL. */
+  function showShallow(next: URL, replace = true) {
+    // eslint-disable-next-line svelte/no-navigation-without-resolve -- Shallow routing edits the current, resolved URL.
+    goto(next, { shallow: true, replace, state: page.state });
+    currentHref = next.href;
   }
 
-  function authenticationModel(view: AuthDialogView): AuthenticationPanelModel {
-    return readAuthenticationActionModel(page.form, view) ?? readyAuthenticationModel(view);
+  function synchronizeUrl() {
+    const normalized = normalizeAuthUrl(new URL(window.location.href));
+    if (normalized.href !== window.location.href) showShallow(normalized);
+    else currentHref = normalized.href;
+  }
+
+  /** The authentication form of a view: the latest action result for it, or a blank form. */
+  function authenticationState(view: AuthDialogView): AuthenticationPanelControllerState {
+    return {
+      model: readAuthenticationActionModel(page.form, view) ?? readyAuthenticationModel(view),
+      action: authenticationAction(view),
+    };
   }
 
   function authenticationAction(view: AuthDialogView): string {
@@ -137,11 +131,8 @@
 
   function changeAuthView(view: AuthDialogView | null) {
     const previousView = readAuthView(new URL(window.location.href).searchParams);
-    const next = withAuthView(new URL(window.location.href), view);
-    // Opening the dialog adds a history entry; any other change replaces the current one.
-    // eslint-disable-next-line svelte/no-navigation-without-resolve -- Shallow routing edits the current, resolved URL.
-    goto(next, { shallow: true, replace: previousView !== null || view === null, state: page.state });
-    currentHref = next.href;
+    // Opening the dialog adds a history entry. Any other change replaces the current one.
+    showShallow(withAuthView(new URL(window.location.href), view), previousView !== null || view === null);
   }
 </script>
 
