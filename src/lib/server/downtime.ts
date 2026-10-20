@@ -22,7 +22,7 @@ export async function readPlatformDowntime(): Promise<Downtime | null> {
 
 /** Fails with the 503 the error pages render as maintenance. */
 export function downtimeError(): never {
-  error(503, { message: "Planned downtime", downtime: true });
+  error(503, "Planned downtime", { downtime: true });
 }
 
 /** Stops a load or action that needs the stopped services once their planned downtime has started. */
