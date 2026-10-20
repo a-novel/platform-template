@@ -28,8 +28,7 @@
     NavList,
     SkipLink,
   } from "@a-novel-kit/uikit";
-  import agoraBanner320 from "@a-novel-kit/uikit-images/files/banner/320w/agora-banner.png";
-  import agoraBanner640 from "@a-novel-kit/uikit-images/files/banner/640w/agora-banner.png";
+  import agoraBanner from "@a-novel-kit/uikit-images/files/banner/80h/agora-banner.png";
   import agoraIcon48 from "@a-novel-kit/uikit-images/files/icon/48x48/agora-icon.png";
   import agoraIcon96 from "@a-novel-kit/uikit-images/files/icon/96x96/agora-icon.png";
 
@@ -97,14 +96,7 @@
         alt={t("shell.brand")}
       />
     {:else}
-      <img
-        class="brand-banner"
-        src={agoraBanner320}
-        srcset={`${agoraBanner320} 1x, ${agoraBanner640} 2x`}
-        width="96"
-        height="24"
-        alt={t("shell.brand")}
-      />
+      <img class="brand-banner" src={agoraBanner} width="96" height="24" alt={t("shell.brand")} />
     {/if}
   </span>
 {/snippet}
