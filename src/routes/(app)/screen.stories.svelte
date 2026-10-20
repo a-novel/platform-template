@@ -10,6 +10,7 @@
   import ScrollPreview from "@a-novel-kit/uikit-storybook/ScrollPreview.svelte";
 
   import { defineMeta } from "@storybook/addon-svelte-csf";
+  import type { StoryContext } from "@storybook/sveltekit";
   import { expect, userEvent, within } from "storybook/test";
 
   const anonymous: ShellViewModel = {
@@ -62,10 +63,7 @@
     },
   });
 
-  interface PlayContext {
-    canvasElement: HTMLElement;
-    globals: Record<string, unknown>;
-  }
+  type PlayContext = Pick<StoryContext, "canvasElement" | "globals">;
 
   function clearFocus() {
     if (document.activeElement instanceof HTMLElement) document.activeElement.blur();
@@ -151,7 +149,7 @@
     await expect(Math.max(...labelStarts) - Math.min(...labelStarts)).toBeLessThanOrEqual(1);
   }
 
-  async function verifyValidationFeedback({ canvasElement }: { canvasElement: HTMLElement }) {
+  async function verifyValidationFeedback({ canvasElement }: PlayContext) {
     await expect(canvasElement.querySelectorAll('[aria-invalid="true"]')).toHaveLength(2);
     expect(canvasElement.querySelector('a[href$="-email"]')).toBeNull();
   }
