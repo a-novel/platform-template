@@ -119,12 +119,8 @@
 
   .session-summary,
   #account-session {
-    scroll-margin-block-start: var(--space-5);
-  }
-
-  .session-summary,
-  #account-session {
     padding-block-start: var(--space-4);
+    scroll-margin-block-start: var(--space-5);
   }
 
   .section-heading {
@@ -157,16 +153,16 @@
     line-height: var(--line-height-normal);
   }
 
-  @media (min-width: 35rem) {
-    .session-details {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-  }
-
   .session-details {
     display: grid;
     gap: var(--space-4);
     margin: 0;
+  }
+
+  @media (min-width: 35rem) {
+    .session-details {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
   }
 
   .session-details > div {
