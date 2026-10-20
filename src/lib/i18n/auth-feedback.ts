@@ -1,4 +1,4 @@
-import type { AuthenticationFeedback, AuthenticationValidation } from "#lib/application/auth/types.js";
+import type { AuthenticationFeedback, AuthenticationValidation, FormIssue } from "#lib/application/auth/types.js";
 
 import type { TFunction } from "i18next";
 
@@ -16,8 +16,18 @@ export function translateAuthenticationFeedback(t: TFunction<"common">, feedback
   }
 }
 
+/** Resolves the validation issue reported for one form field, or undefined when the field has none. */
+export function translateFieldIssue<Field extends string>(
+  t: TFunction<"common">,
+  issues: readonly FormIssue<Field>[],
+  field: Field
+): string | undefined {
+  const issue = issues.find((candidate) => candidate.field === field);
+  return issue ? translateAuthenticationValidation(t, issue) : undefined;
+}
+
 /** Resolves a stable form-validation category through the active locale. */
-export function translateAuthenticationValidation(t: TFunction<"common">, issue: AuthenticationValidation): string {
+function translateAuthenticationValidation(t: TFunction<"common">, issue: AuthenticationValidation): string {
   switch (issue.feedback) {
     case "email":
       return t("authFlow.validation.email");
