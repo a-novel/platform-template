@@ -45,9 +45,9 @@
     "test:unit": "vitest run --project=unit --coverage.reportsDirectory=coverage/unit"
   },
   "dependencies": {
-    "@a-novel-kit/nodelib-browser": "1.14.0",
-    "@a-novel-kit/nodelib-i18n": "1.14.0",
-    "@a-novel-kit/nodelib-server": "1.14.0",
+    "@a-novel-kit/nodelib-browser": "1.14.1",
+    "@a-novel-kit/nodelib-i18n": "1.14.1",
+    "@a-novel-kit/nodelib-server": "1.14.1",
     "@a-novel-kit/uikit": "0.11.0",
     "@a-novel-kit/uikit-fonts": "0.11.0",
     "@a-novel-kit/uikit-images": "0.11.0",
@@ -65,8 +65,8 @@
     "zod": "4.6.7"
   },
   "devDependencies": {
-    "@a-novel-kit/nodelib-config": "1.14.0",
-    "@a-novel-kit/nodelib-test": "1.14.0",
+    "@a-novel-kit/nodelib-config": "1.14.1",
+    "@a-novel-kit/nodelib-test": "1.14.1",
     "@a-novel-kit/uikit-storybook": "0.11.0",
     "@eslint/compat": "2.1.1",
     "@eslint/config-helpers": "0.7.0",
