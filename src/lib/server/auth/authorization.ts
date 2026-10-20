@@ -1,10 +1,9 @@
 import { loginHref } from "#lib/application/auth/navigation.js";
 
 import { downtimeError, refuseDuringDowntime } from "../downtime";
-import { createAuthenticationContext } from "./context";
+import { type AuthenticationEvent, createAuthenticationContext } from "./context";
 import { type AuthenticatedSession, AuthenticationDowntimeError } from "./session";
 
-import type { RequestEvent } from "@sveltejs/kit";
 import { error, redirect } from "@sveltejs/kit";
 
 /**
@@ -12,22 +11,24 @@ import { error, redirect } from "@sveltejs/kit";
  * Optional rules restrict a verified account; authentication outages never become anonymous access.
  */
 export async function requireAuthorization(
-  event: Pick<RequestEvent, "cookies" | "getClientAddress" | "url">,
+  event: AuthenticationEvent,
   when: (session: AuthenticatedSession) => boolean = () => true
 ) {
   await refuseDuringDowntime();
 
-  const resolved = await (async () => {
-    try {
-      const authentication = createAuthenticationContext(event);
-      return { authentication, session: await authentication.session.authenticated() };
-    } catch (cause) {
-      if (cause instanceof AuthenticationDowntimeError) downtimeError();
-      error(503, "Authentication unavailable");
-    }
-  })();
+  const { authentication, session } = await authenticate(event);
+  if (!session) redirect(303, loginHref(event.url.pathname + event.url.search));
+  if (!when(session)) error(403, "Access denied");
+  return { authentication, session };
+}
 
-  if (!resolved.session) redirect(303, loginHref(event.url.pathname + event.url.search));
-  if (!when(resolved.session)) error(403, "Access denied");
-  return { authentication: resolved.authentication, session: resolved.session };
+/** Resolves the visitor's session, or fails with the 503 an unreachable authentication service warrants. */
+async function authenticate(event: AuthenticationEvent) {
+  try {
+    const authentication = createAuthenticationContext(event);
+    return { authentication, session: await authentication.session.authenticated() };
+  } catch (cause) {
+    if (cause instanceof AuthenticationDowntimeError) downtimeError();
+    error(503, "Authentication unavailable");
+  }
 }

@@ -1,5 +1,6 @@
 import type { AccountClaimsState, AccountScreenModel } from "#lib/application/auth/types.js";
 import { requireAuthorization } from "#lib/server/auth/authorization.js";
+import type { AuthenticationEvent } from "#lib/server/auth/context.js";
 import { logoutAuthentication } from "#lib/server/auth/logout.js";
 import { readTokenExpiry } from "#lib/server/auth/session.js";
 
@@ -20,7 +21,7 @@ function accountModel(claims: AccountClaimsState): AccountScreenModel {
   return { claims, logoutState: "ready" };
 }
 
-export const loadAccount = async (event: Pick<RequestEvent, "cookies" | "getClientAddress" | "locals" | "url">) => {
+export const loadAccount = async (event: AuthenticationEvent & Pick<RequestEvent, "locals">) => {
   const { locals } = event;
   const t = locals.i18n.getFixedT(locals.locale, "common");
 
