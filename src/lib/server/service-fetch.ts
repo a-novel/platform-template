@@ -1,7 +1,7 @@
 /** Cloud Run's metadata server mints Google ID tokens for the runtime's own service account. */
 const identityUrl = "http://metadata.google.internal/computeMetadata/v1/instance/service-accounts/default/identity";
 
-/** Google ID tokens last an hour; renew them five minutes early. */
+/** Google ID tokens last an hour. The platform renews them five minutes early. */
 const identityTokenTtlMs = 55 * 60 * 1000;
 
 const identityTokens = new Map<string, { token: Promise<string>; expiresAt: number }>();

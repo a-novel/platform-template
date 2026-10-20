@@ -1,6 +1,6 @@
 import type { ValidationResult } from "./forms";
 
-/** Freezes real validation feedback for a visual scenario; valid samples fail loudly. */
+/** Freezes real validation feedback for a visual scenario. A valid sample throws. */
 export function validationFixture<Field extends string>(
   validate: (form: FormData) => ValidationResult<unknown, Field>,
   values: Record<string, string>

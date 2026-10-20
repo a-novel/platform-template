@@ -10,7 +10,7 @@ export function authenticationPageTitle(t: TFunction<"common">, { state }: Authe
   return title;
 }
 
-/** Uses a readable error description instead of a bare HTTP status in the tab. */
+/** Names an error page's tab with a readable description of its status. */
 export function errorPageTitle(t: TFunction<"common">, status: number, downtime = false) {
   if (downtime) return t("access.downtime.title");
 

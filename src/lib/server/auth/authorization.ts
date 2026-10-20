@@ -8,7 +8,7 @@ import { error, redirect } from "@sveltejs/kit";
 
 /**
  * Verifies each protected load or mutation independently. SDK clients and tokens remain server-only.
- * Optional rules restrict a verified account; authentication outages never become anonymous access.
+ * Optional rules restrict a verified account. An authentication outage never becomes anonymous access.
  */
 export async function requireAuthorization(
   event: AuthenticationEvent,

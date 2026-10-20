@@ -19,7 +19,7 @@ function isAuthDialogView(value: string): value is AuthDialogView {
   return value === "login";
 }
 
-/** Reads one canonical authentication view; duplicates and invalid values close the dialog. */
+/** Reads one canonical authentication view. Duplicate and invalid values close the dialog. */
 export function readAuthView(parameters: URLSearchParams): AuthDialogView | null {
   const values = parameters.getAll(authParameter);
   return values.length === 1 && values[0] !== undefined && isAuthDialogView(values[0]) ? values[0] : null;
