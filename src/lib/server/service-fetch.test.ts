@@ -42,9 +42,10 @@ describe("serviceFetch", () => {
   });
 
   it("retries a failed identity token on the next call", async () => {
+    const failure = new Response("metadata server unavailable", { status: 500 });
     const metadata = vi
       .fn<() => Promise<Response>>()
-      .mockResolvedValueOnce(new Response("", { status: 500 }))
+      .mockResolvedValueOnce(failure)
       .mockResolvedValueOnce(new Response("identity-token"));
     vi.stubGlobal("fetch", metadata);
     const base = vi.fn(async () => new Response("ok"));
@@ -53,6 +54,7 @@ describe("serviceFetch", () => {
     await expect(send("https://authentication.test/v2/healthcheck")).rejects.toThrow("identity token");
     await send("https://authentication.test/v2/healthcheck");
 
+    expect(failure.bodyUsed).toBe(true);
     expect(base).toHaveBeenCalledOnce();
     expect(headersOf(base).get("X-Serverless-Authorization")).toBe("Bearer identity-token");
   });
