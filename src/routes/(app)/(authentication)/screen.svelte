@@ -51,7 +51,6 @@
         autocapitalize="none"
         spellcheck="false"
         readonly={submitting}
-        invalid={Boolean(fieldError("email"))}
       />
     {/snippet}
   </Field>
@@ -63,14 +62,7 @@
     required
   >
     {#snippet children(control)}
-      <Input
-        {...control}
-        name="password"
-        type="password"
-        autocomplete="current-password"
-        readonly={submitting}
-        invalid={Boolean(fieldError("password"))}
-      />
+      <Input {...control} name="password" type="password" autocomplete="current-password" readonly={submitting} />
     {/snippet}
   </Field>
 
