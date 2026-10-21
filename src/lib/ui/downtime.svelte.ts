@@ -19,8 +19,8 @@ export const [getPlatformDowntime, setPlatformDowntime, hasPlatformDowntime] = c
 const maxTimerDelay = 2 ** 31 - 1;
 
 /**
- * Tracks the downtime a load returned. It flips to started when the start passes on the visitor's
- * clock, and shows times in the visitor's zone after hydration, so the server and the first render
+ * Tracks the downtime a load returned. It flips to started once the start passes on the visitor's
+ * clock. It moves to the visitor's time zone after hydration, so the server and the first render
  * agree. Call it during component initialization.
  */
 export function createPlatformDowntime(
