@@ -35,18 +35,15 @@
   });
 
   let currentHref = $state(page.url.href);
-  const initialRoute = untrack(() => ({
-    parameters: new URL(currentHref).searchParams,
-    activeNavigation: data.activeNavigation,
-    session: data.session,
-  }));
-  const initialAuthView = readAuthView(initialRoute.parameters);
-  const authentication = createAuthenticationPanelController(authenticationState(initialAuthView ?? "login"));
+  const initialRoute = untrack(routeState);
+  const authentication = createAuthenticationPanelController(
+    initialRoute.authentication ?? authenticationState("login")
+  );
   const controller = createShellController({
     model: {
       activeNavigation: initialRoute.activeNavigation,
-      authView: initialAuthView,
-      drawerOpen: readNavigationOpen(initialRoute.parameters),
+      authView: initialRoute.authView,
+      drawerOpen: initialRoute.drawerOpen,
       rail: "expanded",
       session: initialRoute.session,
     },
@@ -68,16 +65,7 @@
   );
 
   $effect(() => {
-    const parameters = new URL(currentHref).searchParams;
-    const authView = readAuthView(parameters);
-    const route = {
-      activeNavigation: data.activeNavigation,
-      session: data.session,
-      authView,
-      drawerOpen: readNavigationOpen(parameters),
-      authentication: authView ? authenticationState(authView) : undefined,
-    };
-
+    const route = routeState();
     untrack(() => controller.synchronizeRoute(route));
   });
 
@@ -96,6 +84,20 @@
 
     return () => window.removeEventListener("popstate", synchronizeUrl);
   });
+
+  /** The shell state that the route data and the current URL hold. */
+  function routeState() {
+    const parameters = new URL(currentHref).searchParams;
+    const authView = readAuthView(parameters);
+
+    return {
+      activeNavigation: data.activeNavigation,
+      session: data.session,
+      authView,
+      drawerOpen: readNavigationOpen(parameters),
+      authentication: authView ? authenticationState(authView) : undefined,
+    };
+  }
 
   /** Shows a URL change without loading the page, and makes it the shell's current URL. */
   function showShallow(next: URL, replace = true) {

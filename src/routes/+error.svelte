@@ -17,14 +17,15 @@
       ? { end: platformDowntime.downtime.end, timeZone: platformDowntime.timeZone }
       : undefined
   );
+  const currentPath = $derived(page.url.pathname + page.url.search);
 </script>
 
 <PageTitle title={errorPageTitle(t, page.status, downtime !== undefined)} />
 
 <Screen
   status={page.status}
-  loginHref={loginHref(page.url.pathname + page.url.search)}
+  loginHref={loginHref(currentPath)}
   homeHref={resolve("")}
-  retryHref={page.url.pathname + page.url.search}
+  retryHref={currentPath}
   {downtime}
 />

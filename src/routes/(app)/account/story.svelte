@@ -33,9 +33,10 @@
     return model;
   }
 
+  const model = $derived(localizeClaimExpiries(structuredClone(initialModel)));
   const controller: AccountScreenController = {
     get state() {
-      return { model: localizeClaimExpiries(structuredClone(initialModel)), logoutAction: "/storybook/account/logout" };
+      return { model, logoutAction: "/storybook/account/logout" };
     },
     synchronize: () => {},
     submitLogout: () => false,
