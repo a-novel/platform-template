@@ -2,7 +2,7 @@ import { accountDisplayFromHandle } from "#lib/application/shell/account-display
 import type { ShellSession } from "#lib/application/shell/types.js";
 
 import { readPlatformDowntime } from "../downtime";
-import { type AuthenticationEvent, createAuthenticationContext } from "./context";
+import { type AuthenticationEvent, getAuthenticationContext } from "./context";
 import type { ResolvedSession } from "./session";
 
 import { isDowntimeStarted } from "@a-novel-kit/nodelib-server";
@@ -50,7 +50,7 @@ async function readShellSession(event: ShellEvent): Promise<ShellSession> {
 /** Reads the visitor's session, treating a server that cannot reach Authentication as an outage. */
 async function currentSession(event: AuthenticationEvent): Promise<ResolvedSession> {
   try {
-    return await createAuthenticationContext(event).session.current();
+    return await getAuthenticationContext(event).session.current();
   } catch {
     return { status: "unavailable" };
   }

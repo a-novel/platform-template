@@ -1,5 +1,5 @@
 import { authenticationActions } from "./authentication-route";
-import { createAuthenticationContext } from "./context";
+import { getAuthenticationContext } from "./context";
 import { stubAuthenticationContext } from "./context.fixture";
 import { AuthenticationSession } from "./session";
 
@@ -9,7 +9,7 @@ import { HttpError } from "@a-novel-kit/nodelib-browser/http";
 
 import type { RequestEvent } from "@sveltejs/kit";
 
-vi.mock("./context", () => ({ createAuthenticationContext: vi.fn() }));
+vi.mock("./context", () => ({ getAuthenticationContext: vi.fn() }));
 
 function event(
   fields = { email: "creator@example.com", password: "test-password" },
@@ -20,7 +20,7 @@ function event(
     cookies: { get: vi.fn(), set: vi.fn(), delete: vi.fn() },
     request: new Request(url, { method: "POST", body: new URLSearchParams(fields) }),
   } as unknown as RequestEvent;
-  vi.mocked(createAuthenticationContext).mockReturnValue(stubAuthenticationContext(request.cookies, url));
+  vi.mocked(getAuthenticationContext).mockReturnValue(stubAuthenticationContext(request.cookies, url));
   return request;
 }
 
@@ -45,7 +45,7 @@ describe("login outcomes", () => {
       status: 400,
       data: { authentication: { journey: "login", state: { status: "validation-error" } } },
     });
-    expect(createAuthenticationContext).not.toHaveBeenCalled();
+    expect(getAuthenticationContext).not.toHaveBeenCalled();
     expect(JSON.stringify(result)).not.toContain("invalid-private-value");
   });
 

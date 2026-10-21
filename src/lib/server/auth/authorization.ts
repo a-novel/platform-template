@@ -1,7 +1,7 @@
 import { loginHref } from "#lib/application/auth/navigation.js";
 
 import { downtimeError, refuseDuringDowntime } from "../downtime";
-import { type AuthenticationEvent, createAuthenticationContext } from "./context";
+import { type AuthenticationEvent, getAuthenticationContext } from "./context";
 import { type AuthenticatedSession, AuthenticationDowntimeError } from "./session";
 
 import { error, redirect } from "@sveltejs/kit";
@@ -25,7 +25,7 @@ export async function requireAuthorization(
 /** Resolves the visitor's session, or fails with the 503 an unreachable authentication service warrants. */
 async function authenticate(event: AuthenticationEvent) {
   try {
-    const authentication = createAuthenticationContext(event);
+    const authentication = getAuthenticationContext(event);
     return { authentication, session: await authentication.session.authenticated() };
   } catch (cause) {
     if (cause instanceof AuthenticationDowntimeError) downtimeError();

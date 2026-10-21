@@ -66,6 +66,9 @@ export class AuthenticationDowntimeError extends Error {
 
 /** AuthenticationSession keeps a visitor's tokens in HttpOnly cookies and refreshes them on demand. */
 export class AuthenticationSession {
+  /** The session check that the loads and actions of the request share. A cookie change discards it. */
+  private check?: Promise<ResolvedSession>;
+
   constructor(
     private readonly client: SessionClient,
     private readonly cookies: SessionCookies,
@@ -73,7 +76,12 @@ export class AuthenticationSession {
   ) {}
 
   /** Checks the session cookies, refreshing a rejected access token. An outage keeps the cookies. */
-  async current(): Promise<ResolvedSession> {
+  current(): Promise<ResolvedSession> {
+    this.check ??= this.resolve();
+    return this.check;
+  }
+
+  private async resolve(): Promise<ResolvedSession> {
     const accessToken = this.cookies.get(accessTokenCookie);
     const refreshToken = this.cookies.get(refreshTokenCookie);
 
@@ -93,9 +101,7 @@ export class AuthenticationSession {
       };
     } catch (error) {
       if (isDowntimeError(error)) return { status: "downtime" };
-      if (!isHttpStatusError(error, ...rejectedSessionStatuses)) {
-        return { status: "unavailable" };
-      }
+      if (!isHttpStatusError(error, ...rejectedSessionStatuses)) return { status: "unavailable" };
     }
 
     if (!refreshToken) {
@@ -103,6 +109,11 @@ export class AuthenticationSession {
       return { status: "none" };
     }
 
+    return await this.refresh(accessToken, refreshToken);
+  }
+
+  /** Renews a rejected access token. A rejected refresh token signs the visitor out. */
+  private async refresh(accessToken: string, refreshToken: string): Promise<ResolvedSession> {
     try {
       const refreshed = await this.client.refresh({ accessToken, refreshToken });
       const claims = await this.client.claims(refreshed.accessToken);
@@ -157,6 +168,8 @@ export class AuthenticationSession {
 
   /** Stores a token pair from the service, with the identity it belongs to when known. */
   accept(token: Token, identityEmail?: string): void {
+    this.check = undefined;
+
     const options = this.cookieOptions();
     // An anonymous token outlives the browser session, so a browser restart doesn't spend the
     // visitor's few anonymous tokens. A signed-in session still ends with the browser.
@@ -174,6 +187,8 @@ export class AuthenticationSession {
 
   /** Keeps the local part of an email address as the shell's display handle. */
   rememberIdentity(email: string): void {
+    this.check = undefined;
+
     const separator = email.lastIndexOf("@");
     const handle = separator > 0 ? email.slice(0, separator) : "";
 
@@ -187,6 +202,8 @@ export class AuthenticationSession {
 
   /** Removes every session cookie, which signs the visitor out locally. */
   clear(): void {
+    this.check = undefined;
+
     this.cookies.delete(accessTokenCookie, { path: "/" });
     this.cookies.delete(refreshTokenCookie, { path: "/" });
     this.cookies.delete(identityHandleCookie, { path: "/" });

@@ -3,7 +3,7 @@ import { safeReturnTo } from "#lib/application/auth/navigation.js";
 import type { AuthenticationPanelModel } from "#lib/application/auth/types.js";
 
 import { refuseDuringDowntime } from "../downtime";
-import { createAuthenticationContext } from "./context";
+import { getAuthenticationContext } from "./context";
 
 import { isHttpStatusError } from "@a-novel-kit/nodelib-browser/http";
 
@@ -31,7 +31,7 @@ export const authenticationActions = {
     if (!input.success) return failLogin(400, { status: "validation-error", issues: input.issues });
 
     try {
-      await createAuthenticationContext(event).session.login(input.value.email, input.value.password);
+      await getAuthenticationContext(event).session.login(input.value.email, input.value.password);
     } catch (error) {
       return loginFailure(error);
     }
