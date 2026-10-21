@@ -15,8 +15,8 @@ export async function submitForm(buttonName: string): Promise<HTMLFormElement> {
 
 /**
  * Checks a form's action layout at phone and desktop widths. The submit button starts at the form's
- * edge and spans it on a phone, its feedback sits right above it, and both keep twice the field gap
- * from the last field.
+ * edge and spans it on a phone. Its feedback sits right above it. Both keep twice the field gap from
+ * the last field.
  */
 export async function expectFormActionLayout(form: HTMLFormElement) {
   const button = form.querySelector('button[type="submit"]');
@@ -27,20 +27,27 @@ export async function expectFormActionLayout(form: HTMLFormElement) {
   try {
     for (const width of [320, 390, 1280]) {
       await page.viewport(width, 844);
-      const bounds = button.getBoundingClientRect();
-      const formBounds = form.getBoundingClientRect();
-      expect(bounds.left).toBeCloseTo(formBounds.left);
-      if (width < 560) expect(bounds.width).toBeCloseTo(formBounds.width);
-      else expect(bounds.width).toBeLessThan(formBounds.width);
-      const feedback = form.querySelector('[role="alert"], [role="status"]');
-      if (feedback) expect(bounds.top - feedback.getBoundingClientRect().bottom).toBe(16);
-      const lastInput = Array.from(form.querySelectorAll("input")).at(-1);
-      if (lastInput)
-        expect(
-          (feedback ?? button).getBoundingClientRect().top - lastInput.getBoundingClientRect().bottom
-        ).toBeGreaterThanOrEqual(32);
+      expectActionLayout(form, button, width < 560);
     }
   } finally {
     await page.viewport(originalViewport.width, originalViewport.height);
   }
+}
+
+/** Checks the action layout at the current viewport width. */
+function expectActionLayout(form: HTMLFormElement, button: Element, phone: boolean) {
+  const bounds = button.getBoundingClientRect();
+  const formBounds = form.getBoundingClientRect();
+  expect(bounds.left).toBeCloseTo(formBounds.left);
+  if (phone) expect(bounds.width).toBeCloseTo(formBounds.width);
+  else expect(bounds.width).toBeLessThan(formBounds.width);
+
+  const feedback = form.querySelector('[role="alert"], [role="status"]');
+  if (feedback) expect(bounds.top - feedback.getBoundingClientRect().bottom).toBe(16);
+
+  const lastInput = Array.from(form.querySelectorAll("input")).at(-1);
+  if (!lastInput) return;
+
+  const actionTop = (feedback ?? button).getBoundingClientRect().top;
+  expect(actionTop - lastInput.getBoundingClientRect().bottom).toBeGreaterThanOrEqual(32);
 }

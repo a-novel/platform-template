@@ -26,16 +26,19 @@ test("login returns to the protected account, survives reload and logout protect
   await page.goto("/account");
   await expect(page).toHaveURL(/auth=login&returnTo=%2Faccount/);
   await expect(page).toHaveTitle("Log in — Agora");
+
   await login(page, account);
   await expect(page).toHaveURL("/account");
   await expect(page).toHaveTitle("Account — Agora");
   await expect(page.getByRole("heading", { name: "Your account", exact: true })).toBeVisible();
   await expect(page.getByText("auth:user", { exact: true })).toBeVisible();
+
   const cookies = (await context.cookies()).filter((cookie) => cookie.name.startsWith("template_"));
   expect(cookies.map((cookie) => cookie.name)).toEqual(
     expect.arrayContaining(["template_access_token", "template_refresh_token"])
   );
   expect(cookies.every((cookie) => cookie.httpOnly && cookie.sameSite === "Lax")).toBe(true);
+
   await page.reload();
   await expect(page.getByText("auth:user", { exact: true })).toBeVisible();
   await expect(page).toHaveTitle("Account — Agora");
@@ -43,10 +46,12 @@ test("login returns to the protected account, survives reload and logout protect
     page.getByText(label, { exact: true }).locator("+ dd")
   );
   await screenshot(page, info, "authenticated-account", perRunValues);
+
   await page.getByRole("button", { name: "Log out", exact: true }).last().click();
   await expect(page).toHaveURL("/");
   await expect(page).toHaveTitle("Home — Agora");
   expect((await context.cookies()).filter((cookie) => cookie.name.startsWith("template_"))).toEqual([]);
+
   await page.goto("/account");
   await expect(page).toHaveURL(/auth=login&returnTo=%2Faccount/);
   await expect(page.getByText("auth:user", { exact: true })).toHaveCount(0);
@@ -56,6 +61,7 @@ test("dialog history and keyboard dismissal restore the shell focus", async ({ p
   await page.goto("/");
   await expect(page).toHaveTitle("Home — Agora");
   if (isMobile) await page.getByRole("link", { name: "Open navigation", exact: true }).click();
+
   const trigger = page.getByRole("link", { name: "Log in", exact: true });
   await trigger.click();
   await expect(page.getByRole("dialog", { name: "Log in", exact: true })).toBeVisible();
@@ -64,18 +70,22 @@ test("dialog history and keyboard dismissal restore the shell focus", async ({ p
   await expect(page.getByRole("link", { name: "Close dialog" })).toBeFocused();
   await page.keyboard.press("Tab");
   await expect(page.getByLabel(/^Email address/)).toBeFocused();
+
   await page.goBack();
   await expect(page).toHaveURL(isMobile ? "/?menu=open" : "/");
   await expect(page).toHaveTitle("Home — Agora");
   await expect(page.getByRole("dialog", { name: "Log in", exact: true })).toHaveCount(0);
+
   await page.goForward();
   await expect(page.getByRole("dialog", { name: "Log in", exact: true })).toBeVisible();
   await expect(page).toHaveTitle("Log in — Agora");
+
   await page.keyboard.press("Escape");
   await expect(page.getByRole("dialog", { name: "Log in", exact: true })).toHaveCount(0);
   await expect(page).toHaveURL(isMobile ? "/?menu=open" : "/");
   await expect(page).toHaveTitle("Home — Agora");
   await expect(trigger).toBeFocused();
+
   if (isMobile) {
     await page.keyboard.press("Escape");
     await expect(page.getByRole("link", { name: "Open navigation", exact: true })).toBeFocused();
@@ -91,8 +101,10 @@ test("navigation controls preserve the rail preference and drawer focus", async 
     await expect(page.getByRole("link", { name: "Open navigation", exact: true })).toBeFocused();
     return;
   }
+
   await page.getByRole("button", { name: "Collapse navigation", exact: true }).click();
   await expect(page.getByRole("button", { name: "Expand navigation", exact: true })).toBeVisible();
+
   await page.reload();
   await expect(page.getByRole("button", { name: "Expand navigation", exact: true })).toBeVisible();
   await page.getByRole("button", { name: "Expand navigation", exact: true }).click();
@@ -107,6 +119,7 @@ test("an authentication outage preserves the session and recovers after reload",
   await page.goto("/?auth=login&returnTo=%2Faccount");
   await login(page, account);
   await expect(page.getByText("auth:user", { exact: true })).toBeVisible();
+
   const cookies = await context.cookies();
   try {
     await compose("stop", "authentication");
@@ -119,6 +132,7 @@ test("an authentication outage preserves the session and recovers after reload",
     await compose("start", "authentication");
     await expect.poll(authenticationResponds, { timeout: 30_000 }).toBe(true);
   }
+
   await page.reload();
   await expect(page.getByText("auth:user", { exact: true })).toBeVisible();
   await expect(page).toHaveTitle("Account — Agora");
@@ -136,12 +150,14 @@ test.describe("native forms without JavaScript", () => {
       await expect(page.getByRole("dialog")).toHaveCount(0);
       await page.getByRole("link", { name: "Open navigation", exact: true }).click();
     }
+
     await page.getByRole("link", { name: "Log in", exact: true }).click();
     const dialog = page.getByRole("dialog");
     await expect(page).toHaveTitle("Log in — Agora");
     await dialog.getByLabel(/^Email address/).fill("invalid");
     await dialog.getByRole("button", { name: "Log in", exact: true }).click();
     await expect(dialog.getByText("Enter a valid email address.", { exact: true })).toBeVisible();
+
     await dialog.getByRole("link", { name: "Close dialog" }).click();
     await expect(page.getByRole("dialog")).toHaveCount(0);
     await expect(page).toHaveURL("/?returnTo=%2Faccount");
@@ -152,6 +168,7 @@ test.describe("native forms without JavaScript", () => {
     await expect(page.getByRole("dialog", { name: "Log in", exact: true })).toBeVisible();
     await login(page, { ...account, password: "Incorrect-password-42!" });
     await expect(page.getByText("The email address or password is incorrect.", { exact: true })).toBeVisible();
+
     await login(page, account);
     await expect(page).toHaveURL("/account");
     await expect(page.getByText("auth:user", { exact: true })).toBeVisible();
@@ -161,8 +178,10 @@ test.describe("native forms without JavaScript", () => {
     await page.goto("/?auth=login&returnTo=%2Faccount");
     await login(page, account);
     await expect(page).toHaveTitle("Account — Agora");
+
     await page.getByRole("button", { name: "Log out", exact: true }).last().click();
     await expect(page).toHaveURL("/");
+
     await page.goto("/account");
     await expect(page).toHaveURL(/auth=login&returnTo=%2Faccount/);
   });

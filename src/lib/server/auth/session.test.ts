@@ -101,6 +101,31 @@ describe("AuthenticationSession", () => {
     });
   });
 
+  it("shares one session check between the concurrent loads of a request", async () => {
+    cookies.values.set("template_access_token", "access");
+    client.claims.mockResolvedValue({ roles: [Role.User], userID: "test-user" });
+    const session = new AuthenticationSession(client, cookies, new URL("https://template.test/"));
+
+    const [shell, page] = await Promise.all([session.current(), session.authenticated()]);
+
+    expect(shell).toMatchObject({ status: "available", accessToken: "access" });
+    expect(page).toMatchObject({ status: "available", accessToken: "access" });
+    expect(client.claims).toHaveBeenCalledOnce();
+  });
+
+  it("checks the session again once its cookies change", async () => {
+    cookies.values.set("template_access_token", "access");
+    client.claims.mockResolvedValue({ roles: [Role.User], userID: "test-user" });
+    client.login.mockResolvedValue({ accessToken: "new-access", refreshToken: "new-refresh" });
+    const session = new AuthenticationSession(client, cookies, new URL("https://template.test/"));
+
+    await session.current();
+    await session.login("maya.chen@example.com", "valid-password");
+
+    await expect(session.current()).resolves.toMatchObject({ accessToken: "new-access" });
+    expect(client.claims).toHaveBeenCalledTimes(2);
+  });
+
   it("does not treat anonymous claims as an authenticated identity", async () => {
     cookies.values.set("template_access_token", "anonymous-access");
     client.claims.mockResolvedValue({ roles: [] });

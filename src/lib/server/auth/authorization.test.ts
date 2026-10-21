@@ -1,5 +1,5 @@
 import { requireAuthorization } from "./authorization";
-import { createAuthenticationContext } from "./context";
+import { getAuthenticationContext } from "./context";
 import { stubAuthenticationContext } from "./context.fixture";
 import { AuthenticationSession } from "./session";
 import type { AuthenticatedSession } from "./session";
@@ -10,7 +10,7 @@ import { Role } from "@a-novel/service-authentication-rest";
 
 import type { RequestEvent } from "@sveltejs/kit";
 
-vi.mock("./context", () => ({ createAuthenticationContext: vi.fn() }));
+vi.mock("./context", () => ({ getAuthenticationContext: vi.fn() }));
 
 const authenticated = vi.spyOn(AuthenticationSession.prototype, "authenticated");
 const cookies = { get: vi.fn(), set: vi.fn(), delete: vi.fn() } as unknown as RequestEvent["cookies"];
@@ -28,7 +28,7 @@ const session = {
 describe("protected operations", () => {
   beforeEach(() => {
     vi.resetAllMocks();
-    vi.mocked(createAuthenticationContext).mockReturnValue(stubAuthenticationContext(cookies, event.url));
+    vi.mocked(getAuthenticationContext).mockReturnValue(stubAuthenticationContext(cookies, event.url));
   });
 
   it("returns server credentials only after a verified account satisfies the rule", async () => {
@@ -62,7 +62,7 @@ describe("protected operations", () => {
   });
 
   it("handles an unavailable authentication configuration as an outage", async () => {
-    vi.mocked(createAuthenticationContext).mockImplementation(() => {
+    vi.mocked(getAuthenticationContext).mockImplementation(() => {
       throw new Error("configuration unavailable");
     });
     await expect(requireAuthorization(event)).rejects.toMatchObject({ status: 503 });

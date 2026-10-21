@@ -15,16 +15,24 @@ export interface AuthenticationContext {
 /** AuthenticationEvent is the part of a request the authentication context reads. */
 export type AuthenticationEvent = Pick<RequestEvent, "cookies" | "getClientAddress" | "url">;
 
-/** Creates the authentication client and session for one visitor's request. */
-export function createAuthenticationContext(event: AuthenticationEvent): AuthenticationContext {
+// SvelteKit hands the hooks, actions and loads of one request the same cookies object.
+const requestContexts = new WeakMap<AuthenticationEvent["cookies"], AuthenticationContext>();
+
+/**
+ * Returns the authentication client and session of one visitor's request. Every load and action of
+ * the request shares them, so the request checks the session once.
+ */
+export function getAuthenticationContext(event: AuthenticationEvent): AuthenticationContext {
+  const shared = requestContexts.get(event.cookies);
+  if (shared) return shared;
+
   const config = getRuntimeConfig();
   const api = new AuthenticationApi(
     config.authenticationServiceUrl,
     serviceFetch({ audience: config.authenticationServiceAudience, visitorAddress: event.getClientAddress() })
   );
+  const context = { api, session: new AuthenticationSession(createSessionClient(api), event.cookies, event.url) };
 
-  return {
-    api,
-    session: new AuthenticationSession(createSessionClient(api), event.cookies, event.url),
-  };
+  requestContexts.set(event.cookies, context);
+  return context;
 }

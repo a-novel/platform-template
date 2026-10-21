@@ -23,22 +23,25 @@
     const model = data.accountModel;
     untrack(() => controller.synchronize(model));
   });
+
+  const currentPath = $derived(page.url.pathname + page.url.search);
+  const title = $derived(
+    controller.state.model.claims.status === "error"
+      ? t("pageTitles.withState", { title: t("pageTitles.account"), status: t("authUi.account.loadErrorTitle") })
+      : t("pageTitles.account")
+  );
 </script>
 
-<PageTitle
-  title={controller.state.model.claims.status === "error"
-    ? t("pageTitles.withState", { title: t("pageTitles.account"), status: t("authUi.account.loadErrorTitle") })
-    : t("pageTitles.account")}
-/>
+<PageTitle {title} />
 
 {#snippet account()}
   <Screen {controller} />
 {/snippet}
 
 <ProtectedPage
-  loginHref={loginHref(page.url.pathname + page.url.search)}
+  loginHref={loginHref(currentPath)}
   homeHref={resolve("")}
-  retryHref={page.url.pathname + page.url.search}
+  retryHref={currentPath}
   children={account}
   unavailable={account}
 />

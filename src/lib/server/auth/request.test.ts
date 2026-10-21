@@ -104,6 +104,15 @@ describe("session at the request boundary", () => {
     });
   });
 
+  it("checks the session once for the shell and page loads of one request", async () => {
+    const { event } = request("/account", tokenCookies);
+    fetchService.mockImplementation(async () => Response.json(identity));
+
+    await Promise.all([loadShell(event), loadAccount(event)]);
+
+    expect(fetchService).toHaveBeenCalledOnce();
+  });
+
   it("uses a localized account label when the identity cookie contains a full email", async () => {
     const { event } = request("/", { ...tokenCookies, template_identity_handle: "maya.chen@example.com" });
     fetchService.mockResolvedValueOnce(Response.json(identity));

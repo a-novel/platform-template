@@ -1,7 +1,7 @@
 import { createI18n } from "#lib/i18n/instance.js";
 
 import { loadAccount } from "./account-route";
-import { createAuthenticationContext } from "./context";
+import { getAuthenticationContext } from "./context";
 import { stubAuthenticationContext } from "./context.fixture";
 import { AuthenticationSession, AuthenticationUnavailableError } from "./session";
 
@@ -9,7 +9,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import type { RequestEvent } from "@sveltejs/kit";
 
-vi.mock("./context", () => ({ createAuthenticationContext: vi.fn() }));
+vi.mock("./context", () => ({ getAuthenticationContext: vi.fn() }));
 
 const authenticated = vi.spyOn(AuthenticationSession.prototype, "authenticated");
 
@@ -25,7 +25,7 @@ describe("account route", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     const request = event();
-    vi.mocked(createAuthenticationContext).mockReturnValue(stubAuthenticationContext(request.cookies, request.url));
+    vi.mocked(getAuthenticationContext).mockReturnValue(stubAuthenticationContext(request.cookies, request.url));
   });
 
   it("limits a retrieval failure to the recap and keeps logout usable", async () => {

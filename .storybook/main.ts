@@ -7,8 +7,8 @@ const config: StorybookConfig = {
   framework: "@storybook/sveltekit",
   staticDirs: ["../static"],
   stories: ["../src/**/*.mdx", "../src/**/*.stories.@(js|ts|svelte)"],
-  // Vite matches each specifier exactly, so a subpath needs its own entry, or the first story run
-  // discovers it late and reloads the tests.
+  // Vite matches each specifier exactly, so each subpath needs its own entry. Vite optimizes an
+  // unlisted one mid-run, which reloads the tests.
   viteFinal: (config) =>
     mergeConfig(config, {
       optimizeDeps: {

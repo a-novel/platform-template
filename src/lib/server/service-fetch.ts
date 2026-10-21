@@ -10,8 +10,11 @@ async function fetchIdentityToken(audience: string): Promise<string> {
   const response = await fetch(`${identityUrl}?audience=${encodeURIComponent(audience)}`, {
     headers: { "Metadata-Flavor": "Google" },
   });
-  if (!response.ok) throw new Error(`The platform's identity token is unavailable: HTTP ${response.status}`);
-  return await response.text();
+  if (response.ok) return await response.text();
+
+  // An unread body keeps its connection open until garbage collection.
+  await response.body?.cancel();
+  throw new Error(`The platform's identity token is unavailable: HTTP ${response.status}`);
 }
 
 function identityToken(audience: string): Promise<string> {
