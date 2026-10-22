@@ -16,6 +16,9 @@
   import AuthenticationPanel from "./(authentication)/screen.svelte";
 
   import { getI18nContext } from "@a-novel-kit/nodelib-i18n/svelte";
+  import agoraBanner from "@a-novel-kit/ui-images/files/banner/80h/agora-banner.png";
+  import agoraIcon48 from "@a-novel-kit/ui-images/files/icon/48x48/agora-icon.png";
+  import agoraIcon96 from "@a-novel-kit/ui-images/files/icon/96x96/agora-icon.png";
   import {
     Alert,
     Avatar,
@@ -28,9 +31,6 @@
     NavList,
     SkipLink,
   } from "@a-novel-kit/uikit";
-  import agoraBanner from "@a-novel-kit/uikit-images/files/banner/80h/agora-banner.png";
-  import agoraIcon48 from "@a-novel-kit/uikit-images/files/icon/48x48/agora-icon.png";
-  import agoraIcon96 from "@a-novel-kit/uikit-images/files/icon/96x96/agora-icon.png";
 
   import { House, LogIn, LogOut, Menu, PanelLeftClose, PanelLeftOpen, X } from "@lucide/svelte";
 
