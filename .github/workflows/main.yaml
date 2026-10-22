@@ -73,7 +73,9 @@ jobs:
           persist-credentials: false
       - uses: a-novel-kit/workflows/generic-actions/lint-dockerfile@v1.72.0
         with:
+          # renovate: datasource=custom.hadolint depName=hadolint/hadolint
           version: "2.14.0"
+          sha256: "6bf226944684f56c84dd014e8b979d27425c0148f61b3bd99bcc6f39e9dc5a47"
 
   scan-secrets:
     runs-on: ubuntu-latest
