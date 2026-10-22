@@ -35,12 +35,13 @@ COPY --from=builder --chown=node:node /app/build ./build
 COPY --from=builder --chown=node:node /app/node_modules ./node_modules
 COPY --from=builder --chown=node:node /app/package.json ./package.json
 
-USER node
+# The base image's node user, by ID so a runtime can verify it is not root.
+USER 1000:1000
 
 EXPOSE 3000
 
 HEALTHCHECK --interval=1s --timeout=5s --retries=10 --start-period=1s \
-  CMD wget -qO /dev/null http://127.0.0.1:3000/ping || exit 1
+  CMD ["wget", "-qO", "/dev/null", "http://127.0.0.1:3000/ping"]
 
 STOPSIGNAL SIGTERM
 
