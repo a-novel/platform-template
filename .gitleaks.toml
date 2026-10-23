@@ -13,13 +13,6 @@ targetRules = ["generic-api-key"]
 paths = ['''(^|/)pnpm-lock\.yaml$''']
 
 [[allowlists]]
-description = "The e2e compose file: throwaway credentials for a database that lives for one run."
-targetRules = ["generic-api-key"]
-regexes = [
-  '''postgres://postgres:postgres@''',
-]
-
-[[allowlists]]
 description = "The fixed local-development master key of the disposable authentication service in builds/compose.e2e.yaml, matched by value so any other high-entropy string is still reported."
 targetRules = ["generic-api-key"]
 regexes = ['''fec0681a2f57242211c559ca347721766f8a3acd8ed2e63b36b3768051c702ca''']
