@@ -52,10 +52,16 @@ services:
       POSTGRES_TLS_ENABLED: "false"
       APP_MASTER_KEY: fec0681a2f57242211c559ca347721766f8a3acd8ed2e63b36b3768051c702ca
 
-  authentication:
-    image: ghcr.io/a-novel/service-authentication/standalone-rest:v2.16.0@sha256:2a4a64434105eeee64cfdf96ae8b2ea7bf80547e464076718c00c0af97519fb9
+  # Holds the network authentication joins, so the outage journey's restart leaves the host's
+  # interfaces alone. A new interface makes Chromium abort loading pages with ERR_NETWORK_CHANGED.
+  authentication-network:
+    image: registry.k8s.io/pause:3.10.2
     ports:
       - "127.0.0.1:14100:8080"
+
+  authentication:
+    image: ghcr.io/a-novel/service-authentication/standalone-rest:v2.16.0@sha256:2a4a64434105eeee64cfdf96ae8b2ea7bf80547e464076718c00c0af97519fb9
+    network_mode: service:authentication-network
     healthcheck:
       test: ["CMD", "wget", "-qO", "/dev/null", "http://localhost:8080/v2/ping"]
       interval: 1s
