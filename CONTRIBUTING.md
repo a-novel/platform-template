@@ -71,6 +71,8 @@ The platform server is the only caller of platform services.
 - Pages render user content as text. ESLint rejects `{@html}`.
 - A service outage keeps the session cookies and shows a recoverable state. Only a rejected token
   logs the user out.
+- Logout revokes the session's refresh token, then clears the cookies. A failed revocation still
+  logs the user out of the browser.
 
 ## Writing copy
 

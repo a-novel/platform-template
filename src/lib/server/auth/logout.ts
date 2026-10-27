@@ -2,8 +2,8 @@ import { type AuthenticationEvent, getAuthenticationContext } from "./context";
 
 import { redirect } from "@sveltejs/kit";
 
-/** Clears the platform session and returns the browser to the app shell. */
-export function logoutAuthentication(event: AuthenticationEvent): never {
-  getAuthenticationContext(event).session.clear();
+/** Signs the visitor out, revoking the session's refresh token, and returns the browser to the app shell. */
+export async function logoutAuthentication(event: AuthenticationEvent): Promise<never> {
+  await getAuthenticationContext(event).session.logout();
   redirect(303, "/");
 }

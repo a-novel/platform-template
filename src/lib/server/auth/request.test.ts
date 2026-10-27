@@ -197,19 +197,39 @@ describe("session at the request boundary", () => {
     }
   });
 
-  it("logs out locally even while authentication is unreachable", () => {
+  it("revokes the refresh token at the service on logout", async () => {
+    const { event, values } = request("/auth/logout", tokenCookies);
+    fetchService
+      .mockResolvedValueOnce(Response.json(identity))
+      .mockResolvedValueOnce(new Response(null, { status: 204 }));
+    await expect(logoutAuthentication(event)).rejects.toMatchObject({ status: 303, location: "/" });
+    expect(sentRequest()).toEqual({
+      url: "https://authentication.test/v2/session/revoke",
+      method: "PUT",
+      headers: {
+        "content-type": "application/json",
+        authorization: "Bearer private-access",
+        "x-client-ip": "192.0.2.1",
+      },
+      body: JSON.stringify({ refreshToken: "private-refresh" }),
+    });
+    expect(values.size).toBe(0);
+  });
+
+  it("logs out locally even while authentication is unreachable", async () => {
     const { event, values, cookies } = request("/auth/logout?returnTo=https://attacker.invalid", {
       ...tokenCookies,
       template_identity_handle: "maya.chen",
     });
-    expect(() => logoutAuthentication(event)).toThrow(expect.objectContaining({ status: 303, location: "/" }));
+    await expect(logoutAuthentication(event)).rejects.toMatchObject({ status: 303, location: "/" });
     expect(values.size).toBe(0);
     expect(cookies.delete.mock.calls).toEqual([
       ["template_access_token", { path: "/" }],
       ["template_refresh_token", { path: "/" }],
       ["template_identity_handle", { path: "/" }],
     ]);
-    expect(fetchService).not.toHaveBeenCalled();
+    // The unreachable session check leaves nothing to revoke.
+    expect(fetchService).toHaveBeenCalledOnce();
   });
 
   it("returns an account recap without serializing access or refresh credentials", async () => {
