@@ -95,7 +95,9 @@ browser bundle.
 | `HEALTHCHECK_TIMEOUT_MS`          | No             | Downstream timeout from 100 to 10,000 ms. The default is 2,000.                                                            |
 | `DOWNTIME_URL`                    | No             | Planned downtime document. The default is the one infra publishes.                                                         |
 | `OTEL`                            | No             | `true` records traces, continuing an incoming `traceparent`.                                                               |
-| `GCLOUD_PROJECT_ID`               | No             | Exports traces to this Google Cloud project instead of stdout.                                                             |
+| `OTEL_EXPORTER_OTLP_ENDPOINT`     | No             | Exports traces over OTLP/HTTP to this base URL instead of stdout.                                                          |
+| `OTEL_EXPORTER_OTLP_HEADERS`      | No             | Headers each export sends, such as the backend's key. Inject it as a secret.                                               |
+| `OTEL_EXPORTER_OTLP_COMPRESSION`  | No             | `gzip` compresses each export.                                                                                             |
 | `HOST`                            | No             | Listen address. The image sets `0.0.0.0`.                                                                                  |
 | `PORT`                            | No             | Listen port. The image sets `3000`.                                                                                        |
 
