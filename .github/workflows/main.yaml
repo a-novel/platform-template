@@ -23,7 +23,7 @@ jobs:
       contents: read
       packages: read
     steps:
-      - uses: a-novel-kit/workflows/node-actions/lint-node@v1.80.0
+      - uses: a-novel-kit/workflows/node-actions/lint-node@v1.80.1
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           lint_action: "lint:eslint"
@@ -34,7 +34,7 @@ jobs:
       contents: read
       packages: read
     steps:
-      - uses: a-novel-kit/workflows/node-actions/lint-node@v1.80.0
+      - uses: a-novel-kit/workflows/node-actions/lint-node@v1.80.1
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           lint_action: "lint:stylecheck"
@@ -45,7 +45,7 @@ jobs:
       contents: read
       packages: read
     steps:
-      - uses: a-novel-kit/workflows/node-actions/lint-node@v1.80.0
+      - uses: a-novel-kit/workflows/node-actions/lint-node@v1.80.1
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           lint_action: "lint:typecheck"
@@ -59,7 +59,7 @@ jobs:
       packages: read
       pull-requests: read
     steps:
-      - uses: a-novel-kit/workflows/node-actions/lint-translations@v1.80.0
+      - uses: a-novel-kit/workflows/node-actions/lint-translations@v1.80.1
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
 
@@ -71,7 +71,7 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      - uses: a-novel-kit/workflows/generic-actions/lint-dockerfile@v1.80.0
+      - uses: a-novel-kit/workflows/generic-actions/lint-dockerfile@v1.80.1
         with:
           # renovate: datasource=custom.hadolint depName=hadolint/hadolint
           version: "2.15.1"
@@ -85,7 +85,7 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      - uses: a-novel-kit/workflows/security-actions/scan-secrets@v1.80.0
+      - uses: a-novel-kit/workflows/security-actions/scan-secrets@v1.80.1
         with:
           config: .gitleaks.toml
           # renovate: datasource=github-releases depName=gitleaks/gitleaks
@@ -99,7 +99,7 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      - uses: a-novel-kit/workflows/security-actions/lint-workflows@v1.80.0
+      - uses: a-novel-kit/workflows/security-actions/lint-workflows@v1.80.1
         with:
           # renovate: datasource=docker depName=ghcr.io/zizmorcore/zizmor
           version: "1.31.1@sha256:42d409dbb851d4c5d35a058cf042b828bea1e3f2884378c526eb0974780e18d9"
@@ -113,7 +113,7 @@ jobs:
     outputs:
       artifact-id: ${{ steps.test.outputs.artifact-id }}
     steps:
-      - uses: a-novel-kit/workflows/node-actions/test-node@v1.80.0
+      - uses: a-novel-kit/workflows/node-actions/test-node@v1.80.1
         id: test
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
@@ -137,7 +137,7 @@ jobs:
     outputs:
       artifact-id: ${{ steps.test.outputs.artifact-id }}
     steps:
-      - uses: a-novel-kit/workflows/node-actions/test-playwright@v1.80.0
+      - uses: a-novel-kit/workflows/node-actions/test-playwright@v1.80.1
         id: test
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
@@ -163,7 +163,7 @@ jobs:
     outputs:
       artifact-id: ${{ steps.test.outputs.artifact-id }}
     steps:
-      - uses: a-novel-kit/workflows/node-actions/test-node@v1.80.0
+      - uses: a-novel-kit/workflows/node-actions/test-node@v1.80.1
         id: test
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
@@ -177,7 +177,7 @@ jobs:
     permissions:
       contents: read
     steps:
-      - uses: a-novel-kit/workflows/generic-actions/codecov@v1.80.0
+      - uses: a-novel-kit/workflows/generic-actions/codecov@v1.80.1
         with:
           codecov_token: ${{ secrets.CODECOV_TOKEN }}
           coverage_files: unitcover/lcov.info,browsercover/lcov.info,storybookcover/lcov.info
@@ -189,7 +189,7 @@ jobs:
       contents: read
       packages: read
     steps:
-      - uses: a-novel-kit/workflows/node-actions/setup-node@v1.80.0
+      - uses: a-novel-kit/workflows/node-actions/setup-node@v1.80.1
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
       - name: Audit production and development dependencies
@@ -201,7 +201,7 @@ jobs:
       contents: read
       packages: read
     steps:
-      - uses: a-novel-kit/workflows/node-actions/build-node@v1.80.0
+      - uses: a-novel-kit/workflows/node-actions/build-node@v1.80.1
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           build_action: "build:ci"
@@ -215,7 +215,7 @@ jobs:
       id-token: write
       packages: write
     steps:
-      - uses: a-novel-kit/workflows/build-actions/docker@v1.80.0
+      - uses: a-novel-kit/workflows/build-actions/docker@v1.80.1
         with:
           file: Dockerfile
           image_name: ${{ github.repository }}
