@@ -58,7 +58,7 @@ export default interface Resources {
           "title": "Your session",
           "userId": "Account ID"
         },
-        "description": "The session open on this device.",
+        "description": "Your settings and the session open on this device.",
         "loadErrorTitle": "Session details unavailable",
         "loadingTitle": "Loading session",
         "logout": {
@@ -67,10 +67,9 @@ export default interface Resources {
           "submitting": "Logging out…"
         },
         "privacy": {
-          "telemetry": "Error logs and performance metrics this browser sends through Sentry. Never used for advertising.",
           "title": "Privacy"
         },
-        "title": "Your account"
+        "title": "Manage your account"
       },
       "authentication": {
         "emailLabel": "Email address",
@@ -115,7 +114,8 @@ export default interface Resources {
       "skipToContent": "Skip to content"
     },
     "telemetryConsent": {
-      "message": "Your browser can send us error logs and performance metrics through Sentry, to find what breaks or slows down. Never used for advertising. Change it anytime in your account.",
+      "change": "Change this anytime from the account management menu.",
+      "message": "We sometimes collect error logs and performance metrics to improve our products. No personal information is recorded or shared.",
       "title": "Metrics and log collection"
     }
   }

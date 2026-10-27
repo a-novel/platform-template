@@ -16,6 +16,7 @@
     Alert,
     Badge,
     Button,
+    Card,
     Container,
     FormActions,
     PageHeader,
@@ -24,11 +25,12 @@
     type SwitchController,
   } from "@a-novel-kit/uikit";
 
-  import { Activity, ShieldCheck } from "@lucide/svelte";
+  import { ShieldCheck } from "@lucide/svelte";
 
   let { controller }: AccountScreenProps = $props();
 
   const model = $derived(controller.state.model);
+  const loggingOut = $derived(model.logoutState === "submitting");
 
   const componentId = $props.id();
   const { t } = getI18nContext();
@@ -53,90 +55,91 @@
     <Stack gap="4">
       <PageHeader title={t("authUi.account.title")} description={t("authUi.account.description")} />
 
-      <section id="account-claims" class="session-summary" aria-labelledby={`${componentId}-claims-title`}>
-        <div class="section-heading">
-          <ShieldCheck size="var(--icon-size-md)" aria-hidden="true" />
-          <h2 id={`${componentId}-claims-title`}>{t("authUi.account.claims.title")}</h2>
-        </div>
-
-        {#if model.claims.status === "loading"}
-          <Alert tone="loading" title={t("authUi.account.loadingTitle")} />
-        {:else if model.claims.status === "error"}
-          <Alert tone="error" title={t("authUi.account.loadErrorTitle")}>
-            {translateAuthenticationFeedback(t, model.claims.feedback)}
-          </Alert>
-        {:else}
-          <dl class="session-details">
-            <div class="session-identity">
-              <dt>{t("authUi.account.claims.userId")}</dt>
-              <dd class="monospace">{model.claims.userId}</dd>
-            </div>
-            <div class="session-identity">
-              <dt>{t("authUi.account.claims.roles")}</dt>
-              <dd>
-                <div class="roles">
-                  {#each model.claims.roles as role (role)}
-                    <Badge tone="brand">{role}</Badge>
-                  {:else}
-                    <span>{t("authUi.account.claims.noRoles")}</span>
-                  {/each}
-                </div>
-              </dd>
-            </div>
-            <div class="session-expiry">
-              <dt>{t("authUi.account.claims.accessExpiresAt")}</dt>
-              <dd>{model.claims.accessExpiresAt}</dd>
-            </div>
-            <div class="session-expiry">
-              <dt>{t("authUi.account.claims.refreshExpiresAt")}</dt>
-              <dd>{model.claims.refreshExpiresAt}</dd>
-            </div>
-          </dl>
+      <Stack gap="4">
+        {#if telemetry}
+          <Card surface="raised">
+            <section id="account-privacy" class="card-section" aria-labelledby={`${componentId}-privacy-title`}>
+              <header class="section-heading">
+                <h2 id={`${componentId}-privacy-title`}>{t("authUi.account.privacy.title")}</h2>
+              </header>
+              <Switch
+                class="telemetry-setting"
+                controller={telemetrySwitch}
+                label={t("telemetryConsent.title")}
+                description={t("telemetryConsent.message")}
+                disabled={telemetry.pending}
+              />
+            </section>
+          </Card>
         {/if}
 
-        <form
-          id="account-session"
-          method="POST"
-          action={controller.state.logoutAction}
-          aria-busy={model.logoutState === "submitting"}
-          onsubmit={submitLogout}
-        >
-          <FormActions>
-            {#snippet feedback()}
-              <p id={`${componentId}-logout-description`} class="feedback-message">
-                {t("authUi.account.logout.description")}
-              </p>
-            {/snippet}
-            <Button
-              type="submit"
-              variant="outline"
-              tone="neutral"
-              aria-describedby={`${componentId}-logout-description`}
-              disabled={model.logoutState === "submitting"}
-            >
-              {model.logoutState === "submitting"
-                ? t("authUi.account.logout.submitting")
-                : t("authUi.account.logout.submit")}
-            </Button>
-          </FormActions>
-        </form>
-      </section>
-
-      {#if telemetry}
-        <section id="account-privacy" class="privacy" aria-labelledby={`${componentId}-privacy-title`}>
+        <section id="account-claims" class="session-summary" aria-labelledby={`${componentId}-claims-title`}>
           <div class="section-heading">
-            <Activity size="var(--icon-size-md)" aria-hidden="true" />
-            <h2 id={`${componentId}-privacy-title`}>{t("authUi.account.privacy.title")}</h2>
+            <ShieldCheck size="var(--icon-size-md)" aria-hidden="true" />
+            <h2 id={`${componentId}-claims-title`}>{t("authUi.account.claims.title")}</h2>
           </div>
-          <Switch
-            class="telemetry-setting"
-            controller={telemetrySwitch}
-            label={t("telemetryConsent.title")}
-            description={t("authUi.account.privacy.telemetry")}
-            disabled={telemetry.pending}
-          />
+
+          {#if model.claims.status === "loading"}
+            <Alert tone="loading" title={t("authUi.account.loadingTitle")} />
+          {:else if model.claims.status === "error"}
+            <Alert tone="error" title={t("authUi.account.loadErrorTitle")}>
+              {translateAuthenticationFeedback(t, model.claims.feedback)}
+            </Alert>
+          {:else}
+            <dl class="session-details">
+              <div class="session-identity">
+                <dt>{t("authUi.account.claims.userId")}</dt>
+                <dd class="monospace">{model.claims.userId}</dd>
+              </div>
+              <div class="session-identity">
+                <dt>{t("authUi.account.claims.roles")}</dt>
+                <dd>
+                  <div class="roles">
+                    {#each model.claims.roles as role (role)}
+                      <Badge tone="brand">{role}</Badge>
+                    {:else}
+                      <span>{t("authUi.account.claims.noRoles")}</span>
+                    {/each}
+                  </div>
+                </dd>
+              </div>
+              <div class="session-expiry">
+                <dt>{t("authUi.account.claims.accessExpiresAt")}</dt>
+                <dd>{model.claims.accessExpiresAt}</dd>
+              </div>
+              <div class="session-expiry">
+                <dt>{t("authUi.account.claims.refreshExpiresAt")}</dt>
+                <dd>{model.claims.refreshExpiresAt}</dd>
+              </div>
+            </dl>
+          {/if}
+
+          <form
+            id="account-session"
+            method="POST"
+            action={controller.state.logoutAction}
+            aria-busy={loggingOut}
+            onsubmit={submitLogout}
+          >
+            <FormActions>
+              {#snippet feedback()}
+                <p id={`${componentId}-logout-description`} class="feedback-message">
+                  {t("authUi.account.logout.description")}
+                </p>
+              {/snippet}
+              <Button
+                type="submit"
+                variant="outline"
+                tone="neutral"
+                aria-describedby={`${componentId}-logout-description`}
+                disabled={loggingOut}
+              >
+                {loggingOut ? t("authUi.account.logout.submitting") : t("authUi.account.logout.submit")}
+              </Button>
+            </FormActions>
+          </form>
         </section>
-      {/if}
+      </Stack>
     </Stack>
   </Container>
 </div>
@@ -148,24 +151,33 @@
   }
 
   .session-summary,
-  .privacy,
+  .card-section,
   form {
     display: grid;
     gap: var(--space-4);
     min-inline-size: 0;
   }
 
+  .card-section,
   .session-summary,
-  .privacy,
+  #account-session {
+    scroll-margin-block-start: var(--space-5);
+  }
+
+  .session-summary,
   #account-session {
     padding-block-start: var(--space-4);
-    scroll-margin-block-start: var(--space-5);
   }
 
   .section-heading {
     display: flex;
     align-items: flex-start;
     gap: var(--space-3);
+  }
+
+  header.section-heading {
+    display: grid;
+    gap: var(--space-2);
   }
 
   .section-heading > :global(svg) {
@@ -226,7 +238,7 @@
     overflow-wrap: anywhere;
   }
 
-  .privacy :global(.telemetry-setting) {
+  .card-section :global(.telemetry-setting) {
     display: flex;
   }
 

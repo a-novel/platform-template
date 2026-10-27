@@ -30,7 +30,7 @@ test("login returns to the protected account, survives reload and logout protect
   await login(page, account);
   await expect(page).toHaveURL("/account");
   await expect(page).toHaveTitle("Account — Agora");
-  await expect(page.getByRole("heading", { name: "Your account", exact: true })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Manage your account", exact: true })).toBeVisible();
   await expect(page.getByText("auth:user", { exact: true })).toBeVisible();
 
   const cookies = (await context.cookies()).filter((cookie) => cookie.name.startsWith("template_"));

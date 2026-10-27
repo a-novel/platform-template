@@ -14,4 +14,5 @@ words. The controller records the answer.
 
 <ConsentBanner {controller} title={t("telemetryConsent.title")}>
   {t("telemetryConsent.message")}
+  {t("telemetryConsent.change")}
 </ConsentBanner>

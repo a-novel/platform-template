@@ -45,7 +45,7 @@ authUi:
       roles: Rôles
       title: Votre session
       userId: Identifiant du compte
-    description: La session ouverte sur cet appareil.
+    description: Vos paramètres et la session ouverte sur cet appareil.
     loadErrorTitle: Détails de la session indisponibles
     loadingTitle: Chargement de la session
     logout:
@@ -53,9 +53,8 @@ authUi:
       submit: Se déconnecter
       submitting: Déconnexion…
     privacy:
-      telemetry: Journaux d’erreurs et métriques de performance que ce navigateur envoie via Sentry. Jamais utilisés à des fins publicitaires.
       title: Confidentialité
-    title: Votre compte
+    title: Gérez votre compte
   authentication:
     emailLabel: Courriel
     journeys:
@@ -91,6 +90,6 @@ shell:
   signIn: Se connecter
   skipToContent: Aller au contenu
 telemetryConsent:
-  message: >-
-    Votre navigateur peut nous envoyer des journaux d’erreurs et des métriques de performance via Sentry, pour repérer ce qui échoue ou ralentit. Jamais utilisés à des fins publicitaires. Modifiable à tout moment dans votre compte.
+  change: Modifiable à tout moment depuis le menu de gestion du compte.
+  message: Nous collectons parfois des journaux d’erreurs et des métriques de performances, à des fins d’amélioration de nos produits. Aucune information personnelle n’est enregistrée ou partagée.
   title: Collecte des métriques et des journaux
