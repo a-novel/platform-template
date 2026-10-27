@@ -82,8 +82,15 @@ shell:
   manageAccountFor: Gérer le compte de {{name}}
   navigation: Navigation d’Agora
   openNavigation: Ouvrir la navigation
+  privacyChoices: Choix de confidentialité
   sessionDowntime: Compte indisponible pendant la maintenance.
   sessionLoading: Chargement du compte
   sessionUnavailable: Informations du compte indisponibles.
   signIn: Se connecter
   skipToContent: Aller au contenu
+telemetryConsent:
+  message: >-
+    Avec votre accord, votre navigateur envoie à Agora un rapport quand une page échoue ou se charge lentement.
+    Ces rapports passent par Sentry, notre service de supervision, et ne servent jamais à la publicité. Changez
+    d’avis à tout moment depuis les choix de confidentialité.
+  title: Rapports d’erreurs et de performances

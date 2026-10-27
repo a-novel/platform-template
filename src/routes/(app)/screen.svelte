@@ -12,6 +12,7 @@
 
 <script lang="ts">
   import { getPlatformDowntime, hasPlatformDowntime } from "#lib/ui/downtime.svelte.js";
+  import { getTelemetryConsent, hasTelemetryConsent } from "#lib/ui/telemetry-consent.js";
 
   import AuthenticationPanel from "./(authentication)/screen.svelte";
 
@@ -32,13 +33,15 @@
     SkipLink,
   } from "@a-novel-kit/uikit";
 
-  import { House, LogIn, LogOut, Menu, PanelLeftClose, PanelLeftOpen, X } from "@lucide/svelte";
+  import { House, LogIn, LogOut, Menu, PanelLeftClose, PanelLeftOpen, ShieldCheck, X } from "@lucide/svelte";
 
   let { controller, children }: ShellProps = $props();
 
   // Stories and tests render the shell without the app's downtime tracking.
   const platformDowntime = hasPlatformDowntime() ? getPlatformDowntime() : undefined;
   const stoppedUntil = $derived(platformDowntime?.started ? platformDowntime.downtime?.end : undefined);
+  // Only a platform that collects browser telemetry asks for consent, so only it offers to change the answer.
+  const telemetryConsent = hasTelemetryConsent() ? getTelemetryConsent() : undefined;
 
   const model = $derived(controller.state.model);
   const homeHref = $derived(controller.state.homeHref);
@@ -62,6 +65,12 @@
 
   function closeDrawerAfterNavigation(event: MouseEvent) {
     if (event.target instanceof Element && event.target.closest("a")) controller.navigationDialog.close();
+  }
+
+  // The drawer is modal, so it closes first to leave the request reachable.
+  function reopenTelemetryConsent() {
+    controller.navigationDialog.close();
+    telemetryConsent?.open();
   }
 
   function submitLogout(event: SubmitEvent) {
@@ -190,6 +199,26 @@
   </div>
 {/snippet}
 
+{#snippet privacyChoices(compact: boolean)}
+  {#if telemetryConsent}
+    <Button
+      class="shell-account-button {compact ? 'compact-control' : ''}"
+      variant="ghost"
+      tone="neutral"
+      size="sm"
+      square={compact}
+      aria-label={compact ? t("shell.privacyChoices") : undefined}
+      title={compact ? t("shell.privacyChoices") : undefined}
+      onclick={reopenTelemetryConsent}
+    >
+      <span class="account-action-icon" aria-hidden="true">
+        <ShieldCheck size="var(--icon-size-sm)" />
+      </span>
+      {#if !compact}<span>{t("shell.privacyChoices")}</span>{/if}
+    </Button>
+  {/if}
+{/snippet}
+
 <div class="shell-viewport">
   <SkipLink href="#main-content">{t("shell.skipToContent")}</SkipLink>
 
@@ -220,6 +249,7 @@
 
       <div class="rail-account">
         {@render accountWidget(compactRail)}
+        {@render privacyChoices(compactRail)}
       </div>
     </aside>
 
@@ -274,6 +304,7 @@
       <div class="drawer-navigation">{@render primaryNavigation(false, closeDrawerAfterNavigation)}</div>
       <div class="drawer-account">
         {@render accountWidget(false)}
+        {@render privacyChoices(false)}
       </div>
     </div>
   </Dialog>
@@ -388,6 +419,8 @@
 
   .rail-account,
   .drawer-account {
+    display: grid;
+    gap: var(--space-2);
     min-inline-size: 0;
   }
 
