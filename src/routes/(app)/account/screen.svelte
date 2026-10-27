@@ -9,11 +9,22 @@
 
 <script lang="ts">
   import { translateAuthenticationFeedback } from "#lib/i18n/auth-feedback.js";
+  import { getTelemetryPreference, hasTelemetryPreference } from "#lib/ui/telemetry-preference.js";
 
   import { getI18nContext } from "@a-novel-kit/nodelib-i18n/svelte";
-  import { Alert, Badge, Button, Container, FormActions, PageHeader, Stack } from "@a-novel-kit/uikit";
+  import {
+    Alert,
+    Badge,
+    Button,
+    Container,
+    FormActions,
+    PageHeader,
+    Stack,
+    Switch,
+    type SwitchController,
+  } from "@a-novel-kit/uikit";
 
-  import { ShieldCheck } from "@lucide/svelte";
+  import { Activity, ShieldCheck } from "@lucide/svelte";
 
   let { controller }: AccountScreenProps = $props();
 
@@ -21,6 +32,16 @@
 
   const componentId = $props.id();
   const { t } = getI18nContext();
+
+  // Only a platform that collects browser telemetry asks for consent, so only it offers to change the answer.
+  const telemetry = hasTelemetryPreference() ? getTelemetryPreference() : undefined;
+  const telemetrySwitch: SwitchController = {
+    get state() {
+      return { checked: telemetry?.choice === "accepted" };
+    },
+    setChecked: (checked) => telemetry?.choose(checked ? "accepted" : "declined"),
+    toggle: () => telemetry?.choose(telemetry.choice === "accepted" ? "declined" : "accepted"),
+  };
 
   function submitLogout(event: SubmitEvent) {
     if (!controller.submitLogout()) event.preventDefault();
@@ -100,6 +121,22 @@
           </FormActions>
         </form>
       </section>
+
+      {#if telemetry}
+        <section id="account-privacy" class="privacy" aria-labelledby={`${componentId}-privacy-title`}>
+          <div class="section-heading">
+            <Activity size="var(--icon-size-md)" aria-hidden="true" />
+            <h2 id={`${componentId}-privacy-title`}>{t("authUi.account.privacy.title")}</h2>
+          </div>
+          <Switch
+            class="telemetry-setting"
+            controller={telemetrySwitch}
+            label={t("telemetryConsent.title")}
+            description={t("authUi.account.privacy.telemetry")}
+            disabled={telemetry.pending}
+          />
+        </section>
+      {/if}
     </Stack>
   </Container>
 </div>
@@ -111,6 +148,7 @@
   }
 
   .session-summary,
+  .privacy,
   form {
     display: grid;
     gap: var(--space-4);
@@ -118,6 +156,7 @@
   }
 
   .session-summary,
+  .privacy,
   #account-session {
     padding-block-start: var(--space-4);
     scroll-margin-block-start: var(--space-5);
@@ -185,6 +224,10 @@
     margin: 0;
     line-height: var(--line-height-normal);
     overflow-wrap: anywhere;
+  }
+
+  .privacy :global(.telemetry-setting) {
+    display: flex;
   }
 
   .roles {

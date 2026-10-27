@@ -66,6 +66,10 @@ export default interface Resources {
           "submit": "Log out",
           "submitting": "Logging out…"
         },
+        "privacy": {
+          "telemetry": "Error logs and performance metrics this browser sends through Sentry. Never used for advertising.",
+          "title": "Privacy"
+        },
         "title": "Your account"
       },
       "authentication": {
@@ -104,7 +108,6 @@ export default interface Resources {
       "manageAccountFor": "Manage account for {{name}}",
       "navigation": "Agora navigation",
       "openNavigation": "Open navigation",
-      "privacyChoices": "Privacy choices",
       "sessionDowntime": "Account unavailable during maintenance.",
       "sessionLoading": "Loading account",
       "sessionUnavailable": "Account details are unavailable.",
@@ -112,8 +115,8 @@ export default interface Resources {
       "skipToContent": "Skip to content"
     },
     "telemetryConsent": {
-      "message": "With your consent, your browser sends Agora a report when a page fails or loads slowly. Reports go to Sentry, our monitoring service, and never serve advertising. Change your answer at any time from Privacy choices.",
-      "title": "Error and performance reports"
+      "message": "Your browser can send us error logs and performance metrics through Sentry, to find what breaks or slows down. Never used for advertising. Change it anytime in your account.",
+      "title": "Metrics and log collection"
     }
   }
 }
