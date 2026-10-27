@@ -173,8 +173,8 @@ importers:
         specifier: 2.1.0
         version: 2.1.0(i18next@26.5.7(typescript@6.0.3))(svelte@5.57.2(@typescript-eslint/types@8.72.0))
       '@a-novel-kit/nodelib-server':
-        specifier: 2.2.0
-        version: 2.2.0(@opentelemetry/api@1.10.0)(@opentelemetry/exporter-trace-otlp-proto@0.300.0(@opentelemetry/api@1.10.0))(@opentelemetry/instrumentation-undici@0.34.0(@opentelemetry/api@1.10.0))(@opentelemetry/instrumentation@0.300.0(@opentelemetry/api@1.10.0))(@opentelemetry/resources@3.0.0(@opentelemetry/api@1.10.0))(@opentelemetry/sdk-trace-node@2.12.0(@opentelemetry/api@1.10.0))
+        specifier: 2.2.1
+        version: 2.2.1(@opentelemetry/api@1.10.0)(@opentelemetry/exporter-trace-otlp-proto@0.300.0(@opentelemetry/api@1.10.0))(@opentelemetry/instrumentation-undici@0.34.0(@opentelemetry/api@1.10.0))(@opentelemetry/instrumentation@0.300.0(@opentelemetry/api@1.10.0))(@opentelemetry/resources@3.0.0(@opentelemetry/api@1.10.0))(@opentelemetry/sdk-trace-node@2.12.0(@opentelemetry/api@1.10.0))
       '@a-novel-kit/ui-images':
         specifier: 0.1.0
         version: 0.1.0
@@ -407,8 +407,8 @@ packages:
       i18next: ^26.5.2
       svelte: ^5.57.2
 
-  '@a-novel-kit/nodelib-server@2.2.0':
-    resolution: {integrity: sha512-I08m4UKP90yLI5DPupdAcOJYtTVArEhcy9fL+NXtTaosc7Vl9tGFKdujd83TdmdwJkiiXR1le7i0BWOpQ0UCNA==, tarball: https://npm.pkg.github.com/download/@a-novel-kit/nodelib-server/2.2.0/99e48997b6dfaf82100dc73a00fb8b09ae0610ce}
+  '@a-novel-kit/nodelib-server@2.2.1':
+    resolution: {integrity: sha512-bL3dHLE4pzxwRPmx/f21SUiWJkV8uYK2JxJgsTM/fWsKYaQT3qgn2IJPWunOeG2BR51IVu0QVSbObcAgW2cFEA==, tarball: https://npm.pkg.github.com/download/@a-novel-kit/nodelib-server/2.2.1/6f1807cd789cd0b804900f45161979cce88f4d3d}
     engines: {node: '>=24.0.0', npm: '>=10.9.2'}
     peerDependencies:
       '@opentelemetry/api': ^1.10.0
@@ -3628,7 +3628,7 @@ snapshots:
       i18next: 26.5.7(typescript@6.0.3)
       svelte: 5.57.2(@typescript-eslint/types@8.72.0)
 
-  '@a-novel-kit/nodelib-server@2.2.0(@opentelemetry/api@1.10.0)(@opentelemetry/exporter-trace-otlp-proto@0.300.0(@opentelemetry/api@1.10.0))(@opentelemetry/instrumentation-undici@0.34.0(@opentelemetry/api@1.10.0))(@opentelemetry/instrumentation@0.300.0(@opentelemetry/api@1.10.0))(@opentelemetry/resources@3.0.0(@opentelemetry/api@1.10.0))(@opentelemetry/sdk-trace-node@2.12.0(@opentelemetry/api@1.10.0))':
+  '@a-novel-kit/nodelib-server@2.2.1(@opentelemetry/api@1.10.0)(@opentelemetry/exporter-trace-otlp-proto@0.300.0(@opentelemetry/api@1.10.0))(@opentelemetry/instrumentation-undici@0.34.0(@opentelemetry/api@1.10.0))(@opentelemetry/instrumentation@0.300.0(@opentelemetry/api@1.10.0))(@opentelemetry/resources@3.0.0(@opentelemetry/api@1.10.0))(@opentelemetry/sdk-trace-node@2.12.0(@opentelemetry/api@1.10.0))':
     dependencies:
       '@opentelemetry/api': 1.10.0
       '@opentelemetry/exporter-trace-otlp-proto': 0.300.0(@opentelemetry/api@1.10.0)

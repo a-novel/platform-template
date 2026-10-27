@@ -47,7 +47,7 @@
   "dependencies": {
     "@a-novel-kit/nodelib-browser": "2.1.0",
     "@a-novel-kit/nodelib-i18n": "2.1.0",
-    "@a-novel-kit/nodelib-server": "2.2.0",
+    "@a-novel-kit/nodelib-server": "2.2.1",
     "@a-novel-kit/ui-images": "0.1.0",
     "@a-novel-kit/uikit": "0.11.0",
     "@a-novel-kit/uikit-fonts": "0.11.0",
