@@ -7,6 +7,7 @@ import {
   tokenCreate,
   tokenCreateAnon,
   tokenRefresh,
+  tokenRevoke,
 } from "@a-novel/service-authentication-rest";
 
 import type { Cookies } from "@sveltejs/kit";
@@ -29,6 +30,7 @@ export interface SessionClient {
   createAnonymous(): Promise<Token>;
   login(email: string, password: string): Promise<Token>;
   refresh(token: Token): Promise<Token>;
+  revoke(accessToken: string, refreshToken: string): Promise<void>;
 }
 
 /** ResolvedSession is what the session cookies prove about a visitor once Authentication has checked them. */
@@ -166,6 +168,24 @@ export class AuthenticationSession {
     this.accept(await this.client.login(email, password), email);
   }
 
+  /**
+   * Signs the visitor out: revokes the session's refresh token, then removes every cookie. A failed
+   * revocation still signs the visitor out of this browser, which drops the token.
+   */
+  async logout(): Promise<void> {
+    const session = await this.current();
+
+    if (session.status === "available" && session.refreshToken) {
+      try {
+        await this.client.revoke(session.accessToken, session.refreshToken);
+      } catch {
+        // The refresh token stays valid until it expires. The trace records the failed call.
+      }
+    }
+
+    this.clear();
+  }
+
   /** Stores a token pair from the service, with the identity it belongs to when known. */
   accept(token: Token, identityEmail?: string): void {
     this.check = undefined;
@@ -231,6 +251,7 @@ export function createSessionClient(api: AuthenticationApi): SessionClient {
     createAnonymous: async () => await tokenCreateAnon(api),
     login: async (email, password) => await tokenCreate(api, { email, password }),
     refresh: async (token) => await tokenRefresh(api, token),
+    revoke: async (accessToken, refreshToken) => await tokenRevoke(api, accessToken, { refreshToken }),
   };
 }
 

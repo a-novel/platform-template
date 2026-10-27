@@ -41,6 +41,7 @@ function createClient(): {
     createAnonymous: vi.fn<SessionClient["createAnonymous"]>(),
     login: vi.fn<SessionClient["login"]>(),
     refresh: vi.fn<SessionClient["refresh"]>(),
+    revoke: vi.fn<SessionClient["revoke"]>(),
   };
 }
 
@@ -265,6 +266,65 @@ describe("AuthenticationSession", () => {
 
     await expect(session.authenticated()).rejects.toBeInstanceOf(AuthenticationUnavailableError);
     expect(cookies.values.get("template_access_token")).toBe("access");
+  });
+
+  it("revokes the refresh token before removing every cookie on logout", async () => {
+    cookies.values.set("template_access_token", "access");
+    cookies.values.set("template_refresh_token", "refresh");
+    cookies.values.set("template_identity_handle", "maya.chen");
+    client.claims.mockResolvedValue({ roles: [Role.User], userID: "test-user" });
+    client.revoke.mockResolvedValue();
+    const session = new AuthenticationSession(client, cookies, new URL("https://template.test/"));
+
+    await session.logout();
+
+    expect(client.revoke).toHaveBeenCalledWith("access", "refresh");
+    expect(cookies.values.size).toBe(0);
+  });
+
+  it("refreshes an expired session before revoking it on logout", async () => {
+    cookies.values.set("template_access_token", "expired-access");
+    cookies.values.set("template_refresh_token", "refresh");
+    client.claims
+      .mockRejectedValueOnce(new HttpError(401, "expired"))
+      .mockResolvedValueOnce({ roles: [Role.User], userID: "test-user" });
+    client.refresh.mockResolvedValue({ accessToken: "fresh-access", refreshToken: "fresh-refresh" });
+    client.revoke.mockResolvedValue();
+    const session = new AuthenticationSession(client, cookies, new URL("https://template.test/"));
+
+    await session.logout();
+
+    expect(client.revoke).toHaveBeenCalledWith("fresh-access", "fresh-refresh");
+    expect(cookies.values.size).toBe(0);
+  });
+
+  it.each([
+    ["the revocation fails", new HttpError(503, "unavailable")],
+    ["authentication is unreachable", new Error("network unavailable")],
+  ])("still signs out of the browser when %s", async (_, error) => {
+    cookies.values.set("template_access_token", "access");
+    cookies.values.set("template_refresh_token", "refresh");
+    client.claims.mockResolvedValue({ roles: [Role.User], userID: "test-user" });
+    client.revoke.mockRejectedValue(error);
+    const session = new AuthenticationSession(client, cookies, new URL("https://template.test/"));
+
+    await session.logout();
+
+    expect(cookies.values.size).toBe(0);
+  });
+
+  it.each([
+    ["an anonymous session", () => client.claims.mockResolvedValue({ roles: [Role.Anon] })],
+    ["an unverifiable session", () => client.claims.mockRejectedValue(new Error("network unavailable"))],
+  ])("clears %s on logout without revoking it", async (_, arrange) => {
+    cookies.values.set("template_access_token", "access");
+    arrange();
+    const session = new AuthenticationSession(client, cookies, new URL("https://template.test/"));
+
+    await session.logout();
+
+    expect(client.revoke).not.toHaveBeenCalled();
+    expect(cookies.values.size).toBe(0);
   });
 
   it("uses secure HTTP-only SameSite cookies on HTTPS", () => {
