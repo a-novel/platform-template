@@ -23,8 +23,4 @@ export const variables = defineEnvVars({
     schema: (value) => value === "true",
     description: "Records and exports traces when `true`.",
   },
-  GCLOUD_PROJECT_ID: {
-    schema: (value) => value || undefined,
-    description: "Exports traces to this Google Cloud project. Without it, traces print to standard output.",
-  },
 });
