@@ -16,6 +16,7 @@ const env = vi.hoisted(() => ({
   AUTHENTICATION_SERVICE_URL: "https://authentication.test",
   DOWNTIME_URL: undefined,
   HEALTHCHECK_TIMEOUT_MS: undefined,
+  SERVICE_TOKEN_PATH: undefined,
 }));
 
 vi.mock("$app/env/private", () => env);

@@ -29,7 +29,11 @@ export function getAuthenticationContext(event: AuthenticationEvent): Authentica
   const config = getRuntimeConfig();
   const api = new AuthenticationApi(
     config.authenticationServiceUrl,
-    serviceFetch({ audience: config.authenticationServiceAudience, visitorAddress: event.getClientAddress() })
+    serviceFetch({
+      audience: config.authenticationServiceAudience,
+      serviceTokenPath: config.serviceTokenPath,
+      visitorAddress: event.getClientAddress(),
+    })
   );
   const context = { api, session: new AuthenticationSession(createSessionClient(api), event.cookies, event.url) };
 
