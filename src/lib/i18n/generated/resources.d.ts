@@ -58,7 +58,7 @@ export default interface Resources {
           "title": "Your session",
           "userId": "Account ID"
         },
-        "description": "The session open on this device.",
+        "description": "Your settings and the session open on this device.",
         "loadErrorTitle": "Session details unavailable",
         "loadingTitle": "Loading session",
         "logout": {
@@ -66,7 +66,10 @@ export default interface Resources {
           "submit": "Log out",
           "submitting": "Logging out…"
         },
-        "title": "Your account"
+        "privacy": {
+          "title": "Privacy"
+        },
+        "title": "Manage your account"
       },
       "authentication": {
         "emailLabel": "Email address",
@@ -109,6 +112,11 @@ export default interface Resources {
       "sessionUnavailable": "Account details are unavailable.",
       "signIn": "Log in",
       "skipToContent": "Skip to content"
+    },
+    "telemetryConsent": {
+      "change": "Change this anytime from the account management menu.",
+      "message": "We sometimes collect error logs and performance metrics to improve our products. No personal information is recorded or shared.",
+      "title": "Metrics and log collection"
     }
   }
 }

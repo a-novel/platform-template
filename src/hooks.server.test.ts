@@ -5,13 +5,26 @@ import { describe, expect, it, vi } from "vitest";
 import type { RequestEvent } from "@sveltejs/kit";
 import type { Handle } from "@sveltejs/kit/hooks";
 
-function event(path: string, language?: string): RequestEvent {
+const TRACE_ID = "4bf92f3577b34da6a3ce929d0e0e4736";
+const SPAN_ID = "00f067aa0ba902b7";
+
+function event(path: string, language?: string, traced = false): RequestEvent {
   const url = new URL(path, "https://template.test");
+  const root = { spanContext: () => ({ traceId: TRACE_ID, spanId: SPAN_ID, traceFlags: 1 }) };
   return {
     url,
     locals: {},
     request: new Request(url, { headers: language ? { "accept-language": language } : undefined }),
-  } as RequestEvent;
+    tracing: { enabled: traced, root, current: root },
+  } as unknown as RequestEvent;
+}
+
+/** Renders the page shell through the hook and returns its HTML. */
+async function render(request: RequestEvent, html: string): Promise<string> {
+  const resolve = vi.fn<Parameters<Handle>[0]["resolve"]>(async (_, options) => {
+    return new Response(await options?.transformPageChunk?.({ html, done: true }));
+  });
+  return (await handle({ event: request, resolve })).text();
 }
 
 describe("request hook", () => {
@@ -29,5 +42,14 @@ describe("request hook", () => {
     expect(french.locals.locale).toBe("fr");
     expect(english.locals.locale).toBe("en");
     expect(french.locals.i18n).not.toBe(english.locals.i18n);
+  });
+
+  it.each([
+    { name: "hands the request's trace to the page", traced: true, want: `${TRACE_ID}-${SPAN_ID}-1` },
+    { name: "leaves the page's trace empty while tracing is off", traced: false, want: "" },
+  ])("$name", async ({ traced, want }) => {
+    const html = await render(event("/", "en", traced), '<meta name="sentry-trace" content="%trace%" />');
+
+    expect(html).toBe(`<meta name="sentry-trace" content="${want}" />`);
   });
 });

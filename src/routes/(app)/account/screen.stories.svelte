@@ -90,6 +90,10 @@
   <StoryHarness initialModel={ready} />
 </Story>
 
+<Story name="Collecting metrics" asChild>
+  <StoryHarness initialModel={ready} telemetryChoice="accepted" />
+</Story>
+
 <Story name="Loading" asChild>
   <StoryHarness initialModel={{ ...ready, claims: { status: "loading" } }} />
 </Story>

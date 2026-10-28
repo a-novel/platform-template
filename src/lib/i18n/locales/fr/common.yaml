@@ -45,14 +45,16 @@ authUi:
       roles: Rôles
       title: Votre session
       userId: Identifiant du compte
-    description: La session ouverte sur cet appareil.
+    description: Vos paramètres et la session ouverte sur cet appareil.
     loadErrorTitle: Détails de la session indisponibles
     loadingTitle: Chargement de la session
     logout:
       description: Vous serez déconnecté sur cet appareil.
       submit: Se déconnecter
       submitting: Déconnexion…
-    title: Votre compte
+    privacy:
+      title: Confidentialité
+    title: Gérez votre compte
   authentication:
     emailLabel: Courriel
     journeys:
@@ -87,3 +89,7 @@ shell:
   sessionUnavailable: Informations du compte indisponibles.
   signIn: Se connecter
   skipToContent: Aller au contenu
+telemetryConsent:
+  change: Modifiable à tout moment depuis le menu de gestion du compte.
+  message: Nous collectons parfois des journaux d’erreurs et des métriques de performances, à des fins d’amélioration de nos produits. Aucune information personnelle n’est enregistrée ou partagée.
+  title: Collecte des métriques et des journaux

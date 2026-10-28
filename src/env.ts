@@ -23,4 +23,10 @@ export const variables = defineEnvVars({
     schema: (value) => value === "true",
     description: "Records and exports traces when `true`.",
   },
+  PUBLIC_SENTRY_DSN: {
+    public: true,
+    schema: (value) => value || undefined,
+    description:
+      "Sentry project of the browser telemetry. Without it, the browser reports nothing and asks no consent.",
+  },
 });
