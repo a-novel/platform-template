@@ -5,14 +5,14 @@ FROM docker.io/library/node:24.22.1-alpine3.23 AS base
 ENV PNPM_HOME=/pnpm
 ENV PATH=$PNPM_HOME/bin:$PNPM_HOME:$PATH
 
-# Corepack runs the pnpm version package.json pins.
-RUN corepack enable
-
 WORKDIR /app
 
 FROM base AS dependencies
 
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml .npmrc ./
+# Node.js 25 and later ship no Corepack, so npm installs the pnpm release package.json pins.
+# Like Corepack, it skips pnpm's install scripts, which only swap in a native binary.
+RUN npm install --global --ignore-scripts "pnpm@$(node -p 'require("./package.json").packageManager.split("@")[1]')"
 RUN --mount=type=secret,id=npm_token,required=true \
     pnpm config set --global "//npm.pkg.github.com/:_authToken" "$(cat /run/secrets/npm_token)" && \
     pnpm install --frozen-lockfile && \
