@@ -23,6 +23,8 @@ const runtimeEnvironmentSchema = {
 export type RuntimeConfig = EnvironmentOutput<typeof runtimeEnvironmentSchema> & {
   /** The audience of the ID token Authentication's IAM admits. Unset outside Cloud Run. */
   authenticationServiceAudience?: string;
+  /** The file of the projected service token the platform sends to services. Unset outside Kubernetes. */
+  serviceTokenPath?: string;
 };
 
 /** Parses the platform's environment variables without retaining invalid values. */
@@ -33,5 +35,6 @@ export function parseRuntimeConfig(environment: EnvironmentSource): RuntimeConfi
       runtimeEnvironmentSchema
     ),
     authenticationServiceAudience: environment.AUTHENTICATION_SERVICE_AUDIENCE || undefined,
+    serviceTokenPath: environment.SERVICE_TOKEN_PATH || undefined,
   };
 }

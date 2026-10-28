@@ -1,6 +1,10 @@
 import { serviceFetch } from "./service-fetch";
 
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { mkdtemp, rm, writeFile } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
+
+import { afterEach, describe, expect, it, onTestFinished, vi } from "vitest";
 
 function headersOf(base: ReturnType<typeof vi.fn>, call = 0): Headers {
   return new Headers((base.mock.calls[call]?.[1] as RequestInit | undefined)?.headers);
@@ -39,6 +43,25 @@ describe("serviceFetch", () => {
       expect.stringContaining("audience=agora-authentication-rest-test"),
       expect.objectContaining({ headers: { "Metadata-Flavor": "Google" } })
     );
+  });
+
+  it("sends the current projected service token instead of an identity token", async () => {
+    const directory = await mkdtemp(join(tmpdir(), "service-token-"));
+    onTestFinished(async () => await rm(directory, { recursive: true }));
+    const tokenPath = join(directory, "token");
+    const metadata = vi.fn(async () => new Response("identity-token"));
+    vi.stubGlobal("fetch", metadata);
+    const base = vi.fn(async () => new Response("ok"));
+    const send = serviceFetch({ audience: "agora-authentication-rest-token", serviceTokenPath: tokenPath }, base);
+
+    await writeFile(tokenPath, "service-token");
+    await send("https://authentication.test/v2/healthcheck");
+    await writeFile(tokenPath, "rotated-service-token");
+    await send("https://authentication.test/v2/healthcheck");
+
+    expect(headersOf(base, 0).get("X-Serverless-Authorization")).toBe("Bearer service-token");
+    expect(headersOf(base, 1).get("X-Serverless-Authorization")).toBe("Bearer rotated-service-token");
+    expect(metadata).not.toHaveBeenCalled();
   });
 
   it("retries a failed identity token on the next call", async () => {

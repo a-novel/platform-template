@@ -23,8 +23,10 @@ export function aggregateHealth(
       },
     },
     // Probes prove the platform's identity like any call, but are made for no visitor.
-    fetch: async (input, init) =>
-      await serviceFetch({ audience: readConfig().authenticationServiceAudience }, fetchImplementation)(input, init),
+    fetch: async (input, init) => {
+      const { authenticationServiceAudience: audience, serviceTokenPath } = readConfig();
+      return await serviceFetch({ audience, serviceTokenPath }, fetchImplementation)(input, init);
+    },
   });
 }
 

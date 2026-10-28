@@ -11,6 +11,10 @@ export const variables = defineEnvVars({
     schema: (value) => value,
     description: "Base HTTP or HTTPS URL of the authentication service.",
   },
+  SERVICE_TOKEN_PATH: {
+    schema: (value) => value,
+    description: "File of the projected service token the platform sends to services, on Kubernetes.",
+  },
   HEALTHCHECK_TIMEOUT_MS: {
     schema: (value) => value,
     description: "Timeout of each downstream readiness probe, from 100 to 10,000 ms.",
