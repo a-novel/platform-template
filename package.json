@@ -61,7 +61,7 @@
     "@opentelemetry/resources": "3.0.0",
     "@opentelemetry/sdk-trace-node": "2.12.0",
     "@sentry/browser": "11.9.0",
-    "i18next": "26.5.10",
+    "i18next": "26.5.11",
     "zod": "4.6.7"
   },
   "devDependencies": {
