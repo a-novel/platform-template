@@ -51,7 +51,7 @@ export function serviceFetch(options: ServiceFetchOptions, base: typeof fetch = 
     if (options.visitorAddress) headers.set("X-Client-IP", options.visitorAddress);
     // The kubelet rotates the projected token in place, so each call reads the current one.
     if (options.serviceTokenPath) {
-      headers.set("X-Serverless-Authorization", `Bearer ${await readFile(options.serviceTokenPath, "utf8")}`);
+      headers.set("X-Service-Authorization", await readFile(options.serviceTokenPath, "utf8"));
     } else if (options.audience) {
       headers.set("X-Serverless-Authorization", `Bearer ${await identityToken(options.audience)}`);
     }

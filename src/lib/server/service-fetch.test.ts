@@ -59,8 +59,9 @@ describe("serviceFetch", () => {
     await writeFile(tokenPath, "rotated-service-token");
     await send("https://authentication.test/v2/healthcheck");
 
-    expect(headersOf(base, 0).get("X-Serverless-Authorization")).toBe("Bearer service-token");
-    expect(headersOf(base, 1).get("X-Serverless-Authorization")).toBe("Bearer rotated-service-token");
+    expect(headersOf(base, 0).get("X-Service-Authorization")).toBe("service-token");
+    expect(headersOf(base, 1).get("X-Service-Authorization")).toBe("rotated-service-token");
+    expect(headersOf(base, 1).has("X-Serverless-Authorization")).toBe(false);
     expect(metadata).not.toHaveBeenCalled();
   });
 
