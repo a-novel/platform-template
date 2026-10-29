@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1.28
 
-FROM docker.io/library/node:26.12.1-alpine3.23 AS base
+FROM docker.io/library/node:26.13.0-alpine3.23 AS base
 
 ENV PNPM_HOME=/pnpm
 ENV PATH=$PNPM_HOME/bin:$PNPM_HOME:$PATH
@@ -23,7 +23,7 @@ FROM dependencies AS builder
 COPY . .
 RUN pnpm build && pnpm prune --prod
 
-FROM docker.io/library/node:26.12.1-alpine3.23 AS runtime
+FROM docker.io/library/node:26.13.0-alpine3.23 AS runtime
 
 ENV HOST=0.0.0.0
 ENV NODE_ENV=production
