@@ -39,6 +39,13 @@ function sentRequest() {
 
 const userId = "140f24ee-1531-4a9d-ace8-20b38e1b21bc";
 const identity = { userID: userId, roles: [Role.User] };
+const credentials = {
+  id: userId,
+  email: "maya.chen@example.com",
+  role: Role.User,
+  createdAt: "2026-01-01T00:00:00Z",
+  updatedAt: "2026-01-01T00:00:00Z",
+};
 const tokenCookies = { template_access_token: "private-access", template_refresh_token: "private-refresh" };
 
 function request(path: string, cookieValues: Record<string, string> = {}, fields?: Record<string, string>) {
@@ -107,11 +114,16 @@ describe("session at the request boundary", () => {
 
   it("checks the session once for the shell and page loads of one request", async () => {
     const { event } = request("/account", tokenCookies);
-    fetchService.mockImplementation(async () => Response.json(identity));
+    fetchService.mockImplementation(async (url) =>
+      Response.json(String(url).endsWith("/credentials/self") ? credentials : identity)
+    );
 
     await Promise.all([loadShell(event), loadAccount(event)]);
 
-    expect(fetchService).toHaveBeenCalledOnce();
+    expect(fetchService.mock.calls.map(([url]) => url)).toEqual([
+      "https://authentication.test/v2/session",
+      "https://authentication.test/v2/credentials/self",
+    ]);
   });
 
   it("uses a localized account label when the identity cookie contains a full email", async () => {
@@ -235,7 +247,7 @@ describe("session at the request boundary", () => {
 
   it("returns an account recap without serializing access or refresh credentials", async () => {
     const { event } = request("/account", tokenCookies);
-    fetchService.mockResolvedValueOnce(Response.json(identity));
+    fetchService.mockResolvedValueOnce(Response.json(identity)).mockResolvedValueOnce(Response.json(credentials));
     await expect(loadAccount(event)).resolves.toEqual({
       authorization: "allowed",
       accountModel: {
@@ -246,6 +258,7 @@ describe("session at the request boundary", () => {
           accessExpiresAt: "Non renseignée",
           refreshExpiresAt: "Non renseignée",
         },
+        credentials: { status: "ready", email: credentials.email },
         logoutState: "ready",
       },
     });
