@@ -35,23 +35,29 @@
     choose: (next) => (choice = next),
   });
 
-  function localizeClaimExpiries(model: AccountScreenModel): AccountScreenModel {
-    if (model.claims.status !== "ready") return model;
-
+  function localizeDates(model: AccountScreenModel): AccountScreenModel {
     const formatter = new Intl.DateTimeFormat(i18n.language, {
       dateStyle: "medium",
       timeStyle: "short",
       timeZone: "UTC",
     });
-    for (const key of ["accessExpiresAt", "refreshExpiresAt"] as const) {
-      const expiry = Date.parse(model.claims[key]);
-      if (!Number.isNaN(expiry)) model.claims[key] = formatter.format(expiry);
+    const localize = (value: string) => {
+      const date = Date.parse(value);
+      return Number.isNaN(date) ? value : formatter.format(date);
+    };
+
+    if (model.claims.status === "ready") {
+      model.claims.accessExpiresAt = localize(model.claims.accessExpiresAt);
+      model.claims.refreshExpiresAt = localize(model.claims.refreshExpiresAt);
+    }
+    if (model.credentials.status === "ready" && model.credentials.pendingEmail) {
+      model.credentials.pendingEmail.expiresAt = localize(model.credentials.pendingEmail.expiresAt);
     }
 
     return model;
   }
 
-  const model = $derived(localizeClaimExpiries(structuredClone(initialModel)));
+  const model = $derived(localizeDates(structuredClone(initialModel)));
   const controller: AccountScreenController = {
     get state() {
       return { model, logoutAction: "/storybook/account/logout" };

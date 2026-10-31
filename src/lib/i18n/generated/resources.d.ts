@@ -58,7 +58,14 @@ export default interface Resources {
           "title": "Your session",
           "userId": "Account ID"
         },
-        "description": "Your settings and the session open on this device.",
+        "description": "Your email, your settings and the session open on this device.",
+        "email": {
+          "current": "Current email",
+          "pending": "Awaiting confirmation",
+          "pendingExpiry": "Link expires {{date}}",
+          "title": "Email",
+          "unavailable": "Your current email can’t be shown right now."
+        },
         "loadErrorTitle": "Session details unavailable",
         "loadingTitle": "Loading session",
         "logout": {
