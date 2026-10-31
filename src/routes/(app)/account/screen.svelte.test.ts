@@ -20,6 +20,7 @@ const readyAccount: AccountScreenModel = {
     accessExpiresAt: "18 Aug 2026, 19:30",
     refreshExpiresAt: "25 Aug 2026, 18:30",
   },
+  credentials: { status: "ready", email: "creator@example.test" },
   logoutState: "ready",
 };
 

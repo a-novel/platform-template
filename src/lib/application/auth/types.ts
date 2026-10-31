@@ -44,8 +44,18 @@ export type AccountClaimsState =
   | { status: "loading" }
   | { status: "error"; feedback: AuthenticationFeedback };
 
-/** Account recap and its logout action. */
+/** The account's email and the change awaiting confirmation, as Authentication reports them. */
+export interface AccountCredentialsSummary {
+  email: string;
+  pendingEmail?: { email: string; expiresAt: string };
+}
+
+/** Email availability, independent of the session recap and the logout form. */
+export type AccountCredentialsState = ({ status: "ready" } & AccountCredentialsSummary) | { status: "unavailable" };
+
+/** Account recap, email and logout action. */
 export interface AccountScreenModel {
   claims: AccountClaimsState;
+  credentials: AccountCredentialsState;
   logoutState: "ready" | "submitting";
 }
