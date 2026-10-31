@@ -46,6 +46,7 @@
           action: "#auth",
         };
       },
+      passwordVisibility: { state: { pressed: false }, setPressed: () => {}, toggle: () => {} },
       synchronize: () => {},
       submit: () => false,
     },

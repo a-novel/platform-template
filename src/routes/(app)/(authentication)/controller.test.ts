@@ -40,4 +40,13 @@ describe("createAuthenticationPanelController", () => {
       action: "/retry",
     });
   });
+
+  it("masks a shown password whenever it synchronizes", () => {
+    const controller = createAuthenticationPanelController({ model: readyAuthenticationModel("login"), action: "/" });
+    controller.passwordVisibility.toggle();
+    expect(controller.passwordVisibility.state.pressed).toBe(true);
+
+    controller.synchronize(readyAuthenticationModel("login"), "/");
+    expect(controller.passwordVisibility.state.pressed).toBe(false);
+  });
 });

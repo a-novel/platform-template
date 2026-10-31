@@ -25,7 +25,7 @@ describe("fixed visual review controllers", () => {
     await userEvent.keyboard("{Escape}");
     await expect.element(page.getByRole("dialog", { name: "Log in" })).toBeVisible();
     await page.getByRole("textbox", { name: "Email address" }).fill("review@example.test");
-    await page.getByLabelText("Password", { exact: false }).fill("long memorable test password");
+    await page.getByLabelText(/^Password/).fill("long memorable test password");
     await page.getByRole("dialog").getByRole("button", { name: "Log in", exact: true }).click();
     await expect.element(page.getByRole("textbox", { name: "Email address" })).toBeEnabled();
     await expect.element(page.getByRole("dialog", { name: "Log in" })).toBeVisible();
