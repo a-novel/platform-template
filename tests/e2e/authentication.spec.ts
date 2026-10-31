@@ -25,11 +25,11 @@ test("login returns to the protected account, survives reload and logout protect
 }, info) => {
   await page.goto("/account");
   await expect(page).toHaveURL(/auth=login&returnTo=%2Faccount/);
-  await expect(page).toHaveTitle("Log in — Agora");
+  await expect(page).toHaveTitle("Log in | Agora");
 
   await login(page, account);
   await expect(page).toHaveURL("/account");
-  await expect(page).toHaveTitle("Account — Agora");
+  await expect(page).toHaveTitle("Account | Agora");
   await expect(page.getByRole("heading", { name: "Manage your account", exact: true })).toBeVisible();
   await expect(page.getByText("auth:user", { exact: true })).toBeVisible();
 
@@ -41,7 +41,7 @@ test("login returns to the protected account, survives reload and logout protect
 
   await page.reload();
   await expect(page.getByText("auth:user", { exact: true })).toBeVisible();
-  await expect(page).toHaveTitle("Account — Agora");
+  await expect(page).toHaveTitle("Account | Agora");
   const perRunValues = ["Account ID", "Access expires", "Session expires"].map((label) =>
     page.getByText(label, { exact: true }).locator("+ dd")
   );
@@ -49,7 +49,7 @@ test("login returns to the protected account, survives reload and logout protect
 
   await page.getByRole("button", { name: "Log out", exact: true }).last().click();
   await expect(page).toHaveURL("/");
-  await expect(page).toHaveTitle("Home — Agora");
+  await expect(page).toHaveTitle("Home | Agora");
   expect((await context.cookies()).filter((cookie) => cookie.name.startsWith("template_"))).toEqual([]);
 
   // Logout revoked the refresh token, so the service refuses to renew the session with it.
@@ -68,31 +68,31 @@ test("login returns to the protected account, survives reload and logout protect
 
 test("dialog history and keyboard dismissal restore the shell focus", async ({ page, isMobile }) => {
   await page.goto("/");
-  await expect(page).toHaveTitle("Home — Agora");
+  await expect(page).toHaveTitle("Home | Agora");
   if (isMobile) await page.getByRole("link", { name: "Open navigation", exact: true }).click();
 
   const trigger = page.getByRole("link", { name: "Log in", exact: true });
   await trigger.click();
   await expect(page.getByRole("dialog", { name: "Log in", exact: true })).toBeVisible();
   await expect(page).toHaveURL(isMobile ? "/?menu=open&auth=login" : "/?auth=login");
-  await expect(page).toHaveTitle("Log in — Agora");
+  await expect(page).toHaveTitle("Log in | Agora");
   await expect(page.getByRole("link", { name: "Close dialog" })).toBeFocused();
   await page.keyboard.press("Tab");
   await expect(page.getByLabel(/^Email address/)).toBeFocused();
 
   await page.goBack();
   await expect(page).toHaveURL(isMobile ? "/?menu=open" : "/");
-  await expect(page).toHaveTitle("Home — Agora");
+  await expect(page).toHaveTitle("Home | Agora");
   await expect(page.getByRole("dialog", { name: "Log in", exact: true })).toHaveCount(0);
 
   await page.goForward();
   await expect(page.getByRole("dialog", { name: "Log in", exact: true })).toBeVisible();
-  await expect(page).toHaveTitle("Log in — Agora");
+  await expect(page).toHaveTitle("Log in | Agora");
 
   await page.keyboard.press("Escape");
   await expect(page.getByRole("dialog", { name: "Log in", exact: true })).toHaveCount(0);
   await expect(page).toHaveURL(isMobile ? "/?menu=open" : "/");
-  await expect(page).toHaveTitle("Home — Agora");
+  await expect(page).toHaveTitle("Home | Agora");
   await expect(trigger).toBeFocused();
 
   if (isMobile) {
@@ -134,7 +134,7 @@ test("an authentication outage preserves the session and recovers after reload",
     await compose("stop", "authentication");
     await page.reload();
     await expect(page.getByText("Session details unavailable", { exact: true })).toBeVisible();
-    await expect(page).toHaveTitle("Account: Session details unavailable — Agora");
+    await expect(page).toHaveTitle("Account: Session details unavailable | Agora");
     expect(await context.cookies()).toEqual(cookies);
     await screenshot(page, info, "recoverable-service-outage");
   } finally {
@@ -144,7 +144,7 @@ test("an authentication outage preserves the session and recovers after reload",
 
   await page.reload();
   await expect(page.getByText("auth:user", { exact: true })).toBeVisible();
-  await expect(page).toHaveTitle("Account — Agora");
+  await expect(page).toHaveTitle("Account | Agora");
 });
 
 test.describe("native forms without JavaScript", () => {
@@ -162,7 +162,7 @@ test.describe("native forms without JavaScript", () => {
 
     await page.getByRole("link", { name: "Log in", exact: true }).click();
     const dialog = page.getByRole("dialog");
-    await expect(page).toHaveTitle("Log in — Agora");
+    await expect(page).toHaveTitle("Log in | Agora");
     await dialog.getByLabel(/^Email address/).fill("invalid");
     await dialog.getByRole("button", { name: "Log in", exact: true }).click();
     await expect(dialog.getByText("Enter a valid email address.", { exact: true })).toBeVisible();
@@ -186,7 +186,7 @@ test.describe("native forms without JavaScript", () => {
   test("the account logout works with a server-rendered form", async ({ page, account }) => {
     await page.goto("/?auth=login&returnTo=%2Faccount");
     await login(page, account);
-    await expect(page).toHaveTitle("Account — Agora");
+    await expect(page).toHaveTitle("Account | Agora");
 
     await page.getByRole("button", { name: "Log out", exact: true }).last().click();
     await expect(page).toHaveURL("/");

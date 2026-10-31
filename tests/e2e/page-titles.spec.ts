@@ -36,7 +36,7 @@ const checkpoints: Partial<Record<string, string>> = {
 /** Opens a route and checks its tab title. A capturing run also records the route's checkpoint. */
 async function expectTitle(page: Page, info: TestInfo, route: string, title: string, capture: boolean) {
   const response = await page.goto(route);
-  await expect(page).toHaveTitle(`${title} — Agora`);
+  await expect(page).toHaveTitle(`${title} | Agora`);
   await expect(page.locator("head > title")).toHaveCount(1);
   if (route === "/page-that-does-not-exist") expect(response?.status()).toBe(404);
 
