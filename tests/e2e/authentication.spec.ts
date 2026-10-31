@@ -42,7 +42,7 @@ test("login returns to the protected account, survives reload and logout protect
   await page.reload();
   await expect(page.getByText("auth:user", { exact: true })).toBeVisible();
   await expect(page).toHaveTitle("Account | Agora");
-  const perRunValues = ["Account ID", "Access expires", "Session expires"].map((label) =>
+  const perRunValues = ["Account ID", "Current email", "Access expires", "Session expires"].map((label) =>
     page.getByText(label, { exact: true }).locator("+ dd")
   );
   await screenshot(page, info, "authenticated-account", perRunValues);
