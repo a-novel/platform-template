@@ -60,7 +60,7 @@
     "@opentelemetry/instrumentation-undici": "0.34.0",
     "@opentelemetry/resources": "3.0.0",
     "@opentelemetry/sdk-trace-node": "2.12.0",
-    "@sentry/browser": "11.9.0",
+    "@sentry/browser": "11.10.0",
     "i18next": "26.5.11",
     "zod": "4.6.7"
   },
