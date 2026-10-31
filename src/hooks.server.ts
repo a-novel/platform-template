@@ -29,9 +29,9 @@ function pageTrace({ tracing }: RequestEvent): string {
   return `${traceId}-${spanId}-${traceFlags & 1}`;
 }
 
-// Names the request's span after its route, as `GET /account`, and records the response's status, so
-// span metrics split the traffic by page and tell a refusal from a fault. A request that matched no
-// route keeps its method alone, so no path names a span.
+// Names the request's span after its route, as `GET /(app)/account`, and records the response's
+// status, so span metrics split the traffic by page and tell a refusal from a fault. A request that
+// matched no route keeps its method alone, so no path names a span.
 function traceResponse({ request, route, tracing }: RequestEvent, { status }: Response): void {
   tracing.root.updateName(route.id ? `${request.method} ${route.id}` : request.method);
   tracing.root.setAttribute("http.response.status_code", status);
