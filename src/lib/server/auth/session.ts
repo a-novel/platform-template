@@ -205,13 +205,16 @@ export class AuthenticationSession {
     if (identityEmail) this.rememberIdentity(identityEmail);
   }
 
-  /** Keeps the local part of an email address as the shell's display handle. */
+  /**
+   * Keeps the local part of an email address as the shell's display handle. An unchanged handle writes
+   * nothing, so the request keeps its session check.
+   */
   rememberIdentity(email: string): void {
-    this.check = undefined;
-
     const separator = email.lastIndexOf("@");
     const handle = separator > 0 ? email.slice(0, separator) : "";
+    if (this.cookies.get(identityHandleCookie) === handle) return;
 
+    this.check = undefined;
     if (handle.length === 0 || handle.length > 64) {
       this.cookies.delete(identityHandleCookie, { path: "/" });
       return;
