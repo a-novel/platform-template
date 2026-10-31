@@ -45,7 +45,13 @@ authUi:
       roles: Rôles
       title: Votre session
       userId: Identifiant du compte
-    description: Vos paramètres et la session ouverte sur cet appareil.
+    description: Votre courriel, vos paramètres et la session ouverte sur cet appareil.
+    email:
+      current: Courriel actuel
+      pending: En attente de confirmation
+      pendingExpiry: Le lien expire le {{date}}
+      title: Courriel
+      unavailable: Votre courriel actuel ne peut pas être affiché pour le moment.
     loadErrorTitle: Détails de la session indisponibles
     loadingTitle: Chargement de la session
     logout:

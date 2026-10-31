@@ -6,6 +6,7 @@ import { describe, expect, it } from "vitest";
 
 const unavailableAccount: AccountScreenModel = {
   claims: { status: "error", feedback: "sessionUnavailable" },
+  credentials: { status: "unavailable" },
   logoutState: "ready",
 };
 
