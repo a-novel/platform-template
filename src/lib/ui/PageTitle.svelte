@@ -14,5 +14,5 @@
 </script>
 
 <svelte:head>
-  <title>{authenticationTitle?.() ?? title} — {t("pageTitles.brand")}</title>
+  <title>{authenticationTitle?.() ?? title} | {t("pageTitles.brand")}</title>
 </svelte:head>

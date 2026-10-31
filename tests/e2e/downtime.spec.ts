@@ -46,7 +46,7 @@ test.describe("maintenance in progress", () => {
 
     const response = await page.goto("/account");
     expect(response?.status()).toBe(503);
-    await expect(page).toHaveTitle("Maintenance in progress — Agora");
+    await expect(page).toHaveTitle("Maintenance in progress | Agora");
     await expect(page.getByRole("heading", { level: 1, name: "Temporarily unavailable" })).toBeVisible();
     await screenshot(page, info, "maintenance-page");
   });

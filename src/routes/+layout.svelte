@@ -8,8 +8,10 @@
   import { afterNavigate, beforeNavigate } from "$app/navigation";
   import { page } from "$app/state";
 
-  // The opaque tile keeps the logo readable on light and dark tab bars alike.
-  import favicon from "@a-novel-kit/ui-images/files/icon/32x32/agora-icon-black.png";
+  import lightFavicon from "@a-novel-kit/ui-images/files/icon/32x32/agora-icon-light.png";
+  // Each icon follows the browser theme; the app itself stays dark. Firefox ignores `media` and
+  // shows the last icon, so the light one comes last.
+  import darkFavicon from "@a-novel-kit/ui-images/files/icon/32x32/agora-icon.png";
   import type { ConsentController } from "@a-novel-kit/uikit";
   import "@a-novel-kit/uikit-fonts/fonts.css";
   import "@a-novel-kit/uikit-tokens/tokens.css";
@@ -39,7 +41,8 @@
 </script>
 
 <svelte:head>
-  <link rel="icon" type="image/png" href={favicon} />
+  <link rel="icon" type="image/png" href={darkFavicon} media="(prefers-color-scheme: dark)" />
+  <link rel="icon" type="image/png" href={lightFavicon} media="(prefers-color-scheme: light)" />
 </svelte:head>
 
 <I18nProvider locale={data.locale}>
