@@ -15,7 +15,7 @@ x-postgres-healthcheck: &postgres-healthcheck
 
 services:
   postgres-authentication:
-    image: ghcr.io/a-novel/service-authentication/database:v2.19.0@sha256:cce2b62f9486ddbf490e142525c444777782593845b1c2a6ab4ddab06eb94846
+    image: ghcr.io/a-novel/service-authentication/database:v2.19.1@sha256:cce2b62f9486ddbf490e142525c444777782593845b1c2a6ab4ddab06eb94846
     environment: *postgres-environment
     healthcheck: *postgres-healthcheck
 
@@ -60,7 +60,7 @@ services:
       - "127.0.0.1:14100:8080"
 
   authentication:
-    image: ghcr.io/a-novel/service-authentication/standalone-rest:v2.19.0@sha256:86d3da4ac0d3c2ee6bf2dab947b4d88c4621c0e7f04c67bee1b526ed79859d0a
+    image: ghcr.io/a-novel/service-authentication/standalone-rest:v2.19.1@sha256:8237867865236f0618bb65ca8856836a839c6d1adc47589b34e2d165dba3c597
     network_mode: service:authentication-network
     healthcheck:
       test: ["CMD", "wget", "-qO", "/dev/null", "http://localhost:8080/v2/ping"]
