@@ -2,6 +2,8 @@ import { handle } from "./hooks.server";
 
 import { describe, expect, it, vi } from "vitest";
 
+import { SpanStatusCode, TraceFlags, trace } from "@opentelemetry/api";
+import { BasicTracerProvider, InMemorySpanExporter, SimpleSpanProcessor } from "@opentelemetry/sdk-trace-node";
 import type { RequestEvent } from "@sveltejs/kit";
 import type { Handle } from "@sveltejs/kit/hooks";
 
@@ -10,11 +12,12 @@ const SPAN_ID = "00f067aa0ba902b7";
 
 function event(path: string, language?: string, traced = false): RequestEvent {
   const url = new URL(path, "https://template.test");
-  const root = { spanContext: () => ({ traceId: TRACE_ID, spanId: SPAN_ID, traceFlags: 1 }) };
+  const root = trace.wrapSpanContext({ traceId: TRACE_ID, spanId: SPAN_ID, traceFlags: TraceFlags.SAMPLED });
   return {
     url,
     locals: {},
     request: new Request(url, { headers: language ? { "accept-language": language } : undefined }),
+    route: { id: url.pathname },
     tracing: { enabled: traced, root, current: root },
   } as unknown as RequestEvent;
 }
@@ -51,5 +54,42 @@ describe("request hook", () => {
     const html = await render(event("/", "en", traced), '<meta name="sentry-trace" content="%trace%" />');
 
     expect(html).toBe(`<meta name="sentry-trace" content="${want}" />`);
+  });
+
+  it.each([
+    { name: "a page", method: "GET", route: "/", status: 200, want: { name: "GET /", code: SpanStatusCode.UNSET } },
+    {
+      name: "a refusal",
+      method: "POST",
+      route: "/",
+      status: 400,
+      want: { name: "POST /", code: SpanStatusCode.UNSET },
+    },
+    {
+      name: "an unknown path",
+      method: "GET",
+      route: null,
+      status: 404,
+      want: { name: "GET", code: SpanStatusCode.UNSET },
+    },
+    { name: "a fault", method: "GET", route: "/", status: 500, want: { name: "GET /", code: SpanStatusCode.ERROR } },
+  ])("traces the response to $name on the request's span", async ({ method, route, status, want }) => {
+    const exporter = new InMemorySpanExporter();
+    const provider = new BasicTracerProvider({ spanProcessors: [new SimpleSpanProcessor(exporter)] });
+    const root = provider.getTracer("test").startSpan("sveltekit.handle.root");
+    const request = {
+      ...event("/"),
+      request: new Request("https://template.test/", { method }),
+      route: { id: route },
+      tracing: { enabled: true, root, current: root },
+    } as unknown as RequestEvent;
+
+    await handle({ event: request, resolve: async () => new Response(null, { status }) });
+    root.end();
+
+    const [span] = exporter.getFinishedSpans();
+    expect(span?.name).toBe(want.name);
+    expect(span?.attributes["http.response.status_code"]).toBe(status);
+    expect(span?.status.code).toBe(want.code);
   });
 });
