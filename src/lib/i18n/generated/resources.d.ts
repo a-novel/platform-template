@@ -73,9 +73,6 @@ export default interface Resources {
           "submit": "Log out",
           "submitting": "Logging out…"
         },
-        "privacy": {
-          "title": "Privacy"
-        },
         "title": "Manage your account"
       },
       "authentication": {
@@ -93,7 +90,13 @@ export default interface Resources {
     "pageTitles": {
       "account": "Account",
       "brand": "Agora",
+      "privacy": "Privacy",
       "withState": "{{title}}: {{status}}"
+    },
+    "privacy": {
+      "description": "Choose what we collect on this device.",
+      "noTelemetry": "We collect no metrics or logs on this device.",
+      "title": "Privacy"
     },
     "shell": {
       "accountFallback": "Account",
@@ -114,6 +117,7 @@ export default interface Resources {
       "manageAccountFor": "Manage account for {{name}}",
       "navigation": "Agora navigation",
       "openNavigation": "Open navigation",
+      "privacy": "Privacy",
       "sessionDowntime": "Account unavailable during maintenance.",
       "sessionLoading": "Loading account",
       "sessionUnavailable": "Account details are unavailable.",
@@ -121,7 +125,7 @@ export default interface Resources {
       "skipToContent": "Skip to content"
     },
     "telemetryConsent": {
-      "change": "Change this anytime from the account management menu.",
+      "change": "Change this anytime from the Privacy page.",
       "message": "We sometimes collect error logs and performance metrics to improve our products. No personal information is recorded or shared.",
       "title": "Metrics and log collection"
     }

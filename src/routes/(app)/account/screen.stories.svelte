@@ -133,7 +133,7 @@
 </Story>
 
 <Story name="Collecting metrics" asChild>
-  <StoryHarness initialModel={ready} telemetryChoice="accepted" />
+  <StoryHarness initialModel={ready} />
 </Story>
 
 <Story name="Loading" asChild>

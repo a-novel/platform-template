@@ -58,8 +58,6 @@ authUi:
       description: Vous serez déconnecté sur cet appareil.
       submit: Se déconnecter
       submitting: Déconnexion…
-    privacy:
-      title: Confidentialité
     title: Gérez votre compte
   authentication:
     emailLabel: Courriel
@@ -72,7 +70,12 @@ authUi:
 pageTitles:
   account: Compte
   brand: Agora
+  privacy: Confidentialité
   withState: "{{title}}: {{status}}"
+privacy:
+  description: Choisissez ce que nous collectons sur cet appareil.
+  noTelemetry: Nous ne collectons ni métriques ni journaux sur cet appareil.
+  title: Confidentialité
 shell:
   accountFallback: Compte
   auth:
@@ -90,12 +93,13 @@ shell:
   manageAccountFor: Gérer le compte de {{name}}
   navigation: Navigation d’Agora
   openNavigation: Ouvrir la navigation
+  privacy: Confidentialité
   sessionDowntime: Compte indisponible pendant la maintenance.
   sessionLoading: Chargement du compte
   sessionUnavailable: Informations du compte indisponibles.
   signIn: Se connecter
   skipToContent: Aller au contenu
 telemetryConsent:
-  change: Modifiable à tout moment depuis le menu de gestion du compte.
+  change: Modifiable à tout moment depuis la page Confidentialité.
   message: Nous collectons parfois des journaux d’erreurs et des métriques de performances, à des fins d’amélioration de nos produits. Aucune information personnelle n’est enregistrée ou partagée.
   title: Collecte des métriques et des journaux

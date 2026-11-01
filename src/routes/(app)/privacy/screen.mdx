@@ -1,0 +1,25 @@
+import * as PrivacyStories from "./screen.stories.svelte";
+
+import { Canvas, Meta, ResponsiveStoryPair } from "@a-novel-kit/uikit-storybook";
+
+<Meta of={PrivacyStories} />
+
+# Privacy
+
+The consent banner records the visitor's telemetry answer on this device, for this platform alone.
+This page changes it, signed in or not. The shell lists it only while the platform collects browser
+telemetry.
+
+<ResponsiveStoryPair
+  desktop={PrivacyStories.AcceptedDesktop}
+  mobile={PrivacyStories.AcceptedMobile}
+  meta={PrivacyStories}
+/>
+
+## Declined
+
+<Canvas of={PrivacyStories.Declined} />
+
+## Not collecting
+
+<Canvas of={PrivacyStories.NotCollecting} />

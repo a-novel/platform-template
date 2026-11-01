@@ -8,6 +8,8 @@
   export interface ShellStoryProps {
     initialModel: ShellViewModel;
     initialAuthenticationModel?: AuthenticationPanelModel;
+    /** Whether the platform collects browser telemetry, which adds the Privacy destination. */
+    collectsTelemetry?: boolean;
     /** A started planned downtime, which the shell announces and locks the sign-in dialog for. */
     downtime?: { start: Date; end: Date };
     /** Content after the home page, such as filler to scroll past sticky elements. */
@@ -17,6 +19,7 @@
 
 <script lang="ts">
   import { setPlatformDowntime } from "#lib/ui/downtime.svelte.js";
+  import { setTelemetryPreference } from "#lib/ui/telemetry-preference.js";
 
   import HomeScreen from "./(home)/screen.svelte";
   import { type ShellController, readyAuthenticationModel } from "./controller.svelte";
@@ -24,7 +27,10 @@
 
   import { untrack } from "svelte";
 
-  let { initialModel, initialAuthenticationModel, downtime, children }: ShellStoryProps = $props();
+  let { initialModel, initialAuthenticationModel, collectsTelemetry, downtime, children }: ShellStoryProps = $props();
+
+  if (untrack(() => collectsTelemetry))
+    setTelemetryPreference({ pending: false, choice: "accepted", choose: () => {} });
 
   const startedDowntime = untrack(() => downtime);
   if (startedDowntime) {
@@ -37,7 +43,13 @@
 
   const controller: ShellController = {
     get state() {
-      return { model: initialModel, homeHref: "#home", accountHref: "#account", logoutAction: "#logout" };
+      return {
+        model: initialModel,
+        homeHref: "#home",
+        accountHref: "#account",
+        privacyHref: "#privacy",
+        logoutAction: "#logout",
+      };
     },
     authentication: {
       get state() {

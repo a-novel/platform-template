@@ -12,6 +12,7 @@
 
 <script lang="ts">
   import { getPlatformDowntime, hasPlatformDowntime } from "#lib/ui/downtime.svelte.js";
+  import { hasTelemetryPreference } from "#lib/ui/telemetry-preference.js";
 
   import AuthenticationPanel from "./(authentication)/screen.svelte";
 
@@ -32,7 +33,7 @@
     SkipLink,
   } from "@a-novel-kit/uikit";
 
-  import { House, LogIn, LogOut, Menu, PanelLeftClose, PanelLeftOpen, X } from "@lucide/svelte";
+  import { House, LogIn, LogOut, Menu, PanelLeftClose, PanelLeftOpen, ShieldCheck, X } from "@lucide/svelte";
 
   let { controller, children }: ShellProps = $props();
 
@@ -51,6 +52,19 @@
   const authenticationId = `${componentId}-authentication`;
   const compactRail = $derived(model.rail === "collapsed");
   const { t } = getI18nContext();
+  // Only a platform that collects browser telemetry asks for consent, so only it offers to change the answer.
+  const privacyItems = $derived(
+    hasTelemetryPreference()
+      ? [
+          {
+            href: controller.state.privacyHref,
+            label: t("shell.privacy"),
+            current: model.activeNavigation === "privacy",
+            icon: privacyIcon,
+          },
+        ]
+      : []
+  );
   const authenticatedSession = $derived(model.session.status === "authenticated" ? model.session : null);
   /** The account widget's notice while the session is loading, unavailable or stopped for maintenance. */
   const sessionNotice = $derived.by(() => {
@@ -82,6 +96,8 @@
 </script>
 
 {#snippet homeIcon()}<House size="var(--icon-size-sm)" />{/snippet}
+
+{#snippet privacyIcon()}<ShieldCheck size="var(--icon-size-sm)" />{/snippet}
 
 {#snippet accountIcon()}
   {#if authenticatedSession}
@@ -122,6 +138,7 @@
           current: model.activeNavigation === "home",
           icon: homeIcon,
         },
+        ...privacyItems,
       ]}
     />
   </nav>

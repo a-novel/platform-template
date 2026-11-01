@@ -1,5 +1,5 @@
 import { accountDisplayFromHandle } from "#lib/application/shell/account-display.js";
-import type { ShellSession } from "#lib/application/shell/types.js";
+import type { ShellSession, ShellViewModel } from "#lib/application/shell/types.js";
 
 import { readPlatformDowntime } from "../downtime";
 import { type AuthenticationEvent, getAuthenticationContext } from "./context";
@@ -21,12 +21,15 @@ const shellAuthorization = {
 
 type ShellEvent = AuthenticationEvent & Pick<RequestEvent, "locals">;
 
+/** The rail destination each page belongs to. */
+const navigation: Record<string, ShellViewModel["activeNavigation"]> = { "/": "home", "/privacy": "privacy" };
+
 /** Loads the shell's navigation state, session display and page authorization. */
 export const loadShell = async (event: ShellEvent) => {
   const session = await readShellSession(event);
 
   return {
-    activeNavigation: event.url.pathname === "/" ? ("home" as const) : null,
+    activeNavigation: navigation[event.url.pathname] ?? null,
     session,
     authorization: shellAuthorization[session.status],
   };
