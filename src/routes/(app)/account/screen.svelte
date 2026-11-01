@@ -9,21 +9,9 @@
 
 <script lang="ts">
   import { translateAuthenticationFeedback } from "#lib/i18n/auth-feedback.js";
-  import { getTelemetryPreference, hasTelemetryPreference } from "#lib/ui/telemetry-preference.js";
 
   import { getI18nContext } from "@a-novel-kit/nodelib-i18n/svelte";
-  import {
-    Alert,
-    Badge,
-    Button,
-    Card,
-    Container,
-    FormActions,
-    PageHeader,
-    Stack,
-    Switch,
-    type SwitchController,
-  } from "@a-novel-kit/uikit";
+  import { Alert, Badge, Button, Card, Container, FormActions, PageHeader, Stack } from "@a-novel-kit/uikit";
 
   import { ShieldCheck } from "@lucide/svelte";
 
@@ -34,16 +22,6 @@
 
   const componentId = $props.id();
   const { t } = getI18nContext();
-
-  // Only a platform that collects browser telemetry asks for consent, so only it offers to change the answer.
-  const telemetry = hasTelemetryPreference() ? getTelemetryPreference() : undefined;
-  const telemetrySwitch: SwitchController = {
-    get state() {
-      return { checked: telemetry?.choice === "accepted" };
-    },
-    setChecked: (checked) => telemetry?.choose(checked ? "accepted" : "declined"),
-    toggle: () => telemetry?.choose(telemetry.choice === "accepted" ? "declined" : "accepted"),
-  };
 
   function submitLogout(event: SubmitEvent) {
     if (!controller.submitLogout()) event.preventDefault();
@@ -84,23 +62,6 @@
             {/if}
           </section>
         </Card>
-
-        {#if telemetry}
-          <Card surface="raised">
-            <section id="account-privacy" class="card-section" aria-labelledby={`${componentId}-privacy-title`}>
-              <header class="section-heading">
-                <h2 id={`${componentId}-privacy-title`}>{t("authUi.account.privacy.title")}</h2>
-              </header>
-              <Switch
-                class="telemetry-setting"
-                controller={telemetrySwitch}
-                label={t("telemetryConsent.title")}
-                description={t("telemetryConsent.message")}
-                disabled={telemetry.pending}
-              />
-            </section>
-          </Card>
-        {/if}
 
         <section id="account-claims" class="session-summary" aria-labelledby={`${componentId}-claims-title`}>
           <div class="section-heading">
@@ -265,10 +226,6 @@
     margin: 0;
     line-height: var(--line-height-normal);
     overflow-wrap: anywhere;
-  }
-
-  .card-section :global(.telemetry-setting) {
-    display: flex;
   }
 
   .roles {

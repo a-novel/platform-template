@@ -5,6 +5,7 @@ import { withLocale } from "#lib/i18n/provider.fixture.js";
 import { createAuthenticationPanelController } from "./(authentication)/controller.svelte";
 import { createShellController, readyAuthenticationModel } from "./controller.svelte";
 import Screen from "./screen.svelte";
+import ShellStory from "./story.svelte";
 
 import { beforeEach, describe, expect, it } from "vitest";
 import { render } from "vitest-browser-svelte";
@@ -36,6 +37,7 @@ function controller(patch: Partial<ShellViewModel> = {}) {
     model: model(patch),
     homeHref: "/",
     accountHref: "/account",
+    privacyHref: "/privacy",
     logoutAction: "/auth/logout",
     authentication,
     resolveAuthentication: (view) => ({ model: readyAuthenticationModel(view), action: "/auth" }),
@@ -99,6 +101,20 @@ describe("shell screen", () => {
     await expect
       .element(page.getByRole("button", { name: "Développer la navigation" }))
       .toHaveAttribute("aria-expanded", "false");
+  });
+
+  it("lists Privacy only while the platform collects browser telemetry", async () => {
+    const view = await render(ShellStory, { initialModel: model() }, withLocale());
+    await expect.element(page.getByRole("link", { name: "Privacy" })).not.toBeInTheDocument();
+    await view.unmount();
+
+    render(
+      ShellStory,
+      { initialModel: model({ activeNavigation: "privacy" }), collectsTelemetry: true },
+      withLocale("fr")
+    );
+    await expect.element(page.getByRole("link", { name: "Confidentialité" })).toHaveAttribute("aria-current", "page");
+    await expect.element(page.getByRole("link", { name: "Accueil" })).not.toHaveAttribute("aria-current");
   });
 
   it("links the account name directly and keeps logout visible", async () => {

@@ -1,6 +1,6 @@
 import * as ShellStories from "./screen.stories.svelte";
 
-import { Meta, ResponsiveStoryPair } from "@a-novel-kit/uikit-storybook";
+import { Canvas, Meta, ResponsiveStoryPair } from "@a-novel-kit/uikit-storybook";
 
 <Meta of={ShellStories} />
 
@@ -44,6 +44,13 @@ a service outage, and a successful login redirects.
   mobile={ShellStories.AuthenticatedMobile}
   meta={ShellStories}
 />
+
+### Privacy destination
+
+While the platform collects browser telemetry, the rail lists Privacy, where the visitor changes the
+consent banner's answer.
+
+<Canvas of={ShellStories.PrivacyDestination} />
 
 ### Loading account
 

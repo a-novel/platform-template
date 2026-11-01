@@ -204,6 +204,10 @@
   <StoryHarness initialModel={authenticated} />
 </Story>
 
+<Story name="Privacy destination" asChild>
+  <StoryHarness initialModel={{ ...authenticated, activeNavigation: "privacy" }} collectsTelemetry />
+</Story>
+
 <Story
   name="Authenticated — mobile"
   exportName="AuthenticatedMobile"

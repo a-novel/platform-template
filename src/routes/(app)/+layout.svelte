@@ -49,6 +49,7 @@
     },
     homeHref: resolve(""),
     accountHref: resolve("account"),
+    privacyHref: resolve("privacy"),
     logoutAction: resolve("auth/logout"),
     authentication,
     resolveAuthentication: authenticationState,

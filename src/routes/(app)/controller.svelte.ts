@@ -16,6 +16,7 @@ export interface ShellControllerState {
   model: ShellViewModel;
   homeHref: string;
   accountHref: string;
+  privacyHref: string;
   logoutAction: string;
 }
 
@@ -72,6 +73,7 @@ export function createShellController({
   model: initialModel,
   homeHref,
   accountHref,
+  privacyHref,
   logoutAction,
   authentication,
   resolveAuthentication,
@@ -124,7 +126,7 @@ export function createShellController({
 
   return {
     get state() {
-      return { model, homeHref, accountHref, logoutAction };
+      return { model, homeHref, accountHref, privacyHref, logoutAction };
     },
     authentication,
     navigationDialog,

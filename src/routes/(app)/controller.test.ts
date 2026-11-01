@@ -24,6 +24,7 @@ describe("createShellController", () => {
       },
       homeHref: "/",
       accountHref: "/account",
+      privacyHref: "/privacy",
       logoutAction: "/logout",
       authentication,
       allowNativeLogout: false,
@@ -92,6 +93,7 @@ describe("createShellController", () => {
       },
       homeHref: "/",
       accountHref: "/account",
+      privacyHref: "/privacy",
       logoutAction: "/logout",
       authentication,
       resolveAuthentication: (view) => ({
@@ -157,6 +159,7 @@ describe("createShellController", () => {
       },
       homeHref: "/",
       accountHref: "/account",
+      privacyHref: "/privacy",
       logoutAction: "/logout",
       authentication,
     });
