@@ -52,7 +52,7 @@
     "@a-novel-kit/uikit": "0.12.2",
     "@a-novel-kit/uikit-fonts": "0.12.2",
     "@a-novel-kit/uikit-tokens": "0.12.2",
-    "@a-novel/service-authentication-rest": "2.23.0",
+    "@a-novel/service-authentication-rest": "2.23.1",
     "@lucide/svelte": "1.64.0",
     "@opentelemetry/api": "1.10.0",
     "@opentelemetry/exporter-trace-otlp-proto": "0.300.0",
