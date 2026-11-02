@@ -20,69 +20,15 @@ access:
   unavailable:
     description: Votre session est conservée. Veuillez recharger cette page dans quelques minutes.
     title: Accès temporairement indisponible
-authFlow:
-  expiryUnavailable: Non renseignée
-  feedback:
-    invalidCredentials: Le courriel ou le mot de passe est incorrect.
-    serviceUnavailable: Veuillez réessayer dans quelques minutes.
-    sessionUnavailable: Impossible de vérifier votre session. Veuillez recharger la page dans quelques minutes.
-    tooManyAttempts: Trop de tentatives. Veuillez patienter quelques minutes avant de réessayer.
-  validation:
-    email: Saisissez un courriel valide.
-    maxLength_one: Utilisez au maximum {{count}} caractère.
-    maxLength_many: Utilisez au maximum {{count}} caractères.
-    maxLength_other: Utilisez au maximum {{count}} caractères.
-    minLength_one: Utilisez au moins {{count}} caractère.
-    minLength_many: Utilisez au moins {{count}} caractères.
-    minLength_other: Utilisez au moins {{count}} caractères.
-    password: Saisissez votre mot de passe.
-authUi:
-  account:
-    claims:
-      accessExpiresAt: Expiration de l’accès
-      noRoles: Aucun rôle attribué
-      refreshExpiresAt: Expiration de la session
-      roles: Rôles
-      title: Votre session
-      userId: Identifiant du compte
-    description: Votre courriel, vos paramètres et la session ouverte sur cet appareil.
-    email:
-      current: Courriel actuel
-      pending: En attente de confirmation
-      pendingExpiry: Le lien expire le {{date}}
-      title: Courriel
-      unavailable: Votre courriel actuel ne peut pas être affiché pour le moment.
-    loadErrorTitle: Détails de la session indisponibles
-    loadingTitle: Chargement de la session
-    logout:
-      description: Vous serez déconnecté sur cet appareil.
-      submit: Se déconnecter
-      submitting: Déconnexion…
-    title: Gérez votre compte
-  authentication:
-    emailLabel: Courriel
-    journeys:
-      login:
-        submit: Se connecter
-        submitting: Connexion…
-    passwordLabel: Mot de passe
-  serviceUnavailable: Temporairement indisponible
 pageTitles:
-  account: Compte
   brand: Agora
   privacy: Confidentialité
-  withState: "{{title}}: {{status}}"
 privacy:
   description: Choisissez ce que nous collectons sur cet appareil.
   noTelemetry: Nous ne collectons ni métriques ni journaux sur cet appareil.
   title: Confidentialité
 shell:
-  accountFallback: Compte
-  auth:
-    login:
-      title: Connectez-vous
   brand: Agora
-  closeAuthentication: Fermer la fenêtre
   closeNavigation: Fermer la navigation
   collapseNavigation: Réduire la navigation
   expandNavigation: Développer la navigation
@@ -93,12 +39,20 @@ shell:
   manageAccountFor: Gérer le compte de {{name}}
   navigation: Navigation d’Agora
   openNavigation: Ouvrir la navigation
+  opensInNewTab: (s’ouvre dans un nouvel onglet)
   privacy: Confidentialité
+  register: S’inscrire
   sessionDowntime: Compte indisponible pendant la maintenance.
   sessionLoading: Chargement du compte
   sessionUnavailable: Informations du compte indisponibles.
   signIn: Se connecter
   skipToContent: Aller au contenu
+signInFailed:
+  rateLimited: Trop de tentatives. Veuillez patienter quelques minutes avant de réessayer.
+  rejected: La connexion a pris trop de temps ou a été interrompue. Veuillez réessayer.
+  retry: Réessayer
+  title: Nous n’avons pas pu vous connecter
+  unavailable: La connexion est temporairement indisponible. Veuillez réessayer dans quelques minutes.
 telemetryConsent:
   change: Modifiable à tout moment depuis la page Confidentialité.
   message: Nous collectons parfois des journaux d’erreurs et des métriques de performances, à des fins d’amélioration de nos produits. Aucune information personnelle n’est enregistrée ou partagée.

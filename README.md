@@ -1,6 +1,6 @@
 # Platform Template
 
-A scaffold for new A-Novel platforms: fork it, rename it, and replace its sample account page with your own screens.
+A scaffold for new A-Novel platforms: fork it, rename it, and build your own screens in its shell.
 
 [![X (formerly Twitter) Follow](https://img.shields.io/twitter/follow/agorastoryverse)](https://twitter.com/agorastoryverse)
 [![Discord](https://img.shields.io/discord/1315240114691248138?logo=discord)](https://discord.gg/rp4Qr8cA)
@@ -33,15 +33,16 @@ git grep -n -i template -- . ':!pnpm-lock.yaml'
 | What                | Where                                                               | Why it changes                                                                         |
 | ------------------- | ------------------------------------------------------------------- | -------------------------------------------------------------------------------------- |
 | Session cookies     | `src/lib/server/auth/session.ts`                                    | Platforms share one origin behind the gateway, so each names its cookies after itself. |
+| Client ID           | `src/lib/server/auth/sign-in.ts`                                    | Infra registers each platform with the authentication service under its own name.      |
 | Rail preference key | `src/lib/client/shell/rail-preference.ts`                           | Local storage is shared across that origin too.                                        |
 | Product name        | `src/lib/i18n/locales/*/common.yaml`                                | `pageTitles.brand`, `shell.brand` and `shell.navigation` name the product users see.   |
 | Test placeholders   | `builds/compose.e2e.yaml`, the tests, `.github/workflows/main.yaml` | Test accounts, project names and report names follow the platform name.                |
 | Product logo        | `src/routes/+layout.svelte`, `src/routes/(app)/screen.svelte`       | The favicon, banner and icon show the Agora logo until the product has its own.        |
 
-**3. Replace the sample route.** The account page under `src/routes/(app)/account/` is the sample
-authenticated route. Its server module is `src/lib/server/auth/account-route.ts`, and its copy sits
-under `authUi.account` in the catalogs. `tests/e2e/authentication.spec.ts` covers it end to end. Copy
-its shape for your first screen, then remove what you no longer use.
+**3. Add your screens.** The home page under `src/routes/(app)/(home)/` is empty. Build your first
+screen beside it, in the shape of the shell in `src/routes/(app)`. A route that needs an account calls
+`requireAuthorization`, as the access screens' documentation in `src/routes/(app)/(access)/screen.mdx`
+shows. Sign-in, invitations and the account page stay on the account platform.
 
 **4. Keep the foundations.** The foundations every platform shares stay as they are, along with the
 container, CI and the test setup. The [contribution guide](./CONTRIBUTING.md#where-code-goes) names
@@ -64,21 +65,32 @@ A platform is one of the A-Novel browser applications. Its SvelteKit server rend
 is the only caller of the platform services. Session tokens stay in server-set cookies and never
 reach browser code.
 
-This one is a working skeleton: a navigation shell, a login dialog and a protected account page,
-backed by the authentication service. The template ships as one container image. The
+This one is a working skeleton: a navigation shell with its account controls, backed by the
+authentication service. The template ships as one container image. The
 [published Storybook](https://a-novel.github.io/platform-template/) shows every screen state.
+
+People sign in on the account platform, which serves every account form. The platform is an OAuth 2.0
+client of it: the authorization code grant with PKCE, which the platform's server completes with the
+authentication service.
 
 ## Deploying
 
 Run a tag from the [latest release](https://github.com/a-novel/platform-template/releases/latest) and
-point it at the authentication service. The image runs as a non-root user on port `3000`, and its
-container healthcheck calls `/ping`.
+point it at the authentication service and the account platform. The image runs as a non-root user
+on port `3000`, and its container healthcheck calls `/ping`.
+
+Signing in needs the platform registered in the authentication service's `OAUTH_CLIENTS`, as the
+client `template`. Its redirect URI is `/auth/callback` on the platform's public origin, and its
+caller is the Kubernetes service account whose token `SERVICE_TOKEN_PATH` holds. Infra registers a
+platform once it joins the platform loop.
 
 ```bash
 PLATFORM_TEMPLATE_VERSION="vX.Y.Z"
 AUTHENTICATION_SERVICE_URL="https://authentication.example.com"
+ACCOUNT_URL="https://account.example.com"
 podman run --detach --name platform-template --publish 3000:3000 \
   --env AUTHENTICATION_SERVICE_URL="$AUTHENTICATION_SERVICE_URL" \
+  --env ACCOUNT_URL="$ACCOUNT_URL" \
   ghcr.io/a-novel/platform-template:"$PLATFORM_TEMPLATE_VERSION"
 ```
 
@@ -87,20 +99,21 @@ podman run --detach --name platform-template --publish 3000:3000 \
 The server reads its configuration from the environment when it starts. Nothing is compiled into the
 browser bundle.
 
-| Name                              | Required       | Description                                                                                                                |
-| --------------------------------- | -------------- | -------------------------------------------------------------------------------------------------------------------------- |
-| `AUTHENTICATION_SERVICE_URL`      | Yes            | Base HTTP or HTTPS URL for the authentication service.                                                                     |
-| `AUTHENTICATION_SERVICE_AUDIENCE` | Cloud Run      | Audience of the Google ID token the authentication service's IAM admits. The platform fetches it from the metadata server. |
-| `SERVICE_TOKEN_PATH`              | Kubernetes     | File of the projected service token, sent instead of a Google ID token. The platform reads it on every call.               |
-| `ADDRESS_HEADER`, `XFF_DEPTH`     | Behind a proxy | Where the visitor's IP is read, which the platform forwards for rate limiting. On Cloud Run, `X-Forwarded-For` and `1`.    |
-| `HEALTHCHECK_TIMEOUT_MS`          | No             | Downstream timeout from 100 to 10,000 ms. The default is 2,000.                                                            |
-| `DOWNTIME_URL`                    | No             | Planned downtime document. The default is the one infra publishes.                                                         |
-| `OTEL`                            | No             | `true` records traces, continuing an incoming `traceparent`.                                                               |
-| `OTEL_EXPORTER_OTLP_ENDPOINT`     | No             | Exports traces over OTLP/HTTP to this base URL instead of stdout.                                                          |
-| `OTEL_EXPORTER_OTLP_HEADERS`      | No             | Headers each export sends, such as the backend's key. Inject it as a secret.                                               |
-| `OTEL_EXPORTER_OTLP_COMPRESSION`  | No             | `gzip` compresses each export.                                                                                             |
-| `HOST`                            | No             | Listen address. The image sets `0.0.0.0`.                                                                                  |
-| `PORT`                            | No             | Listen port. The image sets `3000`.                                                                                        |
+| Name                              | Required       | Description                                                                                                                         |
+| --------------------------------- | -------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
+| `AUTHENTICATION_SERVICE_URL`      | Yes            | Base HTTP or HTTPS URL for the authentication service.                                                                              |
+| `ACCOUNT_URL`                     | Yes            | Public URL of the account platform, where visitors sign in and manage their account. Its origin is the issuer the platform expects. |
+| `AUTHENTICATION_SERVICE_AUDIENCE` | Cloud Run      | Audience of the Google ID token the authentication service's IAM admits. The platform fetches it from the metadata server.          |
+| `SERVICE_TOKEN_PATH`              | Kubernetes     | File of the projected service token, which identifies the platform as a client. The platform reads it on every call.                |
+| `ADDRESS_HEADER`, `XFF_DEPTH`     | Behind a proxy | Where the visitor's IP is read, which the platform forwards for rate limiting. On Cloud Run, `X-Forwarded-For` and `1`.             |
+| `HEALTHCHECK_TIMEOUT_MS`          | No             | Downstream timeout from 100 to 10,000 ms. The default is 2,000.                                                                     |
+| `DOWNTIME_URL`                    | No             | Planned downtime document. The default is the one infra publishes.                                                                  |
+| `OTEL`                            | No             | `true` records traces, continuing an incoming `traceparent`.                                                                        |
+| `OTEL_EXPORTER_OTLP_ENDPOINT`     | No             | Exports traces over OTLP/HTTP to this base URL instead of stdout.                                                                   |
+| `OTEL_EXPORTER_OTLP_HEADERS`      | No             | Headers each export sends, such as the backend's key. Inject it as a secret.                                                        |
+| `OTEL_EXPORTER_OTLP_COMPRESSION`  | No             | `gzip` compresses each export.                                                                                                      |
+| `HOST`                            | No             | Listen address. The image sets `0.0.0.0`.                                                                                           |
+| `PORT`                            | No             | Listen port. The image sets `3000`.                                                                                                 |
 
 ## Operational endpoints
 
@@ -122,8 +135,12 @@ pnpm install
 pnpm dev
 ```
 
-The committed `.env.local` reads the service port from that environment. `pnpm storybook` serves the
-screen catalog at `http://localhost:6006`.
+The committed `.env.local` reads the service port from that environment, and points the account
+links at the account platform's development server. `pnpm storybook` serves the screen catalog at
+`http://localhost:6006`.
+
+Signing in also needs the account platform and an authentication service that verifies service
+tokens. The end-to-end stack of `builds/compose.e2e.yaml` runs both.
 
 ## Contributing
 

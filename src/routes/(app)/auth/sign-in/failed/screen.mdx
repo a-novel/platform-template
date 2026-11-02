@@ -1,0 +1,41 @@
+import * as SignInFailedStories from "./screen.stories.svelte";
+
+import { Meta, ResponsiveStoryPair } from "@a-novel-kit/uikit-storybook";
+
+<Meta of={SignInFailedStories} />
+
+# Sign-in failed
+
+A sign-in through the account platform that does not complete lands here, signed out, with a link that
+starts it again toward the same page. The message tells whether to retry at once or in a few minutes.
+
+## Rejected
+
+The account platform's answer did not match the sign-in the platform started, or its code expired.
+The visitor may retry at once.
+
+<ResponsiveStoryPair
+  desktop={SignInFailedStories.RejectedDesktop}
+  mobile={SignInFailedStories.RejectedMobile}
+  meta={SignInFailedStories}
+/>
+
+## Unavailable
+
+The account platform or the authentication service could not complete the sign-in.
+
+<ResponsiveStoryPair
+  desktop={SignInFailedStories.Unavailable}
+  mobile={SignInFailedStories.Unavailable}
+  meta={SignInFailedStories}
+/>
+
+## Rate limited
+
+The authentication service refused too many attempts from this visitor.
+
+<ResponsiveStoryPair
+  desktop={SignInFailedStories.RateLimited}
+  mobile={SignInFailedStories.RateLimited}
+  meta={SignInFailedStories}
+/>

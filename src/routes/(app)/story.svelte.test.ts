@@ -12,22 +12,21 @@ import "@a-novel-kit/uikit-tokens/tokens.css";
 
 const shell: ShellViewModel = {
   activeNavigation: "home",
-  authView: "login",
-  drawerOpen: false,
+  drawerOpen: true,
   rail: "expanded",
-  session: { status: "anonymous" },
+  session: { status: "authenticated" },
 };
 
 describe("fixed visual review controllers", () => {
-  it("keeps the login journey open and ready after dismissal and submission", async () => {
+  it("keeps the open menu and the session after dismissal and logout", async () => {
     render(ShellStory, { initialModel: shell }, withLocale());
-    await page.getByRole("link", { name: "Close dialog" }).click();
+    const menu = page.getByRole("dialog", { name: "Agora" });
+
+    await menu.getByRole("link", { name: "Close navigation" }).click();
     await userEvent.keyboard("{Escape}");
-    await expect.element(page.getByRole("dialog", { name: "Log in" })).toBeVisible();
-    await page.getByRole("textbox", { name: "Email address" }).fill("review@example.test");
-    await page.getByLabelText(/^Password/).fill("long memorable test password");
-    await page.getByRole("dialog").getByRole("button", { name: "Log in", exact: true }).click();
-    await expect.element(page.getByRole("textbox", { name: "Email address" })).toBeEnabled();
-    await expect.element(page.getByRole("dialog", { name: "Log in" })).toBeVisible();
+    await menu.getByRole("button", { name: "Log out" }).click();
+
+    await expect.element(menu).toBeVisible();
+    await expect.element(menu.getByRole("link", { name: "Manage your account (opens in a new tab)" })).toBeVisible();
   });
 });

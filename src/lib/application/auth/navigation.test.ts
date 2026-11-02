@@ -1,13 +1,15 @@
-import { loginHref, safeReturnTo } from "./navigation";
+import { safeReturnTo, signInHref } from "./navigation";
 
 import { describe, expect, it } from "vitest";
 
 const returnTargets = [
   ["/account?panel=password#change", "/account?panel=password#change"],
   ["/account?query=two%20words", "/account?query=two+words"],
-  ["/account?auth=login&returnTo=%2Faccount&panel=email", "/account?panel=email"],
+  ["/account?returnTo=%2Faccount&panel=email", "/account?panel=email"],
   ["/account?/password&panel=email", "/account?panel=email"],
-  ["/?auth=login&returnTo=%2F", "/"],
+  ["/?returnTo=%2F", "/"],
+  ["/auth/sign-in?returnTo=%2Fprivacy", "/"],
+  ["/auth/callback?code=private", "/"],
   ["https://attacker.invalid/account", "/"],
   ["//attacker.invalid/account", "/"],
   ["/%2fattacker.invalid", "/"],
@@ -24,7 +26,8 @@ describe("authentication navigation", () => {
     expect(safeReturnTo(value)).toBe(expected);
   });
 
-  it("opens the existing modal with the safe target encoded once", () => {
-    expect(loginHref("/account?panel=email")).toBe("/?auth=login&returnTo=%2Faccount%3Fpanel%3Demail");
+  it("starts a sign-in with the safe target encoded once", () => {
+    expect(signInHref("/privacy?panel=email")).toBe("/auth/sign-in?returnTo=%2Fprivacy%3Fpanel%3Demail");
+    expect(signInHref("https://attacker.invalid")).toBe("/auth/sign-in?returnTo=%2F");
   });
 });

@@ -37,11 +37,11 @@ describe("request hook", () => {
     const resolve = vi.fn<Parameters<Handle>[0]["resolve"]>(async (request, options) => {
       await Promise.resolve();
       const html = await options?.transformPageChunk?.({ html: '<html lang="%lang%">', done: true });
-      return new Response(html + request.locals.i18n.t("shell.accountFallback"));
+      return new Response(html + request.locals.i18n.t("shell.home"));
     });
     const [fr, en] = await Promise.all([handle({ event: french, resolve }), handle({ event: english, resolve })]);
-    await expect(fr.text()).resolves.toBe('<html lang="fr">Compte');
-    await expect(en.text()).resolves.toBe('<html lang="en">Account');
+    await expect(fr.text()).resolves.toBe('<html lang="fr">Accueil');
+    await expect(en.text()).resolves.toBe('<html lang="en">Home');
     expect(french.locals.locale).toBe("fr");
     expect(english.locals.locale).toBe("en");
     expect(french.locals.i18n).not.toBe(english.locals.i18n);

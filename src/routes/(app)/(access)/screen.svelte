@@ -14,12 +14,12 @@
     /** Content safe to display without verified account information. */
     unavailable?: Snippet;
     /** Local, sanitized destinations supplied by the route. */
-    loginHref: string;
+    signInHref: string;
     homeHref: string;
     retryHref: string;
   }
 
-  let { controller, when, children, unavailable, loginHref, homeHref, retryHref }: Props = $props();
+  let { controller, when, children, unavailable, signInHref, homeHref, retryHref }: Props = $props();
   const { t } = getI18nContext();
 </script>
 
@@ -38,7 +38,7 @@
             headingLevel={1}
           >
             {#snippet actions()}
-              <Link href={loginHref}>{t("shell.signIn")}</Link>
+              <Link href={signInHref} data-sveltekit-reload>{t("shell.signIn")}</Link>
             {/snippet}
           </StatusState>
         {:else if status === "forbidden"}
