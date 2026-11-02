@@ -85,15 +85,20 @@ passes stable codes, which components translate.
 
 The role of a string sets its grammatical form:
 
-| Role                                                        | Form                     | English                    | French                              |
-| ----------------------------------------------------------- | ------------------------ | -------------------------- | ----------------------------------- |
-| Text asking the reader to act: instructions, guidance       | Formal imperative        | Choose a new password.     | Choisissez un nouveau mot de passe. |
-| Controls: buttons, links, accessible names, task tab titles | Infinitive               | Create account             | Créer le compte                     |
-| Names and outcomes: field labels, section titles, results   | Noun phrase or statement | Your password was changed. | Votre mot de passe a été modifié.   |
+| Role                                                        | Form                             | English                    | French                              |
+| ----------------------------------------------------------- | -------------------------------- | -------------------------- | ----------------------------------- |
+| Text asking the reader to act: instructions, guidance       | Formal imperative                | Choose a new password.     | Choisissez un nouveau mot de passe. |
+| Controls: buttons, links, accessible names, task tab titles | Infinitive in the reader’s voice | Create account             | Créer mon compte                    |
+| Names and outcomes: field labels, section titles, results   | Noun phrase or statement         | Your password was changed. | Votre mot de passe a été modifié.   |
 
 Formal address uses `vous` in French, and the third-person formal form in languages that have one,
 such as `usted` in Spanish. English imperative and infinitive share one form, so a control reads
 "Log in", never the noun "Login".
+
+A control speaks for the reader, so French controls use the first person: `M’inscrire`,
+`Me connecter`, `Gérer mon compte`. Other text speaks to the reader. It names their things with
+`votre` and says who acts: `Nous n’avons pas pu vérifier votre session.`, never
+`Impossible de vérifier la session.`
 
 Each concept keeps one term across every screen:
 

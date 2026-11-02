@@ -107,8 +107,8 @@ describe("shell screen", () => {
     await expect
       .element(page.getByRole("button", { name: "Développer la navigation" }))
       .toHaveAttribute("aria-expanded", "false");
-    await expect.element(page.getByRole("link", { name: "Se connecter" })).toBeVisible();
-    await expect.element(page.getByRole("link", { name: "S’inscrire" })).toBeVisible();
+    await expect.element(page.getByRole("link", { name: "Me connecter" })).toBeVisible();
+    await expect.element(page.getByRole("link", { name: "M’inscrire" })).toBeVisible();
   });
 
   it("lists Privacy only while the platform collects browser telemetry", async () => {
@@ -151,16 +151,16 @@ describe("shell screen", () => {
     render(Screen, { controller: controller({ rail: "collapsed", session }) }, withLocale("fr"));
 
     const accountLink = page.getByRole("link", {
-      name: "Gérer le compte de Maya Chen (s’ouvre dans un nouvel onglet)",
+      name: "Gérer mon compte (Maya Chen) (s’ouvre dans un nouvel onglet)",
     });
-    await expect.element(accountLink).toHaveAttribute("title", "Gérer le compte de Maya Chen");
+    await expect.element(accountLink).toHaveAttribute("title", "Gérer mon compte (Maya Chen)");
   });
 
   it("names no one before the account's email is known", async () => {
     render(Screen, { controller: controller({ session: { status: "authenticated" } }) }, withLocale("fr"));
 
-    const accountLink = page.getByRole("link", { name: "Gérer votre compte (s’ouvre dans un nouvel onglet)" });
-    await expect.element(accountLink.getByText("Gérer votre compte", { exact: true })).toBeVisible();
+    const accountLink = page.getByRole("link", { name: "Gérer mon compte (s’ouvre dans un nouvel onglet)" });
+    await expect.element(accountLink.getByText("Gérer mon compte", { exact: true })).toBeVisible();
     await expect.element(accountLink).toHaveAttribute("target", "_blank");
   });
 

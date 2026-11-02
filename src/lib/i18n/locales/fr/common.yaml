@@ -34,18 +34,18 @@ shell:
   expandNavigation: Développer la navigation
   home: Accueil
   homeTitle: Accueil
-  logout: Se déconnecter
-  manageAccount: Gérer votre compte
-  manageAccountFor: Gérer le compte de {{name}}
+  logout: Me déconnecter
+  manageAccount: Gérer mon compte
+  manageAccountFor: Gérer mon compte ({{name}})
   navigation: Navigation d’Agora
   openNavigation: Ouvrir la navigation
   opensInNewTab: (s’ouvre dans un nouvel onglet)
   privacy: Confidentialité
-  register: S’inscrire
+  register: M’inscrire
   sessionDowntime: Compte indisponible pendant la maintenance.
   sessionLoading: Chargement du compte
   sessionUnavailable: Informations du compte indisponibles.
-  signIn: Se connecter
+  signIn: Me connecter
   skipToContent: Aller au contenu
 signInFailed:
   rateLimited: Trop de tentatives. Veuillez patienter quelques minutes avant de réessayer.
@@ -54,6 +54,6 @@ signInFailed:
   title: Nous n’avons pas pu vous connecter
   unavailable: La connexion est temporairement indisponible. Veuillez réessayer dans quelques minutes.
 telemetryConsent:
-  change: Modifiable à tout moment depuis la page Confidentialité.
+  change: Vous pouvez modifier ce choix à tout moment depuis la page Confidentialité.
   message: Nous collectons parfois des journaux d’erreurs et des métriques de performances, à des fins d’amélioration de nos produits. Aucune information personnelle n’est enregistrée ou partagée.
   title: Collecte des métriques et des journaux
