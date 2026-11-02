@@ -10,6 +10,7 @@ import {
 const defaultDowntimeUrl = "https://raw.githubusercontent.com/a-novel/infra/downtime/downtime.json";
 
 const runtimeEnvironmentSchema = {
+  accountUrl: environmentHttpUrl("ACCOUNT_URL"),
   authenticationServiceUrl: environmentHttpUrl("AUTHENTICATION_SERVICE_URL"),
   downtimeUrl: environmentHttpUrl("DOWNTIME_URL"),
   healthcheckTimeoutMs: environmentInteger("HEALTHCHECK_TIMEOUT_MS", {

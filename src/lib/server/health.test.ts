@@ -7,6 +7,7 @@ const config: RuntimeConfig = {
   authenticationServiceUrl: "http://authentication:8080/api",
   downtimeUrl: "http://downtime.test/downtime.json",
   healthcheckTimeoutMs: 500,
+  accountUrl: "https://account.example.test",
 };
 
 function response(body: unknown, status = 200): Response {

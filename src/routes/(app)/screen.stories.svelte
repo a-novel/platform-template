@@ -1,6 +1,4 @@
 <script module lang="ts">
-  import { validationFixture } from "#lib/application/auth/forms.fixture.js";
-  import { validateLogin } from "#lib/application/auth/forms.js";
   import type { ShellViewModel } from "#lib/application/shell/types.js";
   import { createStorybookTranslator } from "#lib/i18n/storybook.js";
 
@@ -15,17 +13,24 @@
 
   const anonymous: ShellViewModel = {
     activeNavigation: "home",
-    authView: null,
     drawerOpen: false,
     rail: "expanded",
     session: { status: "anonymous" },
   };
   const authenticated: ShellViewModel = {
     ...anonymous,
+    session: { status: "authenticated", displayName: "Maya Chen", initials: "MC" },
+  };
+  const unnamedAccount: ShellViewModel = {
+    ...anonymous,
+    session: { status: "authenticated" },
+  };
+  const longAccountName: ShellViewModel = {
+    ...anonymous,
     session: {
       status: "authenticated",
-      displayName: "Maya Chen",
-      initials: "MC",
+      displayName: "Alexandrine de la Bibliothèque des Mondes Imaginaires",
+      initials: "AB",
     },
   };
   const loadingAccount: ShellViewModel = {
@@ -42,14 +47,6 @@
   };
   // Fixed times keep every rendering identical.
   const downtime = { start: new Date("2026-10-12T06:00:00Z"), end: new Date("2026-10-12T08:30:00Z") };
-  const longAccountName: ShellViewModel = {
-    ...anonymous,
-    session: {
-      status: "authenticated",
-      displayName: "Alexandrine de la Bibliothèque des Mondes Imaginaires",
-      initials: "AB",
-    },
-  };
 
   function withOpenMobileNavigation(model: ShellViewModel): ShellViewModel {
     return { ...model, drawerOpen: true };
@@ -75,10 +72,9 @@
     await expect(canvas.getByRole("link", { name: t("shell.home") })).toHaveAttribute("aria-current", "page");
     await expect(canvas.getByRole("img", { name: t("shell.brand") })).toHaveAttribute("width", "96");
 
-    const signIn = canvas.getByRole("link", { name: t("shell.signIn") });
-    await userEvent.click(signIn);
-    await expect(canvas.queryByRole("dialog", { name: t("shell.auth.login.title") })).not.toBeInTheDocument();
-    clearFocus();
+    await expect(canvas.getByRole("link", { name: t("shell.signIn") })).toHaveAttribute("href", "#sign-in");
+    await expect(canvas.getByRole("link", { name: t("shell.register") })).toHaveAttribute("href", "#invitation");
+    await expect(canvas.queryByRole("button", { name: t("shell.logout") })).not.toBeInTheDocument();
   }
 
   async function verifyRailToggle({ canvasElement, globals }: PlayContext) {
@@ -126,11 +122,14 @@
   async function verifyAuthenticatedActions({ canvasElement, globals }: PlayContext) {
     const canvas = within(canvasElement);
     const t = createStorybookTranslator(globals);
-    await expect(canvas.getByRole("link", { name: "Maya Chen" })).toHaveAttribute("href", "#account");
+    const account = canvas.getByRole("link", { name: `Maya Chen ${t("shell.opensInNewTab")}` });
+    await expect(account).toHaveAttribute("href", "#account");
+    await expect(account).toHaveAttribute("target", "_blank");
     await expect(canvas.getByRole("button", { name: t("shell.logout") })).toBeVisible();
     await userEvent.click(canvas.getByRole("button", { name: t("shell.logout") }));
-    await expect(canvas.getByRole("link", { name: "Maya Chen" })).toBeVisible();
+    await expect(account).toBeVisible();
     await expect(canvas.queryByRole("link", { name: t("shell.signIn") })).not.toBeInTheDocument();
+    await expect(canvas.queryByRole("link", { name: t("shell.register") })).not.toBeInTheDocument();
     clearFocus();
   }
 
@@ -147,22 +146,6 @@
     ];
 
     await expect(Math.max(...labelStarts) - Math.min(...labelStarts)).toBeLessThanOrEqual(1);
-  }
-
-  async function verifyValidationFeedback({ canvasElement }: PlayContext) {
-    await expect(canvasElement.querySelectorAll('[aria-invalid="true"]')).toHaveLength(2);
-    expect(canvasElement.querySelector('a[href$="-email"]')).toBeNull();
-  }
-
-  async function verifySubmittingIsLocked({ canvasElement, globals }: PlayContext) {
-    const canvas = within(canvasElement);
-    const t = createStorybookTranslator(globals);
-    await expect(
-      canvas.getByRole("button", { name: t("authUi.authentication.journeys.login.submitting") })
-    ).toBeDisabled();
-    await expect(canvas.getByRole("textbox", { name: t("authUi.authentication.emailLabel") })).toHaveAttribute(
-      "readonly"
-    );
   }
 </script>
 
@@ -218,6 +201,24 @@
   <StoryHarness initialModel={withOpenMobileNavigation(authenticated)} />
 </Story>
 
+<Story name="Account without a name" exportName="AccountWithoutAName" asChild>
+  <StoryHarness initialModel={unnamedAccount} />
+</Story>
+
+<Story name="Long account name" exportName="LongAccountName" asChild>
+  <StoryHarness initialModel={longAccountName} />
+</Story>
+
+<Story
+  name="Long account name, mobile"
+  exportName="LongAccountNameMobile"
+  globals={reviewStoryGlobals.mobile}
+  asChild
+  play={verifyExpandedMobileNavigation}
+>
+  <StoryHarness initialModel={withOpenMobileNavigation(longAccountName)} />
+</Story>
+
 <Story name="Loading account" asChild>
   <StoryHarness initialModel={loadingAccount} />
 </Story>
@@ -252,83 +253,4 @@
 
 <Story name="Maintenance — mobile" exportName="MaintenanceMobile" globals={reviewStoryGlobals.mobile} asChild>
   <StoryHarness initialModel={maintenance} {downtime}><ScrollPreview /></StoryHarness>
-</Story>
-
-<Story name="Login modal during maintenance" asChild>
-  <StoryHarness initialModel={{ ...maintenance, authView: "login" }} {downtime} />
-</Story>
-
-<Story name="Login modal — desktop" exportName="LoginModalDesktop" globals={reviewStoryGlobals.desktop} asChild>
-  <StoryHarness initialModel={{ ...anonymous, authView: "login" }} />
-</Story>
-
-<Story name="Login modal — mobile" exportName="LoginModalMobile" globals={reviewStoryGlobals.mobile} asChild>
-  <StoryHarness initialModel={{ ...anonymous, authView: "login" }} />
-</Story>
-
-<Story name="Login submitting" asChild play={verifySubmittingIsLocked}>
-  <StoryHarness
-    initialModel={{ ...anonymous, authView: "login" }}
-    initialAuthenticationModel={{ journey: "login", state: { status: "submitting" } }}
-  />
-</Story>
-
-<Story name="Login validation error" asChild play={verifyValidationFeedback}>
-  <StoryHarness
-    initialModel={{ ...anonymous, authView: "login" }}
-    initialAuthenticationModel={{
-      journey: "login",
-      state: validationFixture(validateLogin, { email: "not-an-email", password: "" }),
-    }}
-  />
-</Story>
-
-<Story name="Login service error" asChild>
-  <StoryHarness
-    initialModel={{ ...anonymous, authView: "login" }}
-    initialAuthenticationModel={{
-      journey: "login",
-      state: {
-        status: "service-error",
-        feedback: "invalidCredentials",
-      },
-    }}
-  />
-</Story>
-
-<Story name="Login service unavailable" asChild>
-  <StoryHarness
-    initialModel={{ ...anonymous, authView: "login" }}
-    initialAuthenticationModel={{
-      journey: "login",
-      state: {
-        status: "service-error",
-        feedback: "serviceUnavailable",
-      },
-    }}
-  />
-</Story>
-
-<Story name="Login too many attempts" asChild>
-  <StoryHarness
-    initialModel={{ ...anonymous, authView: "login" }}
-    initialAuthenticationModel={{
-      journey: "login",
-      state: { status: "service-error", feedback: "tooManyAttempts" },
-    }}
-  />
-</Story>
-
-<Story name="Long account name" asChild>
-  <StoryHarness initialModel={longAccountName} />
-</Story>
-
-<Story
-  name="Long account name — mobile"
-  exportName="LongAccountNameMobile"
-  globals={reviewStoryGlobals.mobile}
-  asChild
-  play={verifyExpandedMobileNavigation}
->
-  <StoryHarness initialModel={withOpenMobileNavigation(longAccountName)} />
 </Story>

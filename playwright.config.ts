@@ -1,4 +1,5 @@
 import { downtimeUrl, downtimes } from "./tests/e2e/downtime";
+import { serviceTokenPath } from "./tests/e2e/service-token";
 
 import { SvelteKitPlaywright } from "@a-novel-kit/nodelib-config/playwright";
 
@@ -8,8 +9,15 @@ import { defineConfig } from "playwright/test";
 function platformServer(state: string, port: number) {
   return SvelteKitPlaywright({
     port,
-    serverEnvironment: { AUTHENTICATION_SERVICE_URL: "http://127.0.0.1:14100", DOWNTIME_URL: downtimeUrl(state) },
+    serverEnvironment: {
+      ACCOUNT_URL: "http://127.0.0.1:14102",
+      AUTHENTICATION_SERVICE_URL: "http://127.0.0.1:14100",
+      DOWNTIME_URL: downtimeUrl(state),
+      SERVICE_TOKEN_PATH: serviceTokenPath,
+    },
     screenshotStyle: "./tests/e2e/screenshots.css",
+    // The account platform's image serves plain HTTP here, as a load balancer that ends TLS would.
+    use: { extraHTTPHeaders: { "X-Forwarded-Proto": "http" } },
   });
 }
 
@@ -17,7 +25,7 @@ const configs = Object.entries(downtimes).map(([state, { port }]) => platformSer
 
 export default defineConfig({
   ...configs[0],
-  globalSetup: ["./tests/e2e/setup.ts", "./tests/e2e/downtime.ts"],
+  globalSetup: ["./tests/e2e/setup.ts", "./tests/e2e/service-token.ts", "./tests/e2e/downtime.ts"],
   // The first server builds the application, and the downtime variants serve that same build.
   webServer: configs
     .flatMap(({ webServer }) => webServer ?? [])

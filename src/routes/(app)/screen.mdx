@@ -6,18 +6,15 @@ import { Canvas, Meta, ResponsiveStoryPair } from "@a-novel-kit/uikit-storybook"
 
 # Platform shell
 
-The shell frames every page with its navigation, its account controls and the login dialog. Each
-preview holds one state fixed, so dismissing a dialog or a menu leaves it as it was.
+The shell frames every page with its navigation and its account controls. Each preview holds one
+state fixed, so dismissing a menu leaves it as it was.
 
 Expanded headers show the Agora wordmark, and the compact rail shows its icon. On mobile, the
 wordmark and the menu control keep their place between the closed header and the open menu.
 
-Dialog titles and fields share a leading edge. UIKit owns the header controls, the fullscreen menu,
-the compact navigation and the action spacing. Service errors sit just above the submit button, which
-spans the form on mobile and keeps its natural width on desktop.
-
-Validation previews use the same API schemas as the controllers. Invalid credentials read apart from
-a service outage, and a successful login redirects.
+People sign in on the account platform. "Log in" starts the request there and returns to the current
+page, and "Register" opens the account platform's invitation request, the only way to get an
+account. A signed-in visitor manages their account on the account platform too.
 
 ## Navigation and account
 
@@ -39,9 +36,27 @@ a service outage, and a successful login redirects.
 
 ### Authenticated
 
+The account button shows the visitor's name and initials, taken from their email when they sign in,
+and opens the account page on the account platform in a new tab. "Log out" ends the session on every
+platform.
+
 <ResponsiveStoryPair
   desktop={ShellStories.Authenticated}
   mobile={ShellStories.AuthenticatedMobile}
+  meta={ShellStories}
+/>
+
+### Account without a name
+
+When the platform cannot read the account's email at sign-in, the button names no one.
+
+<Canvas of={ShellStories.AccountWithoutAName} />
+
+### Long account name
+
+<ResponsiveStoryPair
+  desktop={ShellStories.LongAccountName}
+  mobile={ShellStories.LongAccountNameMobile}
   meta={ShellStories}
 />
 
@@ -63,49 +78,3 @@ consent banner's answer.
 ### Account unavailable
 
 <ResponsiveStoryPair desktop={ShellStories.AccountError} mobile={ShellStories.AccountErrorMobile} meta={ShellStories} />
-
-### Long account name
-
-<ResponsiveStoryPair
-  desktop={ShellStories.LongAccountName}
-  mobile={ShellStories.LongAccountNameMobile}
-  meta={ShellStories}
-/>
-
-## Login
-
-### Default
-
-<ResponsiveStoryPair
-  desktop={ShellStories.LoginModalDesktop}
-  mobile={ShellStories.LoginModalMobile}
-  meta={ShellStories}
-/>
-
-### Submitting
-
-<ResponsiveStoryPair desktop={ShellStories.LoginSubmitting} mobile={ShellStories.LoginSubmitting} meta={ShellStories} />
-
-### Validation errors
-
-<ResponsiveStoryPair
-  desktop={ShellStories.LoginValidationError}
-  mobile={ShellStories.LoginValidationError}
-  meta={ShellStories}
-/>
-
-### Invalid credentials
-
-<ResponsiveStoryPair
-  desktop={ShellStories.LoginServiceError}
-  mobile={ShellStories.LoginServiceError}
-  meta={ShellStories}
-/>
-
-### Service unavailable
-
-<ResponsiveStoryPair
-  desktop={ShellStories.LoginServiceUnavailable}
-  mobile={ShellStories.LoginServiceUnavailable}
-  meta={ShellStories}
-/>

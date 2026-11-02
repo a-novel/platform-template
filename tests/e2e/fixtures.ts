@@ -1,3 +1,5 @@
+import { accountCaller, callerFetch } from "./service-token";
+
 import { randomUUID } from "node:crypto";
 
 import { isHttpStatusError } from "@a-novel-kit/nodelib-browser/http";
@@ -14,7 +16,11 @@ import {
 import { test as base } from "playwright/test";
 import { z } from "zod";
 
-const api = new AuthenticationApi("http://127.0.0.1:14100");
+/** The account platform, where the platform signs people in. */
+export const accountOrigin = "http://127.0.0.1:14102";
+
+// Only the account platform may create accounts, and only from an invitation.
+const api = new AuthenticationApi("http://127.0.0.1:14100", callerFetch(accountCaller));
 const password = "Template-test-password-42!";
 
 /** Controls only the disposable stack owned by this test run. */
@@ -22,7 +28,7 @@ export const compose = createCompose();
 
 /** Reads a delivered email's link, which must point at the application under test. */
 function emailLink(email: string, pathname: string): Promise<string> {
-  return deliveredLink(email, pathname, { mailpit: "http://127.0.0.1:14825", origin: "http://127.0.0.1:4173" });
+  return deliveredLink(email, pathname, { mailpit: "http://127.0.0.1:14825", origin: accountOrigin });
 }
 
 /** Completes an emailed invitation through the service, as the platform serving the link would. */

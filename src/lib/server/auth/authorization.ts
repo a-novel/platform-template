@@ -1,4 +1,4 @@
-import { loginHref } from "#lib/application/auth/navigation.js";
+import { signInHref } from "#lib/application/auth/navigation.js";
 
 import { downtimeError, refuseDuringDowntime } from "../downtime";
 import { type AuthenticationEvent, getAuthenticationContext } from "./context";
@@ -17,7 +17,7 @@ export async function requireAuthorization(
   await refuseDuringDowntime();
 
   const { authentication, session } = await authenticate(event);
-  if (!session) redirect(303, loginHref(event.url.pathname + event.url.search));
+  if (!session) redirect(303, signInHref(event.url.pathname + event.url.search));
   if (!when(session)) error(403, "Access denied");
   return { authentication, session };
 }

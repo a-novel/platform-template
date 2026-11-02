@@ -10,7 +10,7 @@ import { page } from "vitest/browser";
 
 import type { AuthorizationStatus } from "@a-novel-kit/uikit/authorization";
 
-const links = { loginHref: "/?auth=login&returnTo=%2Faccount", homeHref: "/", retryHref: "/account?panel=email" };
+const links = { signInHref: "/auth/sign-in?returnTo=%2Faccount", homeHref: "/", retryHref: "/account?panel=email" };
 const children = createRawSnippet(() => ({ render: () => "<p>Private content</p>" }));
 const unavailable = createRawSnippet(() => ({ render: () => "<p>Blank public form</p>" }));
 
@@ -21,10 +21,12 @@ describe("protected page presentation", () => {
       render(Screen, { ...links, controller: { state: { status } }, children }, withLocale());
       await expect.element(page.getByText("Private content")).not.toBeInTheDocument();
       await expect.element(page.getByRole("heading", { level: 1 })).toBeVisible();
-      if (status === "anonymous")
-        await expect
-          .element(page.getByRole("link", { name: "Log in", exact: true }))
-          .toHaveAttribute("href", links.loginHref);
+      if (status === "anonymous") {
+        const signIn = page.getByRole("link", { name: "Log in", exact: true });
+        await expect.element(signIn).toHaveAttribute("href", links.signInHref);
+        // The sign-in route redirects to the account platform, which the client router cannot render.
+        await expect.element(signIn).toHaveAttribute("data-sveltekit-reload", "true");
+      }
       if (status === "unavailable")
         await expect
           .element(page.getByRole("link", { name: "Reload page" }))

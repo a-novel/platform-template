@@ -5,7 +5,7 @@ import { SpanStatusCode } from "@opentelemetry/api";
 import type { RequestEvent } from "@sveltejs/kit";
 import type { Handle } from "@sveltejs/kit/hooks";
 
-/** Gives each request its own locale and translations, hands its trace to the page, and traces its response. */
+/** Gives each request its own locale and translations, hands its trace to the page, and traces the response. */
 export const handle: Handle = async ({ event, resolve }) => {
   const locale = resolveLocale(event.request.headers.get("accept-language"));
 

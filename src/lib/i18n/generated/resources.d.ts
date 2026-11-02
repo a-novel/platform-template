@@ -31,67 +31,9 @@ export default interface Resources {
         "title": "Access temporarily unavailable"
       }
     },
-    "authFlow": {
-      "expiryUnavailable": "Not provided",
-      "feedback": {
-        "invalidCredentials": "The email address or password is incorrect.",
-        "serviceUnavailable": "Please try again in a few minutes.",
-        "sessionUnavailable": "We couldn’t verify your session. Please reload the page in a few minutes.",
-        "tooManyAttempts": "Too many attempts. Please wait a few minutes before trying again."
-      },
-      "validation": {
-        "email": "Enter a valid email address.",
-        "maxLength_one": "Use no more than {{count}} character.",
-        "maxLength_other": "Use no more than {{count}} characters.",
-        "minLength_one": "Use at least {{count}} character.",
-        "minLength_other": "Use at least {{count}} characters.",
-        "password": "Enter your password."
-      }
-    },
-    "authUi": {
-      "account": {
-        "claims": {
-          "accessExpiresAt": "Access expires",
-          "noRoles": "No roles assigned",
-          "refreshExpiresAt": "Session expires",
-          "roles": "Roles",
-          "title": "Your session",
-          "userId": "Account ID"
-        },
-        "description": "Your email, your settings and the session open on this device.",
-        "email": {
-          "current": "Current email",
-          "pending": "Awaiting confirmation",
-          "pendingExpiry": "Link expires {{date}}",
-          "title": "Email",
-          "unavailable": "Your current email can’t be shown right now."
-        },
-        "loadErrorTitle": "Session details unavailable",
-        "loadingTitle": "Loading session",
-        "logout": {
-          "description": "You’ll be logged out on this device.",
-          "submit": "Log out",
-          "submitting": "Logging out…"
-        },
-        "title": "Manage your account"
-      },
-      "authentication": {
-        "emailLabel": "Email address",
-        "journeys": {
-          "login": {
-            "submit": "Log in",
-            "submitting": "Logging in…"
-          }
-        },
-        "passwordLabel": "Password"
-      },
-      "serviceUnavailable": "Temporarily unavailable"
-    },
     "pageTitles": {
-      "account": "Account",
       "brand": "Agora",
-      "privacy": "Privacy",
-      "withState": "{{title}}: {{status}}"
+      "privacy": "Privacy"
     },
     "privacy": {
       "description": "Choose what we collect on this device.",
@@ -99,14 +41,7 @@ export default interface Resources {
       "title": "Privacy"
     },
     "shell": {
-      "accountFallback": "Account",
-      "auth": {
-        "login": {
-          "title": "Log in"
-        }
-      },
       "brand": "Agora",
-      "closeAuthentication": "Close dialog",
       "closeNavigation": "Close navigation",
       "collapseNavigation": "Collapse navigation",
       "expandNavigation": "Expand navigation",
@@ -117,12 +52,21 @@ export default interface Resources {
       "manageAccountFor": "Manage account for {{name}}",
       "navigation": "Agora navigation",
       "openNavigation": "Open navigation",
+      "opensInNewTab": "(opens in a new tab)",
       "privacy": "Privacy",
+      "register": "Register",
       "sessionDowntime": "Account unavailable during maintenance.",
       "sessionLoading": "Loading account",
       "sessionUnavailable": "Account details are unavailable.",
       "signIn": "Log in",
       "skipToContent": "Skip to content"
+    },
+    "signInFailed": {
+      "rateLimited": "Too many attempts. Please wait a few minutes before trying again.",
+      "rejected": "The login took too long or was interrupted. Please try again.",
+      "retry": "Try again",
+      "title": "We couldn’t log you in",
+      "unavailable": "Login is temporarily unavailable. Please try again in a few minutes."
     },
     "telemetryConsent": {
       "change": "Change this anytime from the Privacy page.",

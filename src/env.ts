@@ -3,6 +3,10 @@ import { defineEnvVars } from "@sveltejs/kit/env";
 export const variables = defineEnvVars({
   // The service settings pass through as text. parseRuntimeConfig validates them on use, so a
   // misconfigured server still starts and reports itself unhealthy.
+  ACCOUNT_URL: {
+    schema: (value) => value,
+    description: "Public URL of the account platform, where visitors manage their account.",
+  },
   AUTHENTICATION_SERVICE_AUDIENCE: {
     schema: (value) => value,
     description: "Audience of the Google ID token the authentication service's IAM admits, on Cloud Run.",

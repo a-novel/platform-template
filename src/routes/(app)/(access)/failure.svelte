@@ -6,13 +6,13 @@
 
   let {
     status,
-    loginHref,
+    signInHref,
     homeHref,
     retryHref,
     downtime,
   }: {
     status: number;
-    loginHref: string;
+    signInHref: string;
     homeHref: string;
     retryHref: string;
     /** Set when a planned downtime stopped the services the page needs. */
@@ -32,7 +32,7 @@
 {:else if status === 403 || status === 503}
   <ProtectedPage
     controller={{ state: { status: status === 403 ? "forbidden" : "unavailable" } }}
-    {loginHref}
+    {signInHref}
     {homeHref}
     {retryHref}
   />

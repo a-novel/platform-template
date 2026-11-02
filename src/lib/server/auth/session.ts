@@ -1,12 +1,14 @@
 import { isDowntimeError, isHttpStatusError } from "@a-novel-kit/nodelib-browser/http";
 import {
   AuthenticationApi,
+  type AuthorizationCodeGrant,
   type Claims,
-  type Token,
+  OAuthError,
+  type TokenResponse,
+  authorizationCodeExchange,
   claimsGet,
-  tokenCreate,
-  tokenCreateAnon,
-  tokenRefresh,
+  credentialsGetSelf,
+  refreshTokenGrant,
   tokenRevoke,
 } from "@a-novel/service-authentication-rest";
 
@@ -27,9 +29,9 @@ export interface SessionCookies {
 /** SessionClient is the part of the authentication API the session calls. */
 export interface SessionClient {
   claims(accessToken: string): Promise<Claims>;
-  createAnonymous(): Promise<Token>;
-  login(email: string, password: string): Promise<Token>;
-  refresh(token: Token): Promise<Token>;
+  email(accessToken: string): Promise<string>;
+  exchange(grant: AuthorizationCodeGrant): Promise<TokenResponse>;
+  refresh(refreshToken: string): Promise<TokenResponse>;
   revoke(accessToken: string, refreshToken: string): Promise<void>;
 }
 
@@ -38,13 +40,7 @@ export type ResolvedSession =
   | { status: "none" }
   | { status: "unavailable" }
   | { status: "downtime" }
-  | {
-      status: "available";
-      accessToken: string;
-      refreshToken?: string;
-      identityHandle?: string;
-      claims: Claims;
-    };
+  | { status: "available"; accessToken: string; refreshToken?: string; identityHandle?: string; claims: Claims };
 /** AuthenticatedSession is an available session that belongs to a user account. */
 export type AuthenticatedSession = Omit<Extract<ResolvedSession, { status: "available" }>, "claims"> & {
   claims: Claims & { userID: string };
@@ -66,7 +62,10 @@ export class AuthenticationDowntimeError extends Error {
   }
 }
 
-/** AuthenticationSession keeps a visitor's tokens in HttpOnly cookies and refreshes them on demand. */
+/**
+ * AuthenticationSession keeps the token pair the platform obtained from the account platform's
+ * session in HttpOnly cookies, and refreshes it on demand.
+ */
 export class AuthenticationSession {
   /** The session check that the loads and actions of the request share. A cookie change discards it. */
   private check?: Promise<ResolvedSession>;
@@ -94,16 +93,10 @@ export class AuthenticationSession {
 
     try {
       const claims = await this.client.claims(accessToken);
-      return {
-        status: "available",
-        accessToken,
-        refreshToken,
-        identityHandle: this.readIdentityHandle(),
-        claims,
-      };
+      return { status: "available", accessToken, refreshToken, identityHandle: this.readIdentityHandle(), claims };
     } catch (error) {
       if (isDowntimeError(error)) return { status: "downtime" };
-      if (!isHttpStatusError(error, ...rejectedSessionStatuses)) return { status: "unavailable" };
+      if (!isSessionRejection(error)) return { status: "unavailable" };
     }
 
     if (!refreshToken) {
@@ -111,25 +104,19 @@ export class AuthenticationSession {
       return { status: "none" };
     }
 
-    return await this.refresh(accessToken, refreshToken);
+    return await this.refresh(refreshToken);
   }
 
-  /** Renews a rejected access token. A rejected refresh token signs the visitor out. */
-  private async refresh(accessToken: string, refreshToken: string): Promise<ResolvedSession> {
+  /** Renews a rejected access token. A session that ended or was signed out signs the visitor out here too. */
+  private async refresh(refreshToken: string): Promise<ResolvedSession> {
     try {
-      const refreshed = await this.client.refresh({ accessToken, refreshToken });
-      const claims = await this.client.claims(refreshed.accessToken);
-      this.accept(refreshed);
+      const { access_token: accessToken } = await this.client.refresh(refreshToken);
+      const claims = await this.client.claims(accessToken);
+      this.accept(accessToken);
 
-      return {
-        status: "available",
-        accessToken: refreshed.accessToken,
-        refreshToken: refreshed.refreshToken || undefined,
-        identityHandle: this.readIdentityHandle(),
-        claims,
-      };
+      return { status: "available", accessToken, refreshToken, identityHandle: this.readIdentityHandle(), claims };
     } catch (error) {
-      if (isHttpStatusError(error, ...rejectedSessionStatuses)) {
+      if (isSessionRejection(error)) {
         this.clear();
         return { status: "none" };
       }
@@ -138,7 +125,7 @@ export class AuthenticationSession {
     }
   }
 
-  /** Returns the visitor's account session, or null for an anonymous visitor. An outage throws. */
+  /** Returns the visitor's account session, or null for a visitor signed out. An outage throws. */
   async authenticated(): Promise<AuthenticatedSession | null> {
     const session = await this.current();
 
@@ -150,27 +137,22 @@ export class AuthenticationSession {
     return userID ? { ...session, claims: { ...session.claims, userID } } : null;
   }
 
-  /** Returns the current access token, creating an anonymous session when the visitor has none. */
-  async anonymousAccessToken(): Promise<string> {
-    const session = await this.current();
+  /**
+   * Trades an authorization code from the account platform for a token pair in its session, and keeps
+   * the pair with the handle of the account's email, which names the visitor in the shell. A refused
+   * code throws an `OAuthError`.
+   */
+  async signIn(grant: AuthorizationCodeGrant): Promise<void> {
+    const tokens = await this.client.exchange(grant);
+    this.accept(tokens.access_token, tokens.refresh_token);
 
-    if (session.status === "downtime") throw new AuthenticationDowntimeError();
-    if (session.status === "unavailable") throw new AuthenticationUnavailableError();
-    if (session.status === "available") return session.accessToken;
-
-    const token = await this.client.createAnonymous();
-    this.accept(token);
-    return token.accessToken;
-  }
-
-  /** Signs the visitor in and remembers the handle of their email address for the shell. */
-  async login(email: string, password: string): Promise<void> {
-    this.accept(await this.client.login(email, password), email);
+    // Without the email, the visitor is signed in all the same, and the shell names no one.
+    this.rememberIdentity(await this.client.email(tokens.access_token).catch(() => ""));
   }
 
   /**
-   * Signs the visitor out: revokes the session's refresh token, then removes every cookie. A failed
-   * revocation still signs the visitor out of this browser, which drops the token.
+   * Signs the visitor out of every platform, then removes the cookies. A failed revocation still signs
+   * the visitor out of this browser, which drops the tokens.
    */
   async logout(): Promise<void> {
     const session = await this.current();
@@ -179,42 +161,28 @@ export class AuthenticationSession {
       try {
         await this.client.revoke(session.accessToken, session.refreshToken);
       } catch {
-        // The refresh token stays valid until it expires. The trace records the failed call.
+        // The session lasts until it expires. The trace records the failed call.
       }
     }
 
     this.clear();
   }
 
-  /** Stores a token pair from the service, with the identity it belongs to when known. */
-  accept(token: Token, identityEmail?: string): void {
+  /** Stores a new access token, and the refresh token when the grant issued one. Both end with the browser. */
+  private accept(accessToken: string, refreshToken?: string): void {
     this.check = undefined;
 
-    const options = this.cookieOptions();
-    // An anonymous token outlives the browser session, so a browser restart doesn't spend the
-    // visitor's few anonymous tokens. A signed-in session still ends with the browser.
-    const expiry = token.refreshToken ? null : readTokenExpiry(token.accessToken);
-    this.cookies.set(accessTokenCookie, token.accessToken, expiry ? { ...options, expires: expiry } : options);
-
-    if (token.refreshToken) {
-      this.cookies.set(refreshTokenCookie, token.refreshToken, options);
-    } else {
-      this.cookies.delete(refreshTokenCookie, { path: "/" });
-    }
-
-    if (identityEmail) this.rememberIdentity(identityEmail);
+    this.cookies.set(accessTokenCookie, accessToken, this.cookieOptions());
+    if (refreshToken) this.cookies.set(refreshTokenCookie, refreshToken, this.cookieOptions());
   }
 
-  /**
-   * Keeps the local part of an email address as the shell's display handle. An unchanged handle writes
-   * nothing, so the request keeps its session check.
-   */
-  rememberIdentity(email: string): void {
+  /** Keeps the local part of an email address as the shell's display handle, or none for a blank one. */
+  private rememberIdentity(email: string): void {
+    this.check = undefined;
+
     const separator = email.lastIndexOf("@");
     const handle = separator > 0 ? email.slice(0, separator) : "";
-    if (this.cookies.get(identityHandleCookie) === handle) return;
 
-    this.check = undefined;
     if (handle.length === 0 || handle.length > 64) {
       this.cookies.delete(identityHandleCookie, { path: "/" });
       return;
@@ -224,7 +192,7 @@ export class AuthenticationSession {
   }
 
   /** Removes every session cookie, which signs the visitor out locally. */
-  clear(): void {
+  private clear(): void {
     this.check = undefined;
 
     this.cookies.delete(accessTokenCookie, { path: "/" });
@@ -247,34 +215,23 @@ export class AuthenticationSession {
   }
 }
 
+/**
+ * Tells whether Authentication refused the session itself. A refresh of a session that ended or was
+ * signed out answers `invalid_grant`, and a refused access token 401 or 403. Any other refusal of the
+ * token endpoint is a fault on the platform's side, which signing the visitor out cannot repair.
+ */
+function isSessionRejection(error: unknown): boolean {
+  if (error instanceof OAuthError) return error.response.error === "invalid_grant";
+  return isHttpStatusError(error, ...rejectedSessionStatuses);
+}
+
 /** Binds the session API to an authentication client. */
 export function createSessionClient(api: AuthenticationApi): SessionClient {
   return {
     claims: async (accessToken) => await claimsGet(api, accessToken),
-    createAnonymous: async () => await tokenCreateAnon(api),
-    login: async (email, password) => await tokenCreate(api, { email, password }),
-    refresh: async (token) => await tokenRefresh(api, token),
+    email: async (accessToken) => (await credentialsGetSelf(api, accessToken)).email,
+    exchange: async (grant) => await authorizationCodeExchange(api, grant),
+    refresh: async (refreshToken) => await refreshTokenGrant(api, refreshToken),
     revoke: async (accessToken, refreshToken) => await tokenRevoke(api, accessToken, { refreshToken }),
   };
-}
-
-/** Reads the expiry of a JWT without verifying it, or null when the token carries no valid one. */
-export function readTokenExpiry(token: string): Date | null {
-  if (token.length > 4096) return null;
-
-  const payload = token.split(".")[1];
-  if (!payload) return null;
-
-  try {
-    const decoded: unknown = JSON.parse(Buffer.from(payload, "base64url").toString("utf8"));
-    if (!decoded || typeof decoded !== "object") return null;
-
-    const expiry = (decoded as Record<string, unknown>).exp;
-    if (typeof expiry !== "number" || !Number.isSafeInteger(expiry) || expiry <= 0) return null;
-
-    const date = new Date(expiry * 1000);
-    return Number.isNaN(date.valueOf()) ? null : date;
-  } catch {
-    return null;
-  }
 }

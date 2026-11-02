@@ -6,7 +6,7 @@ import { describe, expect, it } from "vitest";
 import { render } from "vitest-browser-svelte";
 import { page } from "vitest/browser";
 
-const links = { loginHref: "/?auth=login&returnTo=%2Faccount", homeHref: "/", retryHref: "/account?panel=email" };
+const links = { signInHref: "/auth/sign-in?returnTo=%2Faccount", homeHref: "/", retryHref: "/account?panel=email" };
 
 const failureTitles = [
   [403, "Accès refusé"],

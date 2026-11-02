@@ -9,7 +9,7 @@
     tags: ["!autodocs"],
     parameters: { layout: "fullscreen" },
     args: {
-      loginHref: "/?auth=login&returnTo=%2Faccount",
+      signInHref: "/auth/sign-in?returnTo=%2Faccount",
       homeHref: "/",
       retryHref: "/account",
     },

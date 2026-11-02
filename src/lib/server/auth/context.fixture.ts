@@ -10,7 +10,7 @@ export function stubAuthenticationContext(cookies: SessionCookies, url: URL): Au
   return {
     api: new AuthenticationApi("https://auth.example.test"),
     session: new AuthenticationSession(
-      { claims: vi.fn(), login: vi.fn(), refresh: vi.fn(), revoke: vi.fn(), createAnonymous: vi.fn() },
+      { claims: vi.fn(), email: vi.fn(), exchange: vi.fn(), refresh: vi.fn(), revoke: vi.fn() },
       cookies,
       url
     ),
