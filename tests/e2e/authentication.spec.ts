@@ -57,7 +57,7 @@ async function accountLink(page: Page, isMobile: boolean) {
 
 /** The platform's cookies, the pending sign-in's included. The account platform's share the host. */
 async function tokenCookies(context: BrowserContext) {
-  return (await context.cookies()).filter((cookie) => cookie.name.startsWith("template_"));
+  return (await context.cookies()).filter((cookie) => cookie.name.startsWith("__Host-template_"));
 }
 
 async function authenticationResponds(): Promise<boolean> {
@@ -82,17 +82,20 @@ test("signs in from signed out through the account platform and returns to the p
   expect(response?.status()).toBe(303);
   expect(response?.headers()).toMatchObject({
     location: "/privacy",
-    "cache-control": "no-store",
+    // The callback sets the session, so the request hook keeps it out of every cache.
+    "cache-control": "private, no-store",
     "referrer-policy": "no-referrer",
   });
 
   const cookies = await tokenCookies(context);
   expect(cookies.map((cookie) => cookie.name).sort()).toEqual([
-    "template_access_token",
-    "template_identity_handle",
-    "template_refresh_token",
+    "__Host-template_access_token",
+    "__Host-template_identity_handle",
+    "__Host-template_refresh_token",
   ]);
-  expect(cookies.every((cookie) => cookie.httpOnly && cookie.sameSite === "Lax")).toBe(true);
+  expect(
+    cookies.every((cookie) => cookie.httpOnly && cookie.secure && cookie.path === "/" && cookie.sameSite === "Lax")
+  ).toBe(true);
 
   // The session survives a new page load, which the checkpoint captures on the home page.
   await page.goto("/");
@@ -126,7 +129,7 @@ test("logging out of the platform ends the session on the account platform too",
   expect(await tokenCookies(context)).toEqual([]);
 
   // Authentication ended the whole session, so the platform's refresh token no longer renews it.
-  await expect(refreshTokenGrant(platformApi, tokens.template_refresh_token ?? "")).rejects.toMatchObject({
+  await expect(refreshTokenGrant(platformApi, tokens["__Host-template_refresh_token"] ?? "")).rejects.toMatchObject({
     response: { error: "invalid_grant" },
   });
 

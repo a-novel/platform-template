@@ -28,7 +28,7 @@ const session = {
 describe("protected operations", () => {
   beforeEach(() => {
     vi.resetAllMocks();
-    vi.mocked(getAuthenticationContext).mockReturnValue(stubAuthenticationContext(cookies, event.url));
+    vi.mocked(getAuthenticationContext).mockReturnValue(stubAuthenticationContext(cookies));
   });
 
   it("returns server credentials only after a verified account satisfies the rule", async () => {

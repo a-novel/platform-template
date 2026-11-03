@@ -16,8 +16,11 @@ const clientId = "template";
 /** The path of the platform's redirect URI, which the client registry holds on the platform's origin. */
 const callbackPath = "/auth/callback";
 
-/** The cookie that keeps a started sign-in until the account platform answers it, for ten minutes. */
-const pendingCookie = "template_sign_in";
+/**
+ * The cookie that keeps a started sign-in until the account platform answers it, for ten minutes. Its
+ * `__Host-` prefix pins it to this host on `/`, so a sibling host cannot plant one.
+ */
+const pendingCookie = "__Host-template_sign_in";
 const pendingLifetimeSeconds = 10 * 60;
 const PendingSignInSchema = z.object({ state: z.string(), verifier: z.string(), returnTo: z.string() });
 
@@ -27,7 +30,7 @@ const temporaryErrors = new Set(["temporarily_unavailable", "server_error"]);
 /**
  * Starts a sign-in at the account platform's authorization endpoint (RFC 6749 §4.1.1). The platform
  * draws a `state` and a PKCE verifier (RFC 7636 §4.1), keeps them with the page to return to in an
- * HttpOnly cookie only the callback receives, and sends the S256 challenge of the verifier.
+ * HttpOnly cookie, and sends the S256 challenge of the verifier.
  */
 export async function startSignIn(event: AuthenticationEvent): Promise<never> {
   await refuseDuringDowntime();
@@ -48,9 +51,9 @@ export async function startSignIn(event: AuthenticationEvent): Promise<never> {
   const returnTo = safeReturnTo(event.url.searchParams.get("returnTo"));
   event.cookies.set(pendingCookie, JSON.stringify({ state, verifier, returnTo }), {
     httpOnly: true,
-    path: callbackPath,
+    path: "/",
     sameSite: "lax",
-    secure: event.url.protocol === "https:",
+    secure: true,
     maxAge: pendingLifetimeSeconds,
   });
 
@@ -66,7 +69,7 @@ export async function startSignIn(event: AuthenticationEvent): Promise<never> {
  */
 export async function completeSignIn(event: AuthenticationEvent): Promise<Response> {
   const pending = PendingSignInSchema.safeParse(parseJson(event.cookies.get(pendingCookie))).data;
-  event.cookies.delete(pendingCookie, { path: callbackPath });
+  event.cookies.delete(pendingCookie, { path: "/" });
 
   // A sibling host can plant this cookie, so the return address is checked again on the way out.
   const returnTo = safeReturnTo(pending?.returnTo);

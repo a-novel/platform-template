@@ -14,9 +14,11 @@ import {
 
 import type { Cookies } from "@sveltejs/kit";
 
-const accessTokenCookie = "template_access_token";
-const refreshTokenCookie = "template_refresh_token";
-const identityHandleCookie = "template_identity_handle";
+// The `__Host-` prefix makes the browser refuse these cookies unless they come Secure, host-only and
+// on `/` (RFC 6265bis §4.1.3.2), so a sibling host cannot plant a session.
+const accessTokenCookie = "__Host-template_access_token";
+const refreshTokenCookie = "__Host-template_refresh_token";
+const identityHandleCookie = "__Host-template_identity_handle";
 const rejectedSessionStatuses = [401, 403] as const;
 
 /** SessionCookies is the part of SvelteKit's `Cookies` API the session uses. */
@@ -72,8 +74,7 @@ export class AuthenticationSession {
 
   constructor(
     private readonly client: SessionClient,
-    private readonly cookies: SessionCookies,
-    private readonly requestUrl: URL
+    private readonly cookies: SessionCookies
   ) {}
 
   /** Checks the session cookies, refreshing a rejected access token. An outage keeps the cookies. */
@@ -210,7 +211,7 @@ export class AuthenticationSession {
       httpOnly: true,
       path: "/",
       sameSite: "lax",
-      secure: this.requestUrl.protocol === "https:",
+      secure: true,
     };
   }
 }
@@ -223,6 +224,11 @@ export class AuthenticationSession {
 function isSessionRejection(error: unknown): boolean {
   if (error instanceof OAuthError) return error.response.error === "invalid_grant";
   return isHttpStatusError(error, ...rejectedSessionStatuses);
+}
+
+/** Tells whether a request carries a session, which makes its response the visitor's alone. */
+export function hasSession(cookies: SessionCookies): boolean {
+  return cookies.get(accessTokenCookie) !== undefined || cookies.get(refreshTokenCookie) !== undefined;
 }
 
 /** Binds the session API to an authentication client. */

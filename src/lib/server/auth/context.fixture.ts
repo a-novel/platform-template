@@ -6,13 +6,12 @@ import { vi } from "vitest";
 import { AuthenticationApi } from "@a-novel/service-authentication-rest";
 
 /** Builds a request's authentication context with a session whose service calls are bare spies. */
-export function stubAuthenticationContext(cookies: SessionCookies, url: URL): AuthenticationContext {
+export function stubAuthenticationContext(cookies: SessionCookies): AuthenticationContext {
   return {
     api: new AuthenticationApi("https://auth.example.test"),
     session: new AuthenticationSession(
       { claims: vi.fn(), email: vi.fn(), exchange: vi.fn(), refresh: vi.fn(), revoke: vi.fn() },
-      cookies,
-      url
+      cookies
     ),
   };
 }
