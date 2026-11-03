@@ -29,7 +29,7 @@ function controller(patch: Partial<ShellViewModel> = {}) {
     homeHref: "/",
     accountHref: "https://account.example.test/account",
     invitationHref: "https://account.example.test/?auth=register",
-    privacyHref: "/privacy",
+    privacyHref: null,
     logoutAction: "/auth/logout",
     allowNativeLogout: false,
   });
@@ -112,15 +112,11 @@ describe("shell screen", () => {
   });
 
   it("lists Privacy only while the platform collects browser telemetry", async () => {
-    const view = await render(ShellStory, { initialModel: model() }, withLocale());
+    const view = await render(ShellStory, { model: model() }, withLocale());
     await expect.element(page.getByRole("link", { name: "Privacy" })).not.toBeInTheDocument();
     await view.unmount();
 
-    render(
-      ShellStory,
-      { initialModel: model({ activeNavigation: "privacy" }), collectsTelemetry: true },
-      withLocale("fr")
-    );
+    render(ShellStory, { model: model({ activeNavigation: "privacy" }), collectsTelemetry: true }, withLocale("fr"));
     await expect.element(page.getByRole("link", { name: "Confidentialité" })).toHaveAttribute("aria-current", "page");
     await expect.element(page.getByRole("link", { name: "Accueil" })).not.toHaveAttribute("aria-current");
   });
