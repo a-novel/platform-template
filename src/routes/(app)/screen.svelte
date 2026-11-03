@@ -337,7 +337,6 @@
 <style>
   .shell-viewport {
     container: app-shell / inline-size;
-    background: var(--color-surface-canvas);
     min-block-size: 100dvb;
     color: var(--color-text-primary);
   }
@@ -368,9 +367,10 @@
     overflow: hidden;
   }
 
+  /* The app's lamp lights the navigation where it crosses it, in line with the canvas. */
   .rail,
   .mobile-header {
-    background: var(--color-surface-island-strong);
+    background: var(--fill-navigation);
   }
 
   .rail-header {

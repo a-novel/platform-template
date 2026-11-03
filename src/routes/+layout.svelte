@@ -4,6 +4,7 @@
   import I18nProvider from "#lib/i18n/I18nProvider.svelte";
   import TelemetryConsent from "#lib/ui/TelemetryConsent.svelte";
   import { createPlatformDowntime, setPlatformDowntime } from "#lib/ui/downtime.svelte.js";
+  import "#lib/ui/lamp.css";
   import { setTelemetryPreference } from "#lib/ui/telemetry-preference.js";
   import { afterNavigate, beforeNavigate } from "$app/navigation";
   import { page } from "$app/state";
@@ -52,8 +53,9 @@
 </I18nProvider>
 
 <style>
+  /* The lamp lives on the root, so pages leave the canvas bare and contrast checks read its color. */
   :global(html) {
-    background: var(--color-surface-canvas);
+    background: var(--fill-canvas);
     min-inline-size: 20rem;
     color-scheme: dark;
   }
