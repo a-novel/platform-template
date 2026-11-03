@@ -1,6 +1,6 @@
-import { logoutAuthentication } from "./logout";
-import { loadShell } from "./shell-layout";
-import { completeSignIn, startSignIn } from "./sign-in";
+import { load as loadShell } from "./(app)/+layout.server";
+import { POST as logoutAuthentication } from "./auth/logout/+server";
+import { completeSignIn, startSignIn } from "./auth/sign-in.server";
 
 import { createHash } from "node:crypto";
 
@@ -8,7 +8,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { Role } from "@a-novel/service-authentication-rest";
 
-import type { Cookies, RequestEvent } from "@sveltejs/kit";
+import type { Cookies } from "@sveltejs/kit";
 
 const env = vi.hoisted(() => ({
   ACCOUNT_URL: "https://account.test",
@@ -57,7 +57,7 @@ function request(path: string, cookieValues: Record<string, string> = {}) {
     }),
   };
   const url = new URL(path, "https://template.test");
-  const event = { cookies, getClientAddress: () => "192.0.2.1", url } as unknown as RequestEvent;
+  const event = { cookies, getClientAddress: () => "192.0.2.1", url } as unknown as never;
   return { event, cookies, values };
 }
 

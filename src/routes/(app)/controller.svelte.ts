@@ -1,10 +1,26 @@
 import { signInHref } from "#lib/application/auth/navigation.js";
-import { withNavigationOpen } from "#lib/application/shell/navigation-state.js";
-import type { ShellSession, ShellViewModel } from "#lib/application/shell/types.js";
+
+import { withNavigationOpen } from "./navigation-state";
 
 import { SvelteURL } from "svelte/reactivity";
 
 import type { OpenController } from "@a-novel-kit/uikit";
+
+/** Session states the shell can render without owning session logic. */
+export type ShellSession =
+  | { status: "anonymous" }
+  | { status: "loading" }
+  | { status: "error" }
+  | { status: "downtime" }
+  | { status: "authenticated"; displayName?: string; initials?: string };
+
+/** Serializable state consumed by the pure application shell. */
+export interface ShellViewModel {
+  activeNavigation: "home" | "privacy" | null;
+  rail: "expanded" | "collapsed";
+  drawerOpen: boolean;
+  session: ShellSession;
+}
 
 /** State rendered by the application shell component. */
 export interface ShellControllerState {

@@ -1,7 +1,7 @@
 <script module lang="ts">
-  import type { ShellViewModel } from "#lib/application/shell/types.js";
   import { createStorybookTranslator } from "#lib/i18n/storybook.js";
 
+  import type { ShellViewModel } from "./controller.svelte";
   import StoryHarness from "./story.svelte";
 
   import { reviewStoryGlobals } from "@a-novel-kit/uikit-storybook";

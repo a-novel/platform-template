@@ -1,3 +1,4 @@
+<!-- @component Renders a protected page once access is allowed, and otherwise the access state that stops it. -->
 <script lang="ts">
   import type { Snippet } from "svelte";
 

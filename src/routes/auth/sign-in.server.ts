@@ -1,8 +1,7 @@
 import { type SignInFailure, safeReturnTo, signInFailedHref } from "#lib/application/auth/navigation.js";
-
-import { refuseDuringDowntime } from "../downtime";
-import { getRuntimeConfig } from "../runtime-config.server";
-import { type AuthenticationEvent, getAuthenticationContext } from "./context";
+import { type AuthenticationEvent, getAuthenticationContext } from "#lib/server/auth/context.js";
+import { refuseDuringDowntime } from "#lib/server/downtime.js";
+import { getRuntimeConfig } from "#lib/server/runtime-config.server.js";
 
 import { createHash, randomBytes } from "node:crypto";
 

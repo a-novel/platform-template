@@ -1,11 +1,11 @@
 <script lang="ts">
-  import { readNavigationOpen, withNavigationOpen } from "#lib/application/shell/navigation-state.js";
-  import { readRailCollapsed, writeRailCollapsed } from "#lib/client/shell/rail-preference.js";
   import { afterNavigate, goto } from "$app/navigation";
   import { resolve } from "$app/paths";
   import { page } from "$app/state";
 
   import { createShellController } from "./controller.svelte";
+  import { readNavigationOpen, withNavigationOpen } from "./navigation-state";
+  import { readRailCollapsed, writeRailCollapsed } from "./rail-preference";
   import Screen from "./screen.svelte";
 
   import { onMount, untrack } from "svelte";

@@ -1,6 +1,6 @@
-import type { ShellViewModel } from "#lib/application/shell/types.js";
 import { withLocale } from "#lib/i18n/provider.fixture.js";
 
+import type { ShellViewModel } from "./controller.svelte";
 import { createShellController } from "./controller.svelte";
 import Screen from "./screen.svelte";
 import ShellStory from "./story.svelte";

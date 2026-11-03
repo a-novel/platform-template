@@ -1,5 +1,11 @@
-import { logoutAuthentication } from "#lib/server/auth/logout.js";
+import { getAuthenticationContext } from "#lib/server/auth/context.js";
 
 import type { RequestHandler } from "./$types";
 
-export const POST: RequestHandler = logoutAuthentication;
+import { redirect } from "@sveltejs/kit";
+
+/** Signs the visitor out, revoking the session's refresh token, and returns the browser to the app shell. */
+export const POST: RequestHandler = async (event) => {
+  await getAuthenticationContext(event).session.logout();
+  redirect(303, "/");
+};
