@@ -240,7 +240,7 @@ describe("sign-in through the account platform at the request boundary", () => {
   it("sends the visitor to the account platform with a fresh state and an S256 PKCE challenge", async () => {
     const { redirect, options, pending, authorization } = await startedSignIn();
 
-    expect(redirect.status).toBe(303);
+    expect(redirect.status).toBe(307);
     expect(authorization.origin + authorization.pathname).toBe("https://account.test/authorize");
     expect(Object.fromEntries(authorization.searchParams)).toEqual({
       response_type: "code",
@@ -346,6 +346,19 @@ describe("sign-in through the account platform at the request boundary", () => {
     expect(fetchService).not.toHaveBeenCalled();
     expect(values.size).toBe(0);
     expect(cookies.delete).toHaveBeenCalledWith("template_sign_in", { path: "/auth/callback" });
+  });
+
+  it("returns to the home page when a planted pending sign-in names another site", async () => {
+    const { pending } = await startedSignIn();
+    const planted = JSON.stringify({ ...pending, returnTo: "https://attacker.invalid/" });
+    const { event } = callback({ code: "c", state: pending.state, iss: "https://account.test" }, planted);
+    fetchService
+      .mockResolvedValueOnce(Response.json(tokenResponse))
+      .mockResolvedValueOnce(Response.json(selfCredentials));
+
+    const response = await completeSignIn(event);
+
+    expect(response.headers.get("location")).toBe("/");
   });
 
   it.each([

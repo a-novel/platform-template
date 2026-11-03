@@ -5,7 +5,7 @@ import { SpanStatusCode } from "@opentelemetry/api";
 import type { RequestEvent } from "@sveltejs/kit";
 import type { Handle } from "@sveltejs/kit/hooks";
 
-/** Gives each request its own locale and translations, hands its trace to the page, and traces the response. */
+/** Gives each request its own locale and translations, hands its trace to the page, refuses framing, and traces the response. */
 export const handle: Handle = async ({ event, resolve }) => {
   const locale = resolveLocale(event.request.headers.get("accept-language"));
 
@@ -16,6 +16,10 @@ export const handle: Handle = async ({ event, resolve }) => {
   const response = await resolve(event, {
     transformPageChunk: ({ html }) => html.replace("%lang%", locale).replace("%trace%", trace),
   });
+
+  // Only the logout form acts on a click, yet no site may overlay any page (RFC 9700 §4.16).
+  response.headers.set("x-frame-options", "DENY");
+  response.headers.append("content-security-policy", "frame-ancestors 'none'");
 
   traceResponse(event, response);
   return response;

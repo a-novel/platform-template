@@ -54,7 +54,8 @@ export async function startSignIn(event: AuthenticationEvent): Promise<never> {
     maxAge: pendingLifetimeSeconds,
   });
 
-  redirect(303, authorization.href, { external: true });
+  // A load answers a GET, so the redirect keeps its method.
+  redirect(307, authorization.href, { external: true });
 }
 
 /**
@@ -67,7 +68,8 @@ export async function completeSignIn(event: AuthenticationEvent): Promise<Respon
   const pending = PendingSignInSchema.safeParse(parseJson(event.cookies.get(pendingCookie))).data;
   event.cookies.delete(pendingCookie, { path: callbackPath });
 
-  const returnTo = pending?.returnTo ?? "/";
+  // A sibling host can plant this cookie, so the return address is checked again on the way out.
+  const returnTo = safeReturnTo(pending?.returnTo);
   const failure = pending ? await exchangeCode(event, pending) : "rejected";
 
   return leaveCallback(failure ? signInFailedHref(returnTo, failure) : returnTo);

@@ -47,6 +47,15 @@ describe("request hook", () => {
     expect(french.locals.i18n).not.toBe(english.locals.i18n);
   });
 
+  it.each([200, 303, 400])("refuses framing of every response with status %s", async (status) => {
+    const response = await handle({
+      event: event("/privacy"),
+      resolve: vi.fn().mockResolvedValue(new Response(null, { status })),
+    });
+    expect(response.headers.get("x-frame-options")).toBe("DENY");
+    expect(response.headers.get("content-security-policy")).toBe("frame-ancestors 'none'");
+  });
+
   it.each([
     { name: "hands the request's trace to the page", traced: true, want: `${TRACE_ID}-${SPAN_ID}-1` },
     { name: "leaves the page's trace empty while tracing is off", traced: false, want: "" },
