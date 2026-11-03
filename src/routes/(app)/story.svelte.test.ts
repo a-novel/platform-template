@@ -19,7 +19,7 @@ const shell: ShellViewModel = {
 
 describe("fixed visual review controllers", () => {
   it("keeps the open menu and the session after dismissal and logout", async () => {
-    render(ShellStory, { initialModel: shell }, withLocale());
+    render(ShellStory, { model: shell }, withLocale());
     const menu = page.getByRole("dialog", { name: "Agora" });
 
     await menu.getByRole("link", { name: "Close navigation" }).click();

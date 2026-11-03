@@ -1,4 +1,5 @@
 import { signInHref } from "#lib/application/auth/navigation.js";
+import type { PlatformDowntime } from "#lib/ui/downtime.svelte.js";
 
 import { withNavigationOpen } from "./navigation-state";
 
@@ -30,8 +31,11 @@ export interface ShellControllerState {
   accountHref: string | null;
   /** The invitation request on the account platform, absent while the server cannot read where it lives. */
   invitationHref: string | null;
-  privacyHref: string;
+  /** The Privacy page, absent on a platform that collects no browser telemetry and so asks nothing. */
+  privacyHref: string | null;
   logoutAction: string;
+  /** The planned downtime the shell announces, absent where nothing tracks it. */
+  platformDowntime?: PlatformDowntime;
 }
 
 /** Route-owned state synchronized into the shell after navigation. */
@@ -82,6 +86,7 @@ export function createShellController({
   invitationHref,
   privacyHref,
   logoutAction,
+  platformDowntime,
   allowNativeLogout = true,
   onRailChange,
   getUrl = () => new SvelteURL(homeHref, "https://template.invalid"),
@@ -110,7 +115,7 @@ export function createShellController({
 
   return {
     get state() {
-      return { model, homeHref, accountHref, invitationHref, privacyHref, logoutAction };
+      return { model, homeHref, accountHref, invitationHref, privacyHref, logoutAction, platformDowntime };
     },
     navigationDialog,
     navigationHref: (open) => href(withNavigationOpen(getUrl(), open)),

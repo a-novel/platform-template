@@ -26,7 +26,7 @@
   const preference = createTelemetryPreference(telemetry);
   if (telemetry.enabled) setTelemetryPreference(preference);
 
-  // The request shows only while the device records no answer; the account page changes it later.
+  // The request shows only while the device records no answer; the Privacy page changes it later.
   const consent: ConsentController = {
     get state() {
       return { open: telemetry.enabled && !preference.pending && preference.choice === undefined };

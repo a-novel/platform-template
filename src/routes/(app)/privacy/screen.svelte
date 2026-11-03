@@ -1,13 +1,18 @@
 <script lang="ts">
-  import { getTelemetryPreference, hasTelemetryPreference } from "#lib/ui/telemetry-preference.js";
+  import type { TelemetryPreference } from "#lib/ui/telemetry-preference.js";
 
   import { getI18nContext } from "@a-novel-kit/nodelib-i18n/svelte";
   import { Card, Container, PageHeader, Stack, Switch, type SwitchController } from "@a-novel-kit/uikit";
 
+  let {
+    telemetry,
+  }: {
+    /** The visitor's telemetry answer, or null on a platform that collects no browser telemetry and asks nothing. */
+    telemetry: TelemetryPreference | null;
+  } = $props();
+
   const { t } = getI18nContext();
 
-  // Only a platform that collects browser telemetry asks for consent, so only it has an answer to change.
-  const telemetry = hasTelemetryPreference() ? getTelemetryPreference() : undefined;
   const telemetrySwitch: SwitchController = {
     get state() {
       return { checked: telemetry?.choice === "accepted" };

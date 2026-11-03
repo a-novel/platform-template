@@ -156,7 +156,7 @@
   asChild
   play={verifyAnonymousAuthentication}
 >
-  <StoryHarness initialModel={anonymous} />
+  <StoryHarness model={anonymous} />
 </Story>
 
 <Story
@@ -166,11 +166,15 @@
   asChild
   play={verifyExpandedMobileNavigation}
 >
-  <StoryHarness initialModel={withOpenMobileNavigation(anonymous)} />
+  <StoryHarness model={withOpenMobileNavigation(anonymous)} />
+</Story>
+
+<Story name="Without account links" exportName="WithoutAccountLinks" asChild>
+  <StoryHarness model={anonymous} accountLinks={false} />
 </Story>
 
 <Story name="Collapsed anonymous" asChild play={verifyRailToggle}>
-  <StoryHarness initialModel={{ ...anonymous, rail: "collapsed" }} />
+  <StoryHarness model={{ ...anonymous, rail: "collapsed" }} />
 </Story>
 
 <Story
@@ -180,15 +184,15 @@
   asChild
   play={verifyCollapsedMobileNavigation}
 >
-  <StoryHarness initialModel={{ ...anonymous, rail: "collapsed" }} />
+  <StoryHarness model={{ ...anonymous, rail: "collapsed" }} />
 </Story>
 
 <Story name="Authenticated" asChild play={verifyAuthenticatedActions}>
-  <StoryHarness initialModel={authenticated} />
+  <StoryHarness model={authenticated} />
 </Story>
 
 <Story name="Privacy destination" asChild>
-  <StoryHarness initialModel={{ ...authenticated, activeNavigation: "privacy" }} collectsTelemetry />
+  <StoryHarness model={{ ...authenticated, activeNavigation: "privacy" }} collectsTelemetry />
 </Story>
 
 <Story
@@ -198,15 +202,19 @@
   asChild
   play={verifyAuthenticatedMobileLayout}
 >
-  <StoryHarness initialModel={withOpenMobileNavigation(authenticated)} />
+  <StoryHarness model={withOpenMobileNavigation(authenticated)} />
+</Story>
+
+<Story name="Collapsed authenticated" asChild>
+  <StoryHarness model={{ ...authenticated, rail: "collapsed" }} collectsTelemetry />
 </Story>
 
 <Story name="Account without a name" exportName="AccountWithoutAName" asChild>
-  <StoryHarness initialModel={unnamedAccount} />
+  <StoryHarness model={unnamedAccount} />
 </Story>
 
 <Story name="Long account name" exportName="LongAccountName" asChild>
-  <StoryHarness initialModel={longAccountName} />
+  <StoryHarness model={longAccountName} />
 </Story>
 
 <Story
@@ -216,11 +224,15 @@
   asChild
   play={verifyExpandedMobileNavigation}
 >
-  <StoryHarness initialModel={withOpenMobileNavigation(longAccountName)} />
+  <StoryHarness model={withOpenMobileNavigation(longAccountName)} />
 </Story>
 
 <Story name="Loading account" asChild>
-  <StoryHarness initialModel={loadingAccount} />
+  <StoryHarness model={loadingAccount} />
+</Story>
+
+<Story name="Collapsed loading account" asChild>
+  <StoryHarness model={{ ...loadingAccount, rail: "collapsed" }} />
 </Story>
 
 <Story
@@ -230,11 +242,11 @@
   asChild
   play={verifyExpandedMobileNavigation}
 >
-  <StoryHarness initialModel={withOpenMobileNavigation(loadingAccount)} />
+  <StoryHarness model={withOpenMobileNavigation(loadingAccount)} />
 </Story>
 
 <Story name="Account error" asChild>
-  <StoryHarness initialModel={accountError} />
+  <StoryHarness model={accountError} />
 </Story>
 
 <Story
@@ -244,13 +256,17 @@
   asChild
   play={verifyExpandedMobileNavigation}
 >
-  <StoryHarness initialModel={withOpenMobileNavigation(accountError)} />
+  <StoryHarness model={withOpenMobileNavigation(accountError)} />
 </Story>
 
 <Story name="Maintenance" asChild>
-  <StoryHarness initialModel={maintenance} {downtime}><ScrollPreview /></StoryHarness>
+  <StoryHarness model={maintenance} {downtime}><ScrollPreview /></StoryHarness>
 </Story>
 
 <Story name="Maintenance — mobile" exportName="MaintenanceMobile" globals={reviewStoryGlobals.mobile} asChild>
-  <StoryHarness initialModel={maintenance} {downtime}><ScrollPreview /></StoryHarness>
+  <StoryHarness model={maintenance} {downtime}><ScrollPreview /></StoryHarness>
+</Story>
+
+<Story name="Upcoming maintenance" asChild>
+  <StoryHarness model={anonymous} {downtime} started={false}><ScrollPreview /></StoryHarness>
 </Story>

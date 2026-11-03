@@ -19,3 +19,6 @@
 
 <Story name="Maintenance" args={{ downtime: { end: new Date("2026-10-12T08:30:00Z"), timeZone: "UTC" } }} />
 <Story name="Page not found" args={{ status: 404 }} />
+<Story name="Access denied" args={{ status: 403 }} />
+<Story name="Service unavailable" args={{ status: 503 }} />
+<Story name="Unexpected error" args={{ status: 500 }} />
