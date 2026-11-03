@@ -23,7 +23,7 @@ services:
     healthcheck: *postgres-healthcheck
 
   postgres-json-keys:
-    image: ghcr.io/a-novel/service-json-keys/database:v2.15.0@sha256:a7fd1aa7ba4476c6775e391fd632e0e292ca0667a25bec07a0cc3fab57afad3a
+    image: ghcr.io/a-novel/service-json-keys/database:v2.15.2@sha256:06457d216da6416e58262893731c6caf4382d74e89baa13aa79eaffd629c771c
     environment: *postgres-environment
     healthcheck: *postgres-healthcheck
 
@@ -37,7 +37,7 @@ services:
       MP_DISABLE_WAL: "true"
 
   service-json-keys:
-    image: ghcr.io/a-novel/service-json-keys/standalone-grpc:v2.15.0@sha256:724cdd6d379076d646a021ea6d4963842ebebcccdb58ddf7ed9675cbda6c54b3
+    image: ghcr.io/a-novel/service-json-keys/standalone-grpc:v2.15.2@sha256:0f65ea89963d59ffaa88c6bbc10fbfd0b4165348bb2a305a8a28e28df0ee63bf
     healthcheck:
       test: ["CMD", "grpcurl", "--plaintext", "-d", "", "localhost:8080", "grpc.health.v1.Health/Check"]
       interval: 1s
