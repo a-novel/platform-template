@@ -33,16 +33,15 @@ git grep -n -i template -- . ':!pnpm-lock.yaml'
 | What                | Where                                                               | Why it changes                                                                         |
 | ------------------- | ------------------------------------------------------------------- | -------------------------------------------------------------------------------------- |
 | Session cookies     | `src/lib/server/auth/session.ts`                                    | Platforms share one origin behind the gateway, so each names its cookies after itself. |
-| Client ID           | `src/lib/server/auth/sign-in.ts`                                    | Infra registers each platform with the authentication service under its own name.      |
-| Rail preference key | `src/lib/client/shell/rail-preference.ts`                           | Local storage is shared across that origin too.                                        |
+| Client ID           | `src/routes/auth/sign-in.server.ts`                                 | Infra registers each platform with the authentication service under its own name.      |
+| Rail preference key | `src/routes/(app)/rail-preference.ts`                               | Local storage is shared across that origin too.                                        |
 | Product name        | `src/lib/i18n/locales/*/common.yaml`                                | `pageTitles.brand`, `shell.brand` and `shell.navigation` name the product users see.   |
 | Test placeholders   | `builds/compose.e2e.yaml`, the tests, `.github/workflows/main.yaml` | Test accounts, project names and report names follow the platform name.                |
 | Product logo        | `src/routes/+layout.svelte`, `src/routes/(app)/screen.svelte`       | The favicon, banner and icon show the Agora logo until the product has its own.        |
 
 **3. Add your screens.** The home page under `src/routes/(app)/(home)/` is empty. Build your first
 screen beside it, in the shape of the shell in `src/routes/(app)`. A route that needs an account calls
-`requireAuthorization`, as the access screens' documentation in `src/routes/(app)/(access)/screen.mdx`
-shows. Sign-in, invitations and the account page stay on the account platform.
+`requireAuthorization`, as the access boundary's documentation in `src/lib/ui/AccessBoundary.mdx` shows. Sign-in, invitations and the account page stay on the account platform.
 
 **4. Keep the foundations.** The foundations every platform shares stay as they are, along with the
 container, CI and the test setup. The [contribution guide](./CONTRIBUTING.md#where-code-goes) names

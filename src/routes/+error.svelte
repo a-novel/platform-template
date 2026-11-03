@@ -6,7 +6,7 @@
   import { resolve } from "$app/paths";
   import { page } from "$app/state";
 
-  import Screen from "./(app)/(access)/failure.svelte";
+  import Screen from "./error-screen.svelte";
 
   import { getI18nContext } from "@a-novel-kit/nodelib-i18n/svelte";
 

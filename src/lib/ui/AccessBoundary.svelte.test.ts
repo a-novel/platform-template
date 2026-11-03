@@ -1,6 +1,6 @@
 import { withLocale } from "#lib/i18n/provider.fixture.js";
 
-import Screen from "./screen.svelte";
+import AccessBoundary from "./AccessBoundary.svelte";
 
 import { createRawSnippet } from "svelte";
 
@@ -18,7 +18,7 @@ describe("protected page presentation", () => {
   it.each<AuthorizationStatus>(["pending", "anonymous", "forbidden", "unavailable"])(
     "withholds private content for %s",
     async (status) => {
-      render(Screen, { ...links, controller: { state: { status } }, children }, withLocale());
+      render(AccessBoundary, { ...links, controller: { state: { status } }, children }, withLocale());
       await expect.element(page.getByText("Private content")).not.toBeInTheDocument();
       await expect.element(page.getByRole("heading", { level: 1 })).toBeVisible();
       if (status === "anonymous") {
@@ -35,13 +35,17 @@ describe("protected page presentation", () => {
   );
 
   it("renders authorized content without a status page", async () => {
-    render(Screen, { ...links, controller: { state: { status: "allowed" } }, children }, withLocale());
+    render(AccessBoundary, { ...links, controller: { state: { status: "allowed" } }, children }, withLocale());
     await expect.element(page.getByText("Private content")).toBeVisible();
     await expect.element(page.getByRole("heading")).not.toBeInTheDocument();
   });
 
   it("allows an explicit public fallback during outages without exposing protected content", async () => {
-    render(Screen, { ...links, controller: { state: { status: "unavailable" } }, children, unavailable }, withLocale());
+    render(
+      AccessBoundary,
+      { ...links, controller: { state: { status: "unavailable" } }, children, unavailable },
+      withLocale()
+    );
     await expect.element(page.getByText("Blank public form")).toBeVisible();
     await expect.element(page.getByText("Private content")).not.toBeInTheDocument();
   });

@@ -6,36 +6,40 @@ sets up the workspace and its shared commands.
 
 ## Where code goes
 
-A feature spans the runtime layers it needs, and dependencies point inward. Routes compose the layers.
-Client and server code depend on application contracts. Application code stays framework-free.
+`src/routes` mirrors the URL, and each of its directories holds everything only its routes use.
+`src/lib` holds what the whole app shares, split by where the code runs. To find anything on screen,
+open the directory of its URL and walk up; past `src/routes`, look in `src/lib`. A file sits in the
+deepest directory that holds every route using it.
 
-| Folder                | Owns                                                                           | Never imports                               |
-| --------------------- | ------------------------------------------------------------------------------ | ------------------------------------------- |
-| `src/routes`          | URLs, layouts, loads, form actions, and wiring                                 |                                             |
-| `src/lib/ui`          | Product-specific presentational components                                     | Environment, services, storage, navigation  |
-| `src/lib/application` | Types, state codecs, validation, and use-case logic                            | SvelteKit, browser APIs, UI, client, server |
-| `src/lib/client`      | Browser adapters, such as local-storage preferences                            | Server code                                 |
-| `src/lib/server`      | Sessions, service clients, and private configuration                           | Client and UI code                          |
-| `src/lib/i18n`        | Locale policy, YAML catalogs, generated key types, and stable-code translators |                                             |
+| What you see                                    | Where it lives                                                               |
+| ----------------------------------------------- | ---------------------------------------------------------------------------- |
+| A page, as `/privacy`                           | `src/routes/(app)/privacy/+page.svelte`, which only wires the screen         |
+| What it renders, and its state                  | `screen.svelte` and `controller.svelte.ts` beside it                         |
+| What it loads and the forms it submits          | `+page.server.ts` beside it                                                  |
+| The shell around every page                     | `src/routes/(app)`: its layout, screen, controller and their helpers         |
+| The home page                                   | `src/routes/(app)/(home)`, a group so its screen keeps its own directory     |
+| The error page                                  | `src/routes/+error.svelte` and `error-screen.svelte`                         |
+| Sign-in, callback and logout                    | `src/routes/auth`, with the shared sign-in protocol in `sign-in.server.ts`   |
+| Health probes                                   | `src/routes/ping`, `src/routes/healthcheck`                                  |
+| Components several routes render                | `src/lib/ui`                                                                 |
+| Shared pure logic: URL codecs, return addresses | `src/lib/application`                                                        |
+| Shared browser adapters: telemetry              | `src/lib/client`                                                             |
+| Session, service calls, downtime                | `src/lib/server`                                                             |
+| Configuration                                   | `src/env.ts`, `src/lib/server/runtime-config.ts`                             |
+| Locale per request, tracing                     | `src/hooks.server.ts`, `src/instrumentation.server.ts`                       |
+| Copy                                            | `src/lib/i18n/locales/*/common.yaml`, under the key of the screen showing it |
+| A journey across pages                          | `tests/e2e`                                                                  |
+
+Dependencies point inward: `src/lib` never imports from `src/routes`, and a route imports from its
+own directory, the directories above it, and `src/lib`. Screens and `src/lib/ui` import no
+environment, services, storage, or navigation; the route files bring those in. Code under
+`src/lib/server` or named `*.server.ts` never reaches the browser.
 
 Inside `src/lib`, a module imports from its own top-level folder, such as `src/lib/server`, by a
 relative path, and from any other folder through `#lib/`.
 
 Reusable controls belong in UIKit and reusable runtime helpers in nodelib. The platform keeps screen
 composition and product behavior.
-
-The foundations every platform keeps live here:
-
-| Foundation                  | Home                                                                    |
-| --------------------------- | ----------------------------------------------------------------------- |
-| Shell, navigation and login | `src/routes/(app)`                                                      |
-| Session and authorization   | `src/lib/server/auth`                                                   |
-| Service calls               | `src/lib/server/service-fetch.ts`                                       |
-| Configuration               | `src/env.ts`, `src/lib/server/runtime-config.ts`                        |
-| Localization                | `src/hooks.server.ts`, `src/lib/i18n`                                   |
-| Tracing                     | `src/instrumentation.server.ts`                                         |
-| Health probes               | `src/routes/ping`, `src/routes/healthcheck`, `src/lib/server/health.ts` |
-| Planned downtime            | `src/lib/server/downtime.ts`, `src/lib/ui/downtime.svelte.ts`           |
 
 ## Building a screen
 
@@ -49,7 +53,8 @@ content and mobile. `pnpm storybook` then shows it without live services. Unit-t
 next, and wire the route last.
 
 Each test sits beside the file it covers and takes its name, such as `controller.test.ts` for
-`controller.svelte.ts`. Helpers shared between tests live in `*.fixture.ts` modules, which coverage
+`controller.svelte.ts` or `page.server.test.ts` for `+page.server.ts`. `src/routes/request.test.ts` drives the server
+routes through the real session, with only `fetch` stubbed. Helpers shared between tests live in `*.fixture.ts` modules, which coverage
 leaves out.
 
 Layouts follow these rules:

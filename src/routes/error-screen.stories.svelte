@@ -1,11 +1,11 @@
 <script module lang="ts">
-  import Failure from "./failure.svelte";
+  import ErrorPage from "./error-screen.svelte";
 
   import { defineMeta } from "@storybook/addon-svelte-csf";
 
   const { Story } = defineMeta({
     title: "Authentication/Error pages",
-    component: Failure,
+    component: ErrorPage,
     tags: ["!autodocs"],
     parameters: { layout: "fullscreen" },
     args: {

@@ -1,7 +1,12 @@
-import { aggregateHealth } from "./health";
-import type { RuntimeConfig } from "./runtime-config";
+import type { RuntimeConfig } from "#lib/server/runtime-config.js";
 
-import { describe, expect, it, vi } from "vitest";
+import { GET } from "./+server";
+
+import { beforeEach, describe, expect, it, vi } from "vitest";
+
+const readConfig = vi.hoisted(() => vi.fn<() => RuntimeConfig>());
+
+vi.mock("#lib/server/runtime-config.server.js", () => ({ getRuntimeConfig: readConfig }));
 
 const config: RuntimeConfig = {
   authenticationServiceUrl: "http://authentication:8080/api",
@@ -17,7 +22,17 @@ function response(body: unknown, status = 200): Response {
   });
 }
 
-describe("aggregateHealth", () => {
+/** Probes the platform through its route, and returns the status and the health report. */
+async function probe(fetchImplementation: typeof globalThis.fetch) {
+  const response = await GET({ fetch: fetchImplementation } as never);
+  return { status: response.status, health: await response.json() };
+}
+
+beforeEach(() => {
+  readConfig.mockReset().mockReturnValue(config);
+});
+
+describe("GET /healthcheck", () => {
   it("reports service reachability and preserves its dependency map", async () => {
     const dependencies = {
       "api:jsonKeys": { status: "up" as const },
@@ -26,16 +41,17 @@ describe("aggregateHealth", () => {
     };
     const fetchImplementation = vi.fn<typeof globalThis.fetch>(async () => response(dependencies));
 
-    const health = await aggregateHealth(fetchImplementation, () => config);
-
-    expect(health).toEqual({
-      services: {
-        authentication: {
-          dependencies,
-          status: "up",
+    await expect(probe(fetchImplementation)).resolves.toEqual({
+      status: 200,
+      health: {
+        services: {
+          authentication: {
+            dependencies,
+            status: "up",
+          },
         },
+        status: "up",
       },
-      status: "up",
     });
     const [url, init] = fetchImplementation.mock.calls[0] ?? [];
     expect(url).toEqual(new URL("http://authentication:8080/api/v2/healthcheck"));
@@ -51,16 +67,17 @@ describe("aggregateHealth", () => {
     };
     const fetchImplementation = vi.fn<typeof globalThis.fetch>(async () => response(dependencies));
 
-    const health = await aggregateHealth(fetchImplementation, () => config);
-
-    expect(health).toEqual({
-      services: {
-        authentication: {
-          dependencies,
-          status: "up",
+    await expect(probe(fetchImplementation)).resolves.toEqual({
+      status: 503,
+      health: {
+        services: {
+          authentication: {
+            dependencies,
+            status: "up",
+          },
         },
+        status: "down",
       },
-      status: "down",
     });
   });
 
@@ -69,30 +86,35 @@ describe("aggregateHealth", () => {
       throw new Error("connection details");
     });
 
-    await expect(aggregateHealth(fetchImplementation, () => config)).resolves.toEqual({
-      services: {
-        authentication: {
-          status: "down",
+    await expect(probe(fetchImplementation)).resolves.toEqual({
+      status: 503,
+      health: {
+        services: {
+          authentication: {
+            status: "down",
+          },
         },
+        status: "down",
       },
-      status: "down",
     });
   });
 
   it("derives the unavailable service from the registry when runtime configuration fails", async () => {
     const fetchImplementation = vi.fn<typeof globalThis.fetch>();
+    readConfig.mockImplementation(() => {
+      throw new Error("private configuration detail");
+    });
 
-    await expect(
-      aggregateHealth(fetchImplementation, () => {
-        throw new Error("private configuration detail");
-      })
-    ).resolves.toEqual({
-      services: {
-        authentication: {
-          status: "down",
+    await expect(probe(fetchImplementation)).resolves.toEqual({
+      status: 503,
+      health: {
+        services: {
+          authentication: {
+            status: "down",
+          },
         },
+        status: "down",
       },
-      status: "down",
     });
     expect(fetchImplementation).not.toHaveBeenCalled();
   });

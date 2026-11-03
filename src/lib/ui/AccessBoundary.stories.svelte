@@ -1,11 +1,11 @@
 <script module lang="ts">
-  import Screen from "./screen.svelte";
+  import AccessBoundary from "./AccessBoundary.svelte";
 
   import { defineMeta } from "@storybook/addon-svelte-csf";
 
   const { Story } = defineMeta({
     title: "Authentication/Protected pages",
-    component: Screen,
+    component: AccessBoundary,
     tags: ["!autodocs"],
     parameters: { layout: "fullscreen" },
     args: {

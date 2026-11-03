@@ -1,6 +1,6 @@
 import { withLocale } from "#lib/i18n/provider.fixture.js";
 
-import Failure from "./failure.svelte";
+import ErrorPage from "./error-screen.svelte";
 
 import { describe, expect, it } from "vitest";
 import { render } from "vitest-browser-svelte";
@@ -17,7 +17,7 @@ const failureTitles = [
 
 describe("error page presentation", () => {
   it.each(failureTitles)("localizes HTTP %s without showing internal error details", async (status, title) => {
-    render(Failure, { ...links, status }, withLocale("fr"));
+    render(ErrorPage, { ...links, status }, withLocale("fr"));
     await expect.element(page.getByRole("heading", { name: title, level: 1 })).toBeVisible();
   });
 });
