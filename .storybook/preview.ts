@@ -1,6 +1,7 @@
 import I18nProvider from "../src/lib/i18n/I18nProvider.svelte";
 import { type Locale, defaultLocale, supportedLocales } from "../src/lib/i18n/config";
 import { storybookLocale } from "../src/lib/i18n/storybook";
+import "../src/lib/ui/lamp.css";
 
 import type { Preview } from "@storybook/sveltekit";
 

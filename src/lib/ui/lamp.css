@@ -1,0 +1,5 @@
+/* Each Agora app lights its lamp in its own color, so people know at a glance where they are. The
+   root element holds it, since the canvas resolves the lamp there. */
+html {
+  --color-lamp: var(--base-brand);
+}
