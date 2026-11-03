@@ -21,9 +21,10 @@ export const handle: Handle = async ({ event, resolve }) => {
     transformPageChunk: ({ html }) => html.replace("%lang%", locale).replace("%trace%", trace),
   });
 
-  // Only the logout form acts on a click, yet no site may overlay any page (RFC 9700 §4.16).
+  // Only the logout form acts on a click, yet no site may overlay any page (RFC 9700 §4.16). Pages already
+  // carry `frame-ancestors 'none'` in the CSP that nodelib's SvelteKit preset sends; this header also covers
+  // the responses without one.
   response.headers.set("x-frame-options", "DENY");
-  response.headers.append("content-security-policy", "frame-ancestors 'none'");
   // A response rendered with a session is the visitor's alone, so no cache may keep it (RFC 9111 §5.2.2.5).
   if (hasSession(event.cookies)) response.headers.set("cache-control", "private, no-store");
 

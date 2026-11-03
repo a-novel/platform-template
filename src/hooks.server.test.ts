@@ -66,7 +66,6 @@ describe("request hook", () => {
       resolve: vi.fn().mockResolvedValue(new Response(null, { status })),
     });
     expect(response.headers.get("x-frame-options")).toBe("DENY");
-    expect(response.headers.get("content-security-policy")).toBe("frame-ancestors 'none'");
   });
 
   it.each([
