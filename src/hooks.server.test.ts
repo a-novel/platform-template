@@ -18,6 +18,7 @@ function event(path: string, language?: string, traced = false): RequestEvent {
     locals: {},
     request: new Request(url, { headers: language ? { "accept-language": language } : undefined }),
     route: { id: url.pathname },
+    cookies: { get: () => undefined },
     tracing: { enabled: traced, root, current: root },
   } as unknown as RequestEvent;
 }
@@ -45,6 +46,26 @@ describe("request hook", () => {
     expect(french.locals.locale).toBe("fr");
     expect(english.locals.locale).toBe("en");
     expect(french.locals.i18n).not.toBe(english.locals.i18n);
+  });
+
+  it("keeps a response rendered with a session out of every cache", async () => {
+    const signedIn = {
+      ...event("/privacy"),
+      cookies: { get: (name: string) => (name === "__Host-template_refresh_token" ? "refresh" : undefined) },
+    } as RequestEvent;
+    const response = await handle({
+      event: signedIn,
+      resolve: vi.fn().mockResolvedValue(new Response("page", { headers: { "cache-control": "public, max-age=60" } })),
+    });
+    expect(response.headers.get("cache-control")).toBe("private, no-store");
+  });
+
+  it.each([200, 303, 400])("refuses framing of every response with status %s", async (status) => {
+    const response = await handle({
+      event: event("/privacy"),
+      resolve: vi.fn().mockResolvedValue(new Response(null, { status })),
+    });
+    expect(response.headers.get("x-frame-options")).toBe("DENY");
   });
 
   it.each([

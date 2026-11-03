@@ -23,7 +23,7 @@ test.describe("scheduled maintenance", () => {
     await screenshot(page, info, "maintenance-scheduled");
 
     const signIn = await request.get("/auth/sign-in", { maxRedirects: 0 });
-    expect(signIn.status()).toBe(303);
+    expect(signIn.status()).toBe(307);
     expect(signIn.headers().location).toMatch(/^http:\/\/127\.0\.0\.1:14102\/authorize\?/);
   });
 

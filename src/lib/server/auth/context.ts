@@ -35,7 +35,7 @@ export function getAuthenticationContext(event: AuthenticationEvent): Authentica
       visitorAddress: event.getClientAddress(),
     })
   );
-  const context = { api, session: new AuthenticationSession(createSessionClient(api), event.cookies, event.url) };
+  const context = { api, session: new AuthenticationSession(createSessionClient(api), event.cookies) };
 
   requestContexts.set(event.cookies, context);
   return context;
