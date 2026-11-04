@@ -54,7 +54,6 @@
     signInHref: () => "#sign-in",
     toggleRail: () => {},
     logout: () => false,
-    synchronizeRoute: () => {},
     synchronizeRail: () => {},
   };
 </script>

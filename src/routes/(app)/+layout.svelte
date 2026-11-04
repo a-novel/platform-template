@@ -6,11 +6,11 @@
   import { page } from "$app/state";
 
   import { createShellController } from "./controller.svelte";
-  import { readNavigationOpen, withNavigationOpen } from "./navigation-state";
+  import { withNavigationOpen } from "./navigation-state";
   import { readRailCollapsed, writeRailCollapsed } from "./rail-preference";
   import Screen from "./screen.svelte";
 
-  import { onMount, untrack } from "svelte";
+  import { onMount } from "svelte";
 
   import { AuthorizationProvider } from "@a-novel-kit/uikit";
   import { createAuthorizationController } from "@a-novel-kit/uikit/authorization";
@@ -22,11 +22,8 @@
 
   let currentHref = $state(page.url.href);
   const controller = createShellController({
-    model: { ...untrack(routeState), rail: "expanded" },
+    getData: () => data,
     homeHref: resolve(""),
-    // The account platform serves these pages, at addresses no navigation changes.
-    accountHref: untrack(() => data.accountHref),
-    invitationHref: untrack(() => data.invitationHref),
     // Only a platform that collects browser telemetry asks for consent, so only it offers to change the answer.
     privacyHref: hasTelemetryPreference() ? resolve("privacy") : null,
     logoutAction: resolve("auth/logout"),
@@ -34,11 +31,6 @@
     getUrl: () => new URL(currentHref),
     onDrawerChange: (open) => showShallow(withNavigationOpen(new URL(window.location.href), open)),
     onRailChange: (rail) => writeRailCollapsed(window.localStorage, rail === "collapsed"),
-  });
-
-  $effect(() => {
-    const route = routeState();
-    untrack(() => controller.synchronizeRoute(route));
   });
 
   afterNavigate(async ({ complete, shallow }) => {
@@ -56,15 +48,6 @@
 
     return () => window.removeEventListener("popstate", synchronizeUrl);
   });
-
-  /** The shell state that the route data and the current URL hold. */
-  function routeState() {
-    return {
-      activeNavigation: data.activeNavigation,
-      session: data.session,
-      drawerOpen: readNavigationOpen(new URL(currentHref).searchParams),
-    };
-  }
 
   /** Shows a URL change without loading the page, and makes it the shell's current URL. */
   function showShallow(next: URL) {

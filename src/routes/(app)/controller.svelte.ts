@@ -1,7 +1,7 @@
 import { signInHref } from "#lib/application/auth/navigation.js";
 import type { PlatformDowntime } from "#lib/ui/downtime.svelte.js";
 
-import { withNavigationOpen } from "./navigation-state";
+import { readNavigationOpen, withNavigationOpen } from "./navigation-state";
 
 import { SvelteURL } from "svelte/reactivity";
 
@@ -38,12 +38,9 @@ export interface ShellControllerState {
   platformDowntime?: PlatformDowntime;
 }
 
-/** Route-owned state synchronized into the shell after navigation. */
-export interface ShellRouteState {
-  activeNavigation: ShellViewModel["activeNavigation"];
-  session: ShellSession;
-  drawerOpen?: boolean;
-}
+/** The layout's load data the shell renders: the page's destination, the session and the account links. */
+export type ShellData = Pick<ShellViewModel, "activeNavigation" | "session"> &
+  Pick<ShellControllerState, "accountHref" | "invitationHref">;
 
 /** Pure state and transitions consumed by the application shell component. */
 export interface ShellController {
@@ -60,19 +57,19 @@ export interface ShellController {
   toggleRail(): void;
   /** Requests logout and reports whether native form submission should continue. */
   logout(): boolean;
-  /** Reconciles route-owned state after navigation. */
-  synchronizeRoute(state: ShellRouteState): void;
   /** Reconciles the persisted navigation-rail preference. */
   synchronizeRail(rail: ShellViewModel["rail"]): void;
 }
 
 /** Configuration for the default shell controller. */
-export interface ShellControllerOptions extends ShellControllerState {
+export interface ShellControllerOptions extends Omit<ShellControllerState, "model" | "accountHref" | "invitationHref"> {
+  /** The layout's load data, which each navigation may replace. */
+  getData: () => ShellData;
   /** Allows the browser to submit the logout form after the controller accepts it. */
   allowNativeLogout?: boolean;
   /** Observes accepted navigation-rail changes. */
   onRailChange?: (rail: ShellViewModel["rail"]) => void;
-  /** Current base-resolved route, including query and fragment state. */
+  /** Current base-resolved route, including query and fragment state. It owns the mobile menu. */
   getUrl?: () => URL;
   /** Observes accepted mobile-menu changes. */
   onDrawerChange?: (open: boolean) => void;
@@ -80,10 +77,8 @@ export interface ShellControllerOptions extends ShellControllerState {
 
 /** Creates a reactive controller for the application shell. */
 export function createShellController({
-  model: initialModel,
+  getData,
   homeHref,
-  accountHref,
-  invitationHref,
   privacyHref,
   logoutAction,
   platformDowntime,
@@ -92,11 +87,28 @@ export function createShellController({
   getUrl = () => new SvelteURL(homeHref, "https://template.invalid"),
   onDrawerChange,
 }: ShellControllerOptions): ShellController {
-  let model = $state(initialModel);
+  let rail = $state<ShellViewModel["rail"]>("expanded");
+  // The URL owns the menu: a transition opens or closes it at once, and the next URL, such as Back's, decides again.
+  let drawerOpen = $derived(readNavigationOpen(getUrl().searchParams));
+  // A logout the browser does not submit signs the shell out until the next load.
+  let session = $derived(getData().session);
+
+  const state = $derived.by((): ShellControllerState => {
+    const { activeNavigation, accountHref, invitationHref } = getData();
+    return {
+      model: { activeNavigation, rail, drawerOpen, session },
+      homeHref,
+      accountHref,
+      invitationHref,
+      privacyHref,
+      logoutAction,
+      platformDowntime,
+    };
+  });
 
   function setDrawerOpen(open: boolean) {
-    if (model.drawerOpen === open) return;
-    model = { ...model, drawerOpen: open };
+    if (drawerOpen === open) return;
+    drawerOpen = open;
     onDrawerChange?.(open);
   }
 
@@ -106,16 +118,16 @@ export function createShellController({
 
   const navigationDialog: OpenController = {
     get state() {
-      return { open: model.drawerOpen };
+      return { open: drawerOpen };
     },
     open: () => setDrawerOpen(true),
     close: () => setDrawerOpen(false),
-    toggle: () => setDrawerOpen(!model.drawerOpen),
+    toggle: () => setDrawerOpen(!drawerOpen),
   };
 
   return {
     get state() {
-      return { model, homeHref, accountHref, invitationHref, privacyHref, logoutAction, platformDowntime };
+      return state;
     },
     navigationDialog,
     navigationHref: (open) => href(withNavigationOpen(getUrl(), open)),
@@ -124,25 +136,16 @@ export function createShellController({
       return signInHref(url.searchParams.get("returnTo") ?? href(url));
     },
     toggleRail() {
-      const rail = model.rail === "expanded" ? "collapsed" : "expanded";
-      model = { ...model, rail };
+      rail = rail === "expanded" ? "collapsed" : "expanded";
       onRailChange?.(rail);
     },
     logout() {
-      if (model.session.status !== "authenticated") return false;
-      if (!allowNativeLogout) model = { ...model, session: { status: "anonymous" } };
+      if (session.status !== "authenticated") return false;
+      if (!allowNativeLogout) session = { status: "anonymous" };
       return allowNativeLogout;
     },
-    synchronizeRoute(routeState) {
-      model = {
-        ...model,
-        activeNavigation: routeState.activeNavigation,
-        session: routeState.session,
-        drawerOpen: routeState.drawerOpen ?? model.drawerOpen,
-      };
-    },
-    synchronizeRail(rail) {
-      if (model.rail !== rail) model = { ...model, rail };
+    synchronizeRail(next) {
+      rail = next;
     },
   };
 }
