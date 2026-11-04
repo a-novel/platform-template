@@ -188,8 +188,8 @@ importers:
         specifier: 0.13.3
         version: 0.13.3
       '@a-novel/service-authentication-rest':
-        specifier: 2.25.1
-        version: 2.25.1(@a-novel-kit/nodelib-browser@2.7.0(@grafana/faro-web-sdk@2.13.0)(@grafana/faro-web-tracing@2.13.0)(zod@4.6.7))(zod@4.6.7)
+        specifier: 2.25.2
+        version: 2.25.2(@a-novel-kit/nodelib-browser@2.7.0(@grafana/faro-web-sdk@2.13.0)(@grafana/faro-web-tracing@2.13.0)(zod@4.6.7))(zod@4.6.7)
       '@a-novel/service-json-keys-rest':
         specifier: 2.15.6
         version: 2.15.6(@a-novel-kit/nodelib-browser@2.7.0(@grafana/faro-web-sdk@2.13.0)(@grafana/faro-web-tracing@2.13.0)(zod@4.6.7))(zod@4.6.7)
@@ -464,8 +464,8 @@ packages:
       i18next: ^26.5.12
       svelte: ^5.57.3
 
-  '@a-novel/service-authentication-rest@2.25.1':
-    resolution: {integrity: sha512-pBvT8XJgupoCMsp+8uiYE6fGWyp6mvAWy8Y3YOuIR1cvd7KCUPxwZb+FB7y9uGfwg+crVAPs59o4B8V1UnNx8A==, tarball: https://npm.pkg.github.com/download/@a-novel/service-authentication-rest/2.25.1/a5c76e7a4cb4828b95f3f35b9db1ae21bf6ffd27}
+  '@a-novel/service-authentication-rest@2.25.2':
+    resolution: {integrity: sha512-74gqAJvOLxQO/ifiSgeR+g+Ghrs3Z/EhQTihRj5QA1Su7lpJOV1Ntt+hCuxGj4cUGQEqnd3EAZ5Td6/bJUjw6g==, tarball: https://npm.pkg.github.com/download/@a-novel/service-authentication-rest/2.25.2/81a94d13bd85d001adea51b1b7a5169ebdcb42ee}
     engines: {node: '>=23.11.0', npm: '>=10.9.2'}
     peerDependencies:
       '@a-novel-kit/nodelib-browser': ^1.3.21 || ^2.0.0
@@ -3573,7 +3573,7 @@ snapshots:
       i18next: 26.6.0(typescript@6.0.3)
       svelte: 5.57.3(@typescript-eslint/types@8.72.1)
 
-  '@a-novel/service-authentication-rest@2.25.1(@a-novel-kit/nodelib-browser@2.7.0(@grafana/faro-web-sdk@2.13.0)(@grafana/faro-web-tracing@2.13.0)(zod@4.6.7))(zod@4.6.7)':
+  '@a-novel/service-authentication-rest@2.25.2(@a-novel-kit/nodelib-browser@2.7.0(@grafana/faro-web-sdk@2.13.0)(@grafana/faro-web-tracing@2.13.0)(zod@4.6.7))(zod@4.6.7)':
     dependencies:
       '@a-novel-kit/nodelib-browser': 2.7.0(@grafana/faro-web-sdk@2.13.0)(@grafana/faro-web-tracing@2.13.0)(zod@4.6.7)
       zod: 4.6.7
