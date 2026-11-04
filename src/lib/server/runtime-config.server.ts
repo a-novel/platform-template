@@ -1,6 +1,5 @@
 import {
   ACCOUNT_URL,
-  AUTHENTICATION_SERVICE_AUDIENCE,
   AUTHENTICATION_SERVICE_URL,
   DOWNTIME_URL,
   HEALTHCHECK_TIMEOUT_MS,
@@ -13,7 +12,6 @@ import { type RuntimeConfig, parseRuntimeConfig } from "./runtime-config";
 export function getRuntimeConfig(): RuntimeConfig {
   return parseRuntimeConfig({
     ACCOUNT_URL,
-    AUTHENTICATION_SERVICE_AUDIENCE,
     AUTHENTICATION_SERVICE_URL,
     DOWNTIME_URL,
     HEALTHCHECK_TIMEOUT_MS,
