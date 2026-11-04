@@ -12,7 +12,6 @@ import type { Cookies } from "@sveltejs/kit";
 
 const env = vi.hoisted(() => ({
   ACCOUNT_URL: "https://account.test",
-  AUTHENTICATION_SERVICE_AUDIENCE: undefined,
   AUTHENTICATION_SERVICE_URL: "https://authentication.test",
   DOWNTIME_URL: undefined,
   HEALTHCHECK_TIMEOUT_MS: undefined,

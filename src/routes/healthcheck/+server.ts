@@ -22,8 +22,8 @@ export const GET: RequestHandler = async ({ fetch }) => {
     },
     // Probes prove the platform's identity like any call, but are made for no visitor.
     fetch: async (input, init) => {
-      const { authenticationServiceAudience: audience, serviceTokenPath } = getRuntimeConfig();
-      return await serviceFetch({ audience, serviceTokenPath }, fetch)(input, init);
+      const { serviceTokenPath } = getRuntimeConfig();
+      return await serviceFetch({ serviceTokenPath }, fetch)(input, init);
     },
   });
 
