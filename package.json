@@ -53,6 +53,7 @@
     "@a-novel-kit/uikit-fonts": "0.13.2",
     "@a-novel-kit/uikit-tokens": "0.13.2",
     "@a-novel/service-authentication-rest": "2.24.0",
+    "@a-novel/service-json-keys-rest": "2.15.5",
     "@grafana/faro-web-sdk": "2.13.0",
     "@grafana/faro-web-tracing": "2.13.0",
     "@lucide/svelte": "1.66.0",

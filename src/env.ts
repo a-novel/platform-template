@@ -11,6 +11,10 @@ export const variables = defineEnvVars({
     schema: (value) => value,
     description: "Base HTTP or HTTPS URL of the authentication service.",
   },
+  JSON_KEYS_SERVICE_URL: {
+    schema: (value) => value,
+    description: "Base HTTP or HTTPS URL of the JSON keys service, whose public keys verify access tokens.",
+  },
   SERVICE_TOKEN_PATH: {
     schema: (value) => value,
     description: "File of the projected service token the platform sends to services, on Kubernetes.",

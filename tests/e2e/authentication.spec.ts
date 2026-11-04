@@ -60,6 +60,14 @@ async function tokenCookies(context: BrowserContext) {
   return (await context.cookies()).filter((cookie) => cookie.name.startsWith("__Host-template_"));
 }
 
+/**
+ * Ends the five minutes in which the platform trusts the access token without asking Authentication,
+ * so the next request checks the session.
+ */
+async function endSessionCheckWindow(context: BrowserContext) {
+  await context.clearCookies({ name: "__Host-template_session_checked" });
+}
+
 async function authenticationResponds(): Promise<boolean> {
   try {
     return (await fetch("http://127.0.0.1:14100/v2/ping")).ok;
@@ -92,10 +100,15 @@ test("signs in from signed out through the account platform and returns to the p
     "__Host-template_access_token",
     "__Host-template_identity_handle",
     "__Host-template_refresh_token",
+    "__Host-template_session_checked",
   ]);
   expect(
     cookies.every((cookie) => cookie.httpOnly && cookie.secure && cookie.path === "/" && cookie.sameSite === "Lax")
   ).toBe(true);
+  // The tokens end with the browser, and Authentication's check of the session after five minutes.
+  const checked = cookies.find((cookie) => cookie.name === "__Host-template_session_checked");
+  expect(checked?.expires).toBeLessThanOrEqual(Date.now() / 1000 + 300);
+  expect(cookies.filter((cookie) => cookie.expires !== -1)).toEqual([checked]);
 
   // The session survives a new page load, which the checkpoint captures on the home page.
   await page.goto("/");
@@ -144,7 +157,7 @@ test("logging out of the platform ends the session on the account platform too",
   await expect(page.getByRole("dialog", { name: "Log in" })).toBeVisible();
 });
 
-test("logging out of the account platform ends the platform's session on its next request", async ({
+test("logging out of the account platform ends the platform's session at its next check", async ({
   page,
   context,
   account,
@@ -156,6 +169,11 @@ test("logging out of the account platform ends the platform's session on its nex
   await page.getByRole("button", { name: "Log out", exact: true }).last().click();
   await expect(page).toHaveURL(`${accountOrigin}/`);
 
+  // Within five minutes of its last check, the platform trusts the token's signature alone.
+  await page.goto("/");
+  await expect(await accountLink(page, isMobile)).toBeVisible();
+
+  await endSessionCheckWindow(context);
   await page.goto("/");
   await openAccountControls(page, isMobile);
   await expect(page.getByRole("link", { name: "Log in", exact: true })).toBeVisible();
@@ -227,6 +245,7 @@ test("an authentication outage preserves the session and recovers after reload",
 }, info) => {
   await signIn(page, account, isMobile);
 
+  await endSessionCheckWindow(context);
   const cookies = await context.cookies();
   try {
     await compose("stop", "authentication");

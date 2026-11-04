@@ -2,6 +2,7 @@ import { load as loadShell } from "./(app)/+layout.server";
 import { POST as logoutAuthentication } from "./auth/logout/+server";
 import { completeSignIn, startSignIn } from "./auth/sign-in.server";
 
+import { Buffer } from "node:buffer";
 import { createHash } from "node:crypto";
 
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
@@ -15,6 +16,7 @@ const env = vi.hoisted(() => ({
   AUTHENTICATION_SERVICE_URL: "https://authentication.test",
   DOWNTIME_URL: undefined,
   HEALTHCHECK_TIMEOUT_MS: undefined,
+  JSON_KEYS_SERVICE_URL: "https://json-keys.test",
   SERVICE_TOKEN_PATH: undefined,
 }));
 
@@ -37,6 +39,15 @@ function sentRequest() {
 }
 
 const userId = "140f24ee-1531-4a9d-ace8-20b38e1b21bc";
+
+/** Signs an access token as JSON keys does for Authentication, with the given key. */
+async function signAccessToken(privateKey: CryptoKey, claims: object): Promise<string> {
+  const encode = (value: object) => Buffer.from(JSON.stringify(value)).toString("base64url");
+  const signed = `${encode({ alg: "Ed25519", typ: "JWT", kid: "key" })}.${encode(claims)}`;
+  const signature = await crypto.subtle.sign("Ed25519", privateKey, new TextEncoder().encode(signed));
+
+  return `${signed}.${Buffer.from(signature).toString("base64url")}`;
+}
 const identity = { userID: userId, roles: [Role.User], clientID: "template" };
 const tokenCookies = {
   "__Host-template_access_token": "private-access",
@@ -105,6 +116,39 @@ describe("session at the request boundary", () => {
         "x-client-ip": "192.0.2.1",
       },
     });
+  });
+
+  it("verifies a recently checked session against JSON keys' public keys, without asking authentication", async () => {
+    const { privateKey, publicKey } = (await crypto.subtle.generateKey("Ed25519", true, [
+      "sign",
+      "verify",
+    ])) as CryptoKeyPair;
+    const key = {
+      ...(await crypto.subtle.exportKey("jwk", publicKey)),
+      kid: "key",
+      alg: "Ed25519",
+      use: "sig",
+      key_ops: ["verify"],
+    };
+    const accessToken = await signAccessToken(privateKey, {
+      iss: "anovel-authentication",
+      aud: "anovel-client",
+      sub: "user-access",
+      exp: Math.floor(Date.now() / 1000) + 900,
+      ...identity,
+    });
+    fetchService.mockImplementation(async () => Response.json([key]));
+    const { event } = request("/", {
+      "__Host-template_access_token": accessToken,
+      "__Host-template_identity_handle": "maya.chen",
+      "__Host-template_session_checked": "1",
+    });
+
+    await expect(loadShell(event)).resolves.toMatchObject({
+      session: { status: "authenticated", displayName: "Maya Chen" },
+      authorization: "allowed",
+    });
+    expect(fetchService.mock.calls.map(([url]) => String(url))).toEqual(["https://json-keys.test/v2/jwks?usage=auth"]);
   });
 
   it("checks the session once for the loads of one request", async () => {
@@ -194,6 +238,7 @@ describe("session at the request boundary", () => {
       ["__Host-template_access_token", { path: "/" }],
       ["__Host-template_refresh_token", { path: "/" }],
       ["__Host-template_identity_handle", { path: "/" }],
+      ["__Host-template_session_checked", { path: "/" }],
     ]);
     // The unreachable session check leaves nothing to revoke.
     expect(fetchService).toHaveBeenCalledOnce();
@@ -308,6 +353,7 @@ describe("sign-in through the account platform at the request boundary", () => {
       "__Host-template_access_token": "new-access",
       "__Host-template_refresh_token": "new-refresh",
       "__Host-template_identity_handle": "maya.chen",
+      "__Host-template_session_checked": "1",
     });
     expect(cookies.delete).toHaveBeenCalledWith("__Host-template_sign_in", { path: "/" });
   });
@@ -325,6 +371,7 @@ describe("sign-in through the account platform at the request boundary", () => {
     expect(Object.fromEntries(values)).toEqual({
       "__Host-template_access_token": "new-access",
       "__Host-template_refresh_token": "new-refresh",
+      "__Host-template_session_checked": "1",
     });
   });
 

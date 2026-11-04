@@ -18,6 +18,7 @@ const runtimeEnvironmentSchema = {
     maximum: 10_000,
     minimum: 100,
   }),
+  jsonKeysServiceUrl: environmentHttpUrl("JSON_KEYS_SERVICE_URL"),
 } as const;
 
 /** RuntimeConfig contains the platform's private server settings. */
