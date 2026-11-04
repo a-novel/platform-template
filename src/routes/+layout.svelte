@@ -6,7 +6,7 @@
   import { createPlatformDowntime, setPlatformDowntime } from "#lib/ui/downtime.svelte.js";
   import "#lib/ui/lamp.css";
   import { setTelemetryPreference } from "#lib/ui/telemetry-preference.js";
-  import { afterNavigate, beforeNavigate } from "$app/navigation";
+  import { afterNavigate } from "$app/navigation";
   import { page } from "$app/state";
 
   import lightFavicon from "@a-novel-kit/ui-images/files/icon/32x32/agora-icon-light.png";
@@ -36,7 +36,6 @@
     decline: () => preference.choose("declined"),
   };
 
-  beforeNavigate((navigation) => telemetry.navigate(navigation));
   // SvelteKit gives the first navigation no route, so the page state names it.
   afterNavigate(() => telemetry.arrive(page.route.id));
 </script>
