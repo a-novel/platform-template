@@ -1,7 +1,7 @@
 import { withLocale } from "#lib/i18n/provider.fixture.js";
 
-import type { ShellViewModel } from "./controller.svelte";
-import { createShellController } from "./controller.svelte";
+import { type ShellControllerOptions, type ShellViewModel, createShellController } from "./controller.svelte";
+import { withNavigationOpen } from "./navigation-state";
 import Screen from "./screen.svelte";
 import ShellStory from "./story.svelte";
 
@@ -13,6 +13,11 @@ import { Alert } from "@a-novel-kit/uikit";
 import "@a-novel-kit/uikit-fonts/fonts.css";
 import "@a-novel-kit/uikit-tokens/tokens.css";
 
+const accountLinks = {
+  accountHref: "https://account.example.test/account",
+  invitationHref: "https://account.example.test/?auth=register",
+};
+
 function model(patch: Partial<ShellViewModel> = {}): ShellViewModel {
   return {
     activeNavigation: "home",
@@ -23,16 +28,20 @@ function model(patch: Partial<ShellViewModel> = {}): ShellViewModel {
   };
 }
 
-function controller(patch: Partial<ShellViewModel> = {}) {
-  return createShellController({
-    model: model(patch),
+function controller(patch: Partial<ShellViewModel> = {}, options: Partial<ShellControllerOptions> = {}) {
+  const { rail, drawerOpen, ...data } = model(patch);
+  const url = withNavigationOpen(new URL("https://template.example.test/"), drawerOpen);
+  const shell = createShellController({
+    getData: () => ({ ...data, ...accountLinks }),
+    getUrl: () => url,
     homeHref: "/",
-    accountHref: "https://account.example.test/account",
-    invitationHref: "https://account.example.test/?auth=register",
     privacyHref: null,
     logoutAction: "/auth/logout",
     allowNativeLogout: false,
+    ...options,
   });
+  shell.synchronizeRail(rail);
+  return shell;
 }
 
 /** Reads the styles that tell a control's states apart, once its transitions have settled. */
@@ -85,7 +94,7 @@ describe("shell screen", () => {
   it("offers no invitation link while the server cannot read where the account platform lives", async () => {
     render(
       Screen,
-      { controller: createShellController({ ...controller().state, accountHref: null, invitationHref: null }) },
+      { controller: controller({}, { getData: () => ({ ...model(), accountHref: null, invitationHref: null }) }) },
       withLocale()
     );
 
@@ -250,6 +259,27 @@ describe("shell screen", () => {
       expect(closeBounds[key]).toBeCloseTo(controlBounds[key], 0);
     }
     expect(document.documentElement.scrollWidth).toBeLessThanOrEqual(width);
+  });
+
+  it("closes the menu it opened once the URL closes it, as Back does", async () => {
+    await page.viewport(390, 844);
+    let href = $state("https://template.example.test/?document=42");
+    const shell = controller(
+      {},
+      {
+        getUrl: () => new URL(href),
+        onDrawerChange: (open) => (href = withNavigationOpen(new URL(href), open).href),
+      }
+    );
+    render(Screen, { controller: shell }, withLocale());
+
+    await page.getByRole("link", { name: "Open navigation" }).click();
+    await expect.element(page.getByRole("dialog", { name: "Agora" })).toBeVisible();
+    expect(href).toBe("https://template.example.test/?document=42&menu=open");
+
+    href = "https://template.example.test/?document=42";
+    await expect.element(page.getByRole("dialog", { name: "Agora" })).not.toBeInTheDocument();
+    expect(shell.state.model.drawerOpen).toBe(false);
   });
 
   const drawerLabels = [
