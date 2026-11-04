@@ -74,6 +74,11 @@ jobs:
   build-platform:
     if: github.event_name == 'push'
     runs-on: ubuntu-latest
+    # The source-map upload key is a secret of the sourcemaps environment, which no feature branch
+    # opens. A platform without one uploads nothing.
+    environment:
+      name: sourcemaps
+      deployment: false
     permissions:
       attestations: write
       contents: read
@@ -85,8 +90,13 @@ jobs:
           file: Dockerfile
           image_name: ${{ github.repository }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
+          # BuildKit leaves secrets out of cache keys, so master's cached build of the same tree would
+          # skip the upload.
+          cache: "false"
           secrets: |
             npm_token=${{ secrets.GITHUB_TOKEN }}
+            faro_sourcemap_api_key=${{ secrets.FARO_SOURCEMAP_API_KEY }}
+            faro_sourcemap_app_id=${{ vars.FARO_SOURCEMAP_APP_ID }}
 
   # Infra pins the published images in one pull request, which deploys the release once it merges.
   deploy:
