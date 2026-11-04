@@ -281,6 +281,7 @@ const selfCredentials = {
   role: Role.User,
   createdAt: "2026-11-01T00:00:00Z",
   updatedAt: "2026-11-01T00:00:00Z",
+  locationConsent: false,
 };
 
 describe("sign-in through the account platform at the request boundary", () => {
