@@ -23,7 +23,7 @@ services:
     healthcheck: *postgres-healthcheck
 
   postgres-json-keys:
-    image: ghcr.io/a-novel/service-json-keys/database:v2.15.6@sha256:06457d216da6416e58262893731c6caf4382d74e89baa13aa79eaffd629c771c
+    image: ghcr.io/a-novel/service-json-keys/database:v2.15.7@sha256:06457d216da6416e58262893731c6caf4382d74e89baa13aa79eaffd629c771c
     environment: *postgres-environment
     healthcheck: *postgres-healthcheck
 
@@ -37,7 +37,7 @@ services:
       MP_DISABLE_WAL: "true"
 
   service-json-keys:
-    image: ghcr.io/a-novel/service-json-keys/standalone-grpc:v2.15.6@sha256:d2076bda8348a8d3b6eb1b4942f44ef4c2dfad4a5cc2f8a38cc43689f8792218
+    image: ghcr.io/a-novel/service-json-keys/standalone-grpc:v2.15.7@sha256:1078a75cbf3d691f450328f40e57d0a9a5c7a7d13b96c176d7ebe41a61ca0fc3
     healthcheck:
       test: ["CMD", "grpcurl", "--plaintext", "-d", "", "localhost:8080", "grpc.health.v1.Health/Check"]
       interval: 1s
@@ -57,7 +57,7 @@ services:
 
   # JSON keys' public API, whose keys verify access tokens on the platform.
   json-keys-rest:
-    image: ghcr.io/a-novel/service-json-keys/rest:v2.15.6@sha256:74f6c06745bb3e5fe9d85a1403be296c61adba89e7529ac6eaec59493473defa
+    image: ghcr.io/a-novel/service-json-keys/rest:v2.15.7@sha256:e93412c2570837c87cd39fff15589ce25abad11b89268213d680aabc44bef4a1
     ports:
       - "127.0.0.1:14103:8080"
     # The gRPC server's start migrates the database and creates the keys this server lists.
