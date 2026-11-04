@@ -3,6 +3,7 @@ import {
   AUTHENTICATION_SERVICE_URL,
   DOWNTIME_URL,
   HEALTHCHECK_TIMEOUT_MS,
+  JSON_KEYS_SERVICE_URL,
   SERVICE_TOKEN_PATH,
 } from "$app/env/private";
 
@@ -15,6 +16,7 @@ export function getRuntimeConfig(): RuntimeConfig {
     AUTHENTICATION_SERVICE_URL,
     DOWNTIME_URL,
     HEALTHCHECK_TIMEOUT_MS,
+    JSON_KEYS_SERVICE_URL,
     SERVICE_TOKEN_PATH,
   });
 }

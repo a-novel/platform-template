@@ -77,6 +77,10 @@ The platform server is the only caller of platform services.
   server-only unless it is declared public. ESLint rejects `import.meta.env`, because Vite inlines
   every value read through it into the browser bundle.
 - Pages render user content as text. ESLint rejects `{@html}`.
+- Authentication checks the session at most once every five minutes. In between, the server verifies
+  the access token's signature and expiry against JSON keys' public keys, so a sign-out on another
+  platform reaches this one within five minutes. A token the server cannot verify goes to
+  Authentication.
 - A service outage keeps the session cookies and shows a recoverable state. Only a rejected token
   logs the user out.
 - Logout ends the session on every platform, then clears the cookies. A failed revocation still logs

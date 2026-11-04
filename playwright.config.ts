@@ -13,6 +13,7 @@ function platformServer(state: string, port: number) {
       ACCOUNT_URL: "http://127.0.0.1:14102",
       AUTHENTICATION_SERVICE_URL: "http://127.0.0.1:14100",
       DOWNTIME_URL: downtimeUrl(state),
+      JSON_KEYS_SERVICE_URL: "http://127.0.0.1:14103",
       SERVICE_TOKEN_PATH: serviceTokenPath,
     },
     screenshotStyle: "./tests/e2e/screenshots.css",

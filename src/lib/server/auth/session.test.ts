@@ -3,12 +3,13 @@ import {
   AuthenticationUnavailableError,
   type SessionClient,
   type SessionCookies,
+  createSessionClient,
 } from "./session";
 
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { HttpError } from "@a-novel-kit/nodelib-browser/http";
-import { OAuthError, Role } from "@a-novel/service-authentication-rest";
+import { AuthenticationApi, OAuthError, Role } from "@a-novel/service-authentication-rest";
 
 type CookieSetOptions = Parameters<SessionCookies["set"]>[2];
 
@@ -41,8 +42,11 @@ function createClient(): {
     exchange: vi.fn<SessionClient["exchange"]>(),
     refresh: vi.fn<SessionClient["refresh"]>(),
     revoke: vi.fn<SessionClient["revoke"]>(),
+    verify: vi.fn<SessionClient["verify"]>(),
   };
 }
+
+const checkedCookie = "__Host-template_session_checked";
 
 /** A token response of Authentication's token endpoint. A refresh carries no refresh token. */
 function tokenResponse(accessToken: string, refreshToken?: string) {
@@ -105,9 +109,11 @@ describe("AuthenticationSession", () => {
       "__Host-template_access_token": "access",
       "__Host-template_refresh_token": "refresh",
       "__Host-template_identity_handle": "maya.chen",
+      [checkedCookie]: "1",
     });
-    for (const { options } of cookies.writes) {
-      expect(options).toEqual({ httpOnly: true, path: "/", sameSite: "lax", secure: true });
+    for (const { name, options } of cookies.writes) {
+      const lifetime = name === checkedCookie ? { maxAge: 300 } : {};
+      expect(options).toEqual({ httpOnly: true, path: "/", sameSite: "lax", secure: true, ...lifetime });
     }
   });
 
@@ -122,6 +128,7 @@ describe("AuthenticationSession", () => {
     expect(Object.fromEntries(cookies.values)).toEqual({
       "__Host-template_access_token": "access",
       "__Host-template_refresh_token": "refresh",
+      [checkedCookie]: "1",
     });
   });
 
@@ -189,7 +196,21 @@ describe("AuthenticationSession", () => {
     expect(Object.fromEntries(cookies.values)).toEqual({
       "__Host-template_access_token": "fresh-access",
       "__Host-template_refresh_token": "refresh",
+      [checkedCookie]: "1",
     });
+  });
+
+  it("reads a refreshed token's claims offline, since the refresh checked the session", async () => {
+    cookies.values.set("__Host-template_access_token", "expired-access");
+    cookies.values.set("__Host-template_refresh_token", "refresh");
+    client.claims.mockRejectedValue(new HttpError(401, "expired"));
+    client.refresh.mockResolvedValue(tokenResponse("fresh-access"));
+    client.verify.mockResolvedValue({ roles: [Role.User], userID: "test-user" });
+    const session = new AuthenticationSession(client, cookies);
+
+    await expect(session.current()).resolves.toMatchObject({ status: "available", accessToken: "fresh-access" });
+    expect(client.verify).toHaveBeenCalledExactlyOnceWith("fresh-access");
+    expect(client.claims).toHaveBeenCalledOnce();
   });
 
   it("signs the visitor out once the session ended or was signed out on another platform", async () => {
@@ -275,6 +296,7 @@ describe("AuthenticationSession", () => {
     cookies.values.set("__Host-template_access_token", "access");
     cookies.values.set("__Host-template_refresh_token", "refresh");
     cookies.values.set("__Host-template_identity_handle", "maya.chen");
+    cookies.values.set(checkedCookie, "1");
     client.claims.mockResolvedValue({ roles: [Role.User], userID: "test-user" });
     client.revoke.mockResolvedValue();
     const session = new AuthenticationSession(client, cookies);
@@ -330,6 +352,61 @@ describe("AuthenticationSession", () => {
     expect(cookies.values.size).toBe(0);
   });
 
+  it("trusts a verified token without asking Authentication within five minutes of its last check", async () => {
+    cookies.values.set("__Host-template_access_token", "access");
+    cookies.values.set(checkedCookie, "1");
+    client.verify.mockResolvedValue({ roles: [Role.User], userID: "test-user" });
+    const session = new AuthenticationSession(client, cookies);
+
+    await expect(session.authenticated()).resolves.toMatchObject({
+      accessToken: "access",
+      claims: { userID: "test-user" },
+    });
+    expect(client.verify).toHaveBeenCalledExactlyOnceWith("access");
+    expect(client.claims).not.toHaveBeenCalled();
+    expect(cookies.writes).toHaveLength(0);
+  });
+
+  it("asks Authentication, and remembers its answer for five minutes, once the last check is older", async () => {
+    cookies.values.set("__Host-template_access_token", "access");
+    client.claims.mockResolvedValue({ roles: [Role.User], userID: "test-user" });
+    const session = new AuthenticationSession(client, cookies);
+
+    await expect(session.current()).resolves.toMatchObject({ status: "available" });
+    expect(client.verify).not.toHaveBeenCalled();
+    expect(cookies.writes).toEqual([
+      {
+        name: checkedCookie,
+        value: "1",
+        options: { httpOnly: true, path: "/", sameSite: "lax", secure: true, maxAge: 300 },
+      },
+    ]);
+  });
+
+  it("asks Authentication when the token cannot be verified offline", async () => {
+    cookies.values.set("__Host-template_access_token", "access");
+    cookies.values.set(checkedCookie, "1");
+    client.verify.mockRejectedValue(new Error("keys unavailable"));
+    client.claims.mockResolvedValue({ roles: [Role.User], userID: "test-user" });
+    const session = new AuthenticationSession(client, cookies);
+
+    await expect(session.current()).resolves.toMatchObject({ status: "available", claims: { userID: "test-user" } });
+    expect(client.claims).toHaveBeenCalledExactlyOnceWith("access");
+  });
+
+  it("signs the visitor out at the first check after the session ended elsewhere", async () => {
+    cookies.values.set("__Host-template_access_token", "access");
+    cookies.values.set("__Host-template_refresh_token", "revoked-refresh");
+    cookies.values.set(checkedCookie, "1");
+    client.verify.mockRejectedValue(new Error("expired"));
+    client.claims.mockRejectedValue(new HttpError(401, "signed out"));
+    client.refresh.mockRejectedValue(oauthError("invalid_grant"));
+    const session = new AuthenticationSession(client, cookies);
+
+    await expect(session.current()).resolves.toEqual({ status: "none" });
+    expect(cookies.values.size).toBe(0);
+  });
+
   it("keeps every cookie Secure and host-only, as its __Host- prefix requires", async () => {
     client.exchange.mockResolvedValue(tokenResponse("access", "refresh"));
     client.email.mockResolvedValue("maya.chen@example.com");
@@ -337,10 +414,55 @@ describe("AuthenticationSession", () => {
 
     await session.signIn(grant);
 
-    expect(cookies.writes).toHaveLength(3);
+    expect(cookies.writes).toHaveLength(4);
     for (const { name, options } of cookies.writes) {
       expect(name).toMatch(/^__Host-/);
       expect(options).toMatchObject({ path: "/", secure: true });
     }
+  });
+});
+
+describe("createSessionClient", () => {
+  const api = new AuthenticationApi("https://authentication.test");
+  const now = new Date("2026-11-04T12:00:00Z");
+
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
+  it("reads a verified token's claims as Authentication returns them", async () => {
+    vi.useFakeTimers({ now, toFake: ["Date"] });
+    const payload = {
+      iss: "anovel-authentication",
+      exp: now.getTime() / 1000 + 900,
+      userID: "test-user",
+      roles: [Role.User],
+      refreshTokenID: "refresh-id",
+      sessionExp: now.getTime() / 1000 + 3600,
+      clientID: "template",
+    };
+    const client = createSessionClient(api, async () => payload);
+
+    await expect(client.verify("access")).resolves.toStrictEqual({
+      userID: "test-user",
+      roles: [Role.User],
+      refreshTokenID: "refresh-id",
+      sessionID: "refresh-id",
+      sessionExp: payload.sessionExp,
+      clientID: "template",
+    });
+  });
+
+  it("refuses a verified token whose session has ended", async () => {
+    vi.useFakeTimers({ now, toFake: ["Date"] });
+    const client = createSessionClient(api, async () => ({ userID: "test-user", sessionExp: now.getTime() / 1000 }));
+
+    await expect(client.verify("access")).rejects.toThrow("ended");
+  });
+
+  it("refuses a token the verifier rejects", async () => {
+    const client = createSessionClient(api, async () => Promise.reject(new Error("JWT expired")));
+
+    await expect(client.verify("access")).rejects.toThrow("expired");
   });
 });

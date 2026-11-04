@@ -19,11 +19,21 @@ export const GET: RequestHandler = async ({ fetch }) => {
           url: new URL("v2/healthcheck", `${config.authenticationServiceUrl}/`),
         };
       },
+      jsonKeys: () => {
+        const config = getRuntimeConfig();
+
+        return {
+          timeoutMs: config.healthcheckTimeoutMs,
+          url: new URL("v2/healthcheck", `${config.jsonKeysServiceUrl}/`),
+        };
+      },
     },
-    // Probes prove the platform's identity like any call, but are made for no visitor.
+    // Probes prove the platform's identity to Authentication like any call, but are made for no
+    // visitor. JSON keys' API is public, so its probe carries no token.
     fetch: async (input, init) => {
-      const { serviceTokenPath } = getRuntimeConfig();
-      return await serviceFetch({ serviceTokenPath }, fetch)(input, init);
+      const { authenticationServiceUrl, serviceTokenPath } = getRuntimeConfig();
+      const identity = String(input).startsWith(`${authenticationServiceUrl}/`) ? { serviceTokenPath } : {};
+      return await serviceFetch(identity, fetch)(input, init);
     },
   });
 
