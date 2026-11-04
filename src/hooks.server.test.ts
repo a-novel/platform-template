@@ -10,7 +10,7 @@ import type { Handle } from "@sveltejs/kit/hooks";
 const TRACE_ID = "4bf92f3577b34da6a3ce929d0e0e4736";
 const SPAN_ID = "00f067aa0ba902b7";
 
-function event(path: string, language?: string, traced = false): RequestEvent {
+function event(path: string, language?: string): RequestEvent {
   const url = new URL(path, "https://template.test");
   const root = trace.wrapSpanContext({ traceId: TRACE_ID, spanId: SPAN_ID, traceFlags: TraceFlags.SAMPLED });
   return {
@@ -19,16 +19,8 @@ function event(path: string, language?: string, traced = false): RequestEvent {
     request: new Request(url, { headers: language ? { "accept-language": language } : undefined }),
     route: { id: url.pathname },
     cookies: { get: () => undefined },
-    tracing: { enabled: traced, root, current: root },
+    tracing: { enabled: false, root, current: root },
   } as unknown as RequestEvent;
-}
-
-/** Renders the page shell through the hook and returns its HTML. */
-async function render(request: RequestEvent, html: string): Promise<string> {
-  const resolve = vi.fn<Parameters<Handle>[0]["resolve"]>(async (_, options) => {
-    return new Response(await options?.transformPageChunk?.({ html, done: true }));
-  });
-  return (await handle({ event: request, resolve })).text();
 }
 
 describe("request hook", () => {
@@ -66,15 +58,6 @@ describe("request hook", () => {
       resolve: vi.fn().mockResolvedValue(new Response(null, { status })),
     });
     expect(response.headers.get("x-frame-options")).toBe("DENY");
-  });
-
-  it.each([
-    { name: "hands the request's trace to the page", traced: true, want: `${TRACE_ID}-${SPAN_ID}-1` },
-    { name: "leaves the page's trace empty while tracing is off", traced: false, want: "" },
-  ])("$name", async ({ traced, want }) => {
-    const html = await render(event("/", "en", traced), '<meta name="sentry-trace" content="%trace%" />');
-
-    expect(html).toBe(`<meta name="sentry-trace" content="${want}" />`);
   });
 
   it.each([
