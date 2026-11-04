@@ -21,7 +21,10 @@ RUN --mount=type=secret,id=npm_token,required=true \
 FROM dependencies AS builder
 
 COPY . .
-RUN pnpm build && pnpm prune --prod
+# A release build mounts the source-map upload key and its Faro app's ID, which vite.config.ts reads.
+RUN --mount=type=secret,id=faro_sourcemap_api_key,env=FARO_SOURCEMAP_API_KEY \
+    --mount=type=secret,id=faro_sourcemap_app_id,env=FARO_SOURCEMAP_APP_ID \
+    pnpm build && pnpm prune --prod
 
 FROM docker.io/library/node:26.13.0-alpine3.23 AS runtime
 
