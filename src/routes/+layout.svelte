@@ -55,6 +55,7 @@
   /* The lamp lives on the root, so pages leave the canvas bare and contrast checks read its color. */
   :global(html) {
     background: var(--fill-canvas);
+    /* WCAG 1.4.10 reflows content down to 320 CSS pixels; a narrower window scrolls instead. */
     min-inline-size: 20rem;
     color-scheme: dark;
   }
