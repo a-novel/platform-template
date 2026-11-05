@@ -4,8 +4,11 @@ export interface AccountDisplay {
   initials: string;
 }
 
-/** Turns an email handle such as `maya.chen+template` into a name and initials. */
-export function accountDisplayFromHandle(handle: string): AccountDisplay {
+/**
+ * Turns an email handle such as `maya.chen+template` into a name and initials. A username, when the
+ * profile sets one, names the account instead; the initials stay the handle's.
+ */
+export function accountDisplayFromHandle(handle: string, username?: string): AccountDisplay {
   const localPart = handle.split("+", 1)[0] ?? "";
   const words = localPart
     .split(/[._-]+/u)
@@ -18,7 +21,7 @@ export function accountDisplayFromHandle(handle: string): AccountDisplay {
     .join("")
     .toUpperCase();
 
-  return { displayName, initials };
+  return { displayName: username ?? displayName, initials };
 }
 
 function capitalize(value: string): string {

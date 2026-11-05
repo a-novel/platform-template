@@ -4,8 +4,11 @@ import { completeSignIn, startSignIn } from "./auth/sign-in.server";
 
 import { Buffer } from "node:buffer";
 import { createHash } from "node:crypto";
+import { mkdtemp, rm, writeFile } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, onTestFinished, vi } from "vitest";
 
 import { Role } from "@a-novel/service-authentication-rest";
 
@@ -17,6 +20,8 @@ const env = vi.hoisted(() => ({
   DOWNTIME_URL: undefined,
   HEALTHCHECK_TIMEOUT_MS: undefined,
   JSON_KEYS_SERVICE_URL: "https://json-keys.test",
+  PROFILE_SERVICE_TOKEN_PATH: undefined as string | undefined,
+  PROFILE_SERVICE_URL: "https://profile.test",
   SERVICE_TOKEN_PATH: undefined,
 }));
 
@@ -31,6 +36,8 @@ vi.mock("@a-novel-kit/nodelib-server", async (importOriginal) => ({
 }));
 
 const fetchService = vi.fn<typeof fetch>();
+// The profile service answers apart, so each test counts the calls to Authentication alone.
+const fetchProfile = vi.fn<typeof fetch>();
 
 /** The last authentication call as the service receives it, after the platform's fetch wrapper. */
 function sentRequest() {
@@ -53,6 +60,7 @@ const tokenCookies = {
   "__Host-template_access_token": "private-access",
   "__Host-template_refresh_token": "private-refresh",
 };
+const profile = { id: "019a4e2c-7d1f-7c3a-9b2e-5f1d0c8a4b21", username: "Maya" };
 const accountLinks = {
   accountHref: "https://account.test/account",
   invitationHref: "https://account.test/?auth=register",
@@ -77,7 +85,12 @@ function request(path: string, cookieValues: Record<string, string> = {}) {
 beforeEach(() => {
   env.AUTHENTICATION_SERVICE_URL = "https://authentication.test";
   fetchService.mockReset().mockRejectedValue(new Error("Unexpected authentication request"));
-  vi.stubGlobal("fetch", fetchService);
+  // An account holds no profile before its first write.
+  fetchProfile.mockReset().mockImplementation(async () => new Response(null, { status: 404 }));
+  vi.stubGlobal("fetch", ((input, init) =>
+    String(input).startsWith("https://profile.test/")
+      ? fetchProfile(input, init)
+      : fetchService(input, init)) satisfies typeof fetch);
 });
 
 afterEach(() => {
@@ -95,6 +108,7 @@ describe("session at the request boundary", () => {
       authorization: "anonymous",
     });
     expect(fetchService).not.toHaveBeenCalled();
+    expect(fetchProfile).not.toHaveBeenCalled();
   });
 
   it("exposes only a verified display identity to the browser", async () => {
@@ -158,6 +172,74 @@ describe("session at the request boundary", () => {
     await Promise.all([loadShell(event), loadShell(event)]);
 
     expect(fetchService.mock.calls.map(([url]) => url)).toEqual(["https://authentication.test/v2/session"]);
+    expect(fetchProfile).toHaveBeenCalledOnce();
+  });
+
+  it("reads the profile as the platform, with the visitor's token, and shows its username and its picture on the account platform", async () => {
+    const directory = await mkdtemp(join(tmpdir(), "profile-token-"));
+    env.PROFILE_SERVICE_TOKEN_PATH = join(directory, "token");
+    onTestFinished(async () => {
+      env.PROFILE_SERVICE_TOKEN_PATH = undefined;
+      await rm(directory, { recursive: true });
+    });
+    await writeFile(env.PROFILE_SERVICE_TOKEN_PATH, "profile-service-token");
+    const { event } = request("/", { ...tokenCookies, "__Host-template_identity_handle": "maya.chen" });
+    fetchService.mockImplementation(async () => Response.json(identity));
+    fetchProfile.mockImplementation(async () =>
+      Response.json({ ...profile, pictureVersion: "2026-11-04T08:15:30.123456Z" })
+    );
+
+    await expect(loadShell(event)).resolves.toEqual({
+      activeNavigation: "home",
+      ...accountLinks,
+      session: {
+        status: "authenticated",
+        displayName: "Maya",
+        initials: "MC",
+        picture: `https://account.test/profile/picture/${profile.id}?v=2026-11-04T08%3A15%3A30.123456Z`,
+      },
+      authorization: "allowed",
+    });
+    const [url, init] = fetchProfile.mock.calls[0] ?? [];
+    expect(url).toBe("https://profile.test/v1/profile/self");
+    expect(Object.fromEntries(new Headers(init?.headers))).toEqual({
+      "content-type": "application/json",
+      authorization: "Bearer private-access",
+      "x-client-ip": "192.0.2.1",
+      "x-service-authorization": "profile-service-token",
+    });
+  });
+
+  const profileFailures: Array<[string, () => Promise<Response>]> = [
+    ["before the profile's first write", async () => new Response(null, { status: 404 })],
+    ["while the profile service fails", async () => new Response("private service detail", { status: 503 })],
+    ["while the profile service is unreachable", async () => Promise.reject(new Error("connection refused"))],
+  ];
+
+  it.each(profileFailures)("names the account by its email with initials %s", async (_, answer) => {
+    const { event } = request("/", { ...tokenCookies, "__Host-template_identity_handle": "maya.chen" });
+    fetchService.mockImplementation(async () => Response.json(identity));
+    fetchProfile.mockImplementation(answer);
+
+    await expect(loadShell(event)).resolves.toEqual({
+      activeNavigation: "home",
+      ...accountLinks,
+      session: { status: "authenticated", displayName: "Maya Chen", initials: "MC" },
+      authorization: "allowed",
+    });
+  });
+
+  it("names an account whose email the platform has not kept by its username", async () => {
+    const { event } = request("/", tokenCookies);
+    fetchService.mockImplementation(async () => Response.json(identity));
+    fetchProfile.mockImplementation(async () => Response.json(profile));
+
+    await expect(loadShell(event)).resolves.toEqual({
+      activeNavigation: "home",
+      ...accountLinks,
+      session: { status: "authenticated", displayName: "Maya" },
+      authorization: "allowed",
+    });
   });
 
   it("keeps anonymous service claims out of authenticated UI", async () => {

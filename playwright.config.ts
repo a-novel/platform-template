@@ -14,6 +14,9 @@ function platformServer(state: string, port: number) {
       AUTHENTICATION_SERVICE_URL: "http://127.0.0.1:14100",
       DOWNTIME_URL: downtimeUrl(state),
       JSON_KEYS_SERVICE_URL: "http://127.0.0.1:14103",
+      // No profile service runs here: the discard port refuses at once, and the shell names the
+      // visitor by their email handle with initials.
+      PROFILE_SERVICE_URL: "http://127.0.0.1:9",
       SERVICE_TOKEN_PATH: serviceTokenPath,
     },
     screenshotStyle: "./tests/e2e/screenshots.css",

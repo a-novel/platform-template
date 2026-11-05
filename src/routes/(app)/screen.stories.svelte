@@ -2,6 +2,7 @@
   import { createStorybookTranslator } from "#lib/i18n/storybook.js";
 
   import type { ShellViewModel } from "./controller.svelte";
+  import { portraitPicture } from "./picture.fixture";
   import StoryHarness from "./story.svelte";
 
   import { reviewStoryGlobals } from "@a-novel-kit/uikit-storybook";
@@ -20,6 +21,11 @@
   const authenticated: ShellViewModel = {
     ...anonymous,
     session: { status: "authenticated", displayName: "Maya Chen", initials: "MC" },
+  };
+  const withPicture: ShellViewModel = {
+    ...anonymous,
+    // A profile with a username and a picture: the username names the account, the handle keeps the initials.
+    session: { status: "authenticated", displayName: "Moonlit Maya 🌊", initials: "MC", picture: portraitPicture },
   };
   const unnamedAccount: ShellViewModel = {
     ...anonymous,
@@ -207,6 +213,24 @@
 
 <Story name="Collapsed authenticated" asChild>
   <StoryHarness model={{ ...authenticated, rail: "collapsed" }} collectsTelemetry />
+</Story>
+
+<Story name="Authenticated with a picture" exportName="AuthenticatedWithAPicture" asChild>
+  <StoryHarness model={withPicture} />
+</Story>
+
+<Story name="Collapsed with a picture" exportName="CollapsedWithAPicture" asChild>
+  <StoryHarness model={{ ...withPicture, rail: "collapsed" }} />
+</Story>
+
+<Story
+  name="Authenticated with a picture, mobile"
+  exportName="AuthenticatedWithAPictureMobile"
+  globals={reviewStoryGlobals.mobile}
+  asChild
+  play={verifyExpandedMobileNavigation}
+>
+  <StoryHarness model={withOpenMobileNavigation(withPicture)} />
 </Story>
 
 <Story name="Account without a name" exportName="AccountWithoutAName" asChild>

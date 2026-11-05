@@ -12,4 +12,11 @@ describe("accountDisplayFromHandle", () => {
   it.each(handles)("derives a readable account label from the handle %s", (handle, expected) => {
     expect(accountDisplayFromHandle(handle)).toEqual(expected);
   });
+
+  it("names the account by its username, keeping the handle's initials", () => {
+    expect(accountDisplayFromHandle("maya.chen", "Moonlit Maya 🌊")).toEqual({
+      displayName: "Moonlit Maya 🌊",
+      initials: "MC",
+    });
+  });
 });

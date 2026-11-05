@@ -155,7 +155,12 @@
         >
           <span class="account-action-icon" aria-hidden="true">
             {#if name}
-              <Avatar label={name} initials={authenticatedSession.initials} size="sm" />
+              <Avatar
+                label={name}
+                initials={authenticatedSession.initials}
+                src={authenticatedSession.picture}
+                size="sm"
+              />
             {:else}
               <CircleUserRound size="var(--icon-size-sm)" />
             {/if}

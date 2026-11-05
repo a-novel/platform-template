@@ -2,6 +2,7 @@ import { withLocale } from "#lib/i18n/provider.fixture.js";
 
 import { type ShellControllerOptions, type ShellViewModel, createShellController } from "./controller.svelte";
 import { withNavigationOpen } from "./navigation-state";
+import { portraitPicture } from "./picture.fixture";
 import Screen from "./screen.svelte";
 import ShellStory from "./story.svelte";
 
@@ -167,6 +168,23 @@ describe("shell screen", () => {
       name: "Gérer mon compte (Maya Chen) (s’ouvre dans un nouvel onglet)",
     });
     await expect.element(accountLink).toHaveAttribute("title", "Gérer mon compte (Maya Chen)");
+  });
+
+  it("shows the account's picture in place of its initials", async () => {
+    const session = {
+      status: "authenticated",
+      displayName: "Maya Chen",
+      initials: "MC",
+      picture: portraitPicture,
+    } as const;
+    render(Screen, { controller: controller({ session }) }, withLocale());
+
+    const accountLink = page.getByRole("link", { name: "Maya Chen (opens in a new tab)" });
+    await expect.element(accountLink).toBeVisible();
+    const picture = accountLink.element().querySelector("img");
+    expect(picture?.getAttribute("src")).toBe(portraitPicture);
+    await expect.poll(() => picture?.naturalWidth).toBe(256);
+    expect(accountLink.element().textContent).not.toContain("MC");
   });
 
   it("names no one before the account's email is known", async () => {

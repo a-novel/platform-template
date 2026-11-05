@@ -17,7 +17,15 @@ export const variables = defineEnvVars({
   },
   SERVICE_TOKEN_PATH: {
     schema: (value) => value,
-    description: "File of the projected service token the platform sends to services, on Kubernetes.",
+    description: "File of the projected service token the platform sends to Authentication, on Kubernetes.",
+  },
+  PROFILE_SERVICE_URL: {
+    schema: (value) => value,
+    description: "Base HTTP or HTTPS URL of the profile service, which stores each user's username and picture.",
+  },
+  PROFILE_SERVICE_TOKEN_PATH: {
+    schema: (value) => value,
+    description: "File of the projected service token the platform sends to the profile service, on Kubernetes.",
   },
   HEALTHCHECK_TIMEOUT_MS: {
     schema: (value) => value,
