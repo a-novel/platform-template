@@ -1,7 +1,12 @@
 import { version } from "$app/env";
-import { PUBLIC_FARO_URL } from "$app/env/public";
+import { PUBLIC_CONSENT_DOMAIN, PUBLIC_FARO_URL } from "$app/env/public";
 
 import { BrowserTelemetry } from "@a-novel-kit/nodelib-browser/telemetry";
 
 /** Reports the visitor's errors, page views and requests to Grafana Faro, once they consent. */
-export const telemetry = new BrowserTelemetry({ url: PUBLIC_FARO_URL, name: "platform-template", version });
+export const telemetry = new BrowserTelemetry({
+  url: PUBLIC_FARO_URL,
+  name: "platform-template",
+  version,
+  consentDomain: PUBLIC_CONSENT_DOMAIN,
+});

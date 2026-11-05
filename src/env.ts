@@ -31,6 +31,12 @@ export const variables = defineEnvVars({
     schema: (value) => value === "true",
     description: "Records and exports traces when `true`.",
   },
+  PUBLIC_CONSENT_DOMAIN: {
+    public: true,
+    schema: (value) => value || undefined,
+    description:
+      "Domain every Agora platform runs under, where the browser keeps the visitor's telemetry answer for all of them. Without it, the answer stays with this host.",
+  },
   PUBLIC_FARO_URL: {
     public: true,
     schema: (value) => value || undefined,

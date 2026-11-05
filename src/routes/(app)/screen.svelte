@@ -57,18 +57,6 @@
   const drawerId = `${componentId}-navigation-drawer`;
   const compactRail = $derived(model.rail === "collapsed");
   const { t } = getI18nContext();
-  const privacyItems = $derived(
-    privacyHref
-      ? [
-          {
-            href: privacyHref,
-            label: t("shell.privacy"),
-            current: model.activeNavigation === "privacy",
-            icon: privacyIcon,
-          },
-        ]
-      : []
-  );
   const authenticatedSession = $derived(model.session.status === "authenticated" ? model.session : null);
   /** The account widget's notice while the session is loading, unavailable or stopped for maintenance. */
   const sessionNotice = $derived.by(() => {
@@ -100,8 +88,6 @@
 </script>
 
 {#snippet homeIcon()}<House size="var(--icon-size-sm)" />{/snippet}
-
-{#snippet privacyIcon()}<ShieldCheck size="var(--icon-size-sm)" />{/snippet}
 
 {#snippet brand(compact: boolean)}
   <span class="brand" class:compact>
@@ -136,7 +122,6 @@
           current: model.activeNavigation === "home",
           icon: homeIcon,
         },
-        ...privacyItems,
       ]}
     />
   </nav>
@@ -236,6 +221,25 @@
           {#if !compact}<span>{t("shell.register")}</span>{/if}
         </Button>
       {/if}
+    {/if}
+    {#if privacyHref && !authenticatedSession}
+      <!-- A logged-in visitor changes their answer from their account. -->
+      <Button
+        class="shell-account-button {compact ? 'compact-control' : ''}"
+        variant="ghost"
+        tone="neutral"
+        size="sm"
+        square={compact}
+        aria-label={compact ? t("shell.privacy") : undefined}
+        aria-current={model.activeNavigation === "privacy" ? "page" : undefined}
+        title={compact ? t("shell.privacy") : undefined}
+        href={privacyHref}
+      >
+        <span class="account-action-icon" aria-hidden="true">
+          <ShieldCheck size="var(--icon-size-sm)" />
+        </span>
+        {#if !compact}<span>{t("shell.privacy")}</span>{/if}
+      </Button>
     {/if}
   </div>
 {/snippet}

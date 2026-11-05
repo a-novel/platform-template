@@ -9,6 +9,8 @@
   import { afterNavigate } from "$app/navigation";
   import { page } from "$app/state";
 
+  import { onMount } from "svelte";
+
   import lightFavicon from "@a-novel-kit/ui-images/files/icon/32x32/agora-icon-light.png";
   // Each icon follows the browser theme; the app itself stays dark. Firefox ignores `media` and
   // shows the last icon, so the light one comes last.
@@ -23,13 +25,18 @@
   // shares the downtime.
   setPlatformDowntime(createPlatformDowntime(() => data));
 
-  const preference = createTelemetryPreference(telemetry);
+  const preference = createTelemetryPreference(telemetry, () => data.telemetryChoice);
   if (telemetry.enabled) setTelemetryPreference(preference);
 
-  // The request shows only while the device records no answer; the Privacy page changes it later.
+  // Only the running page records an answer, so the request waits for it. Without JavaScript, nothing
+  // reports and nothing asks.
+  let running = $state(false);
+  onMount(() => (running = true));
+
+  // The request shows only while the visitor has no answer; the Privacy page changes it later.
   const consent: ConsentController = {
     get state() {
-      return { open: telemetry.enabled && !preference.pending && preference.choice === undefined };
+      return { open: telemetry.enabled && running && preference.choice === undefined };
     },
     open: () => {},
     accept: () => preference.choose("accepted"),

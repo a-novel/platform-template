@@ -166,7 +166,7 @@
   asChild
   play={verifyExpandedMobileNavigation}
 >
-  <StoryHarness model={withOpenMobileNavigation(anonymous)} />
+  <StoryHarness model={withOpenMobileNavigation(anonymous)} collectsTelemetry />
 </Story>
 
 <Story name="Without account links" exportName="WithoutAccountLinks" asChild>
@@ -192,7 +192,7 @@
 </Story>
 
 <Story name="Privacy destination" asChild>
-  <StoryHarness model={{ ...authenticated, activeNavigation: "privacy" }} collectsTelemetry />
+  <StoryHarness model={{ ...anonymous, activeNavigation: "privacy" }} collectsTelemetry />
 </Story>
 
 <Story

@@ -36,7 +36,7 @@ export default interface Resources {
       "privacy": "Privacy"
     },
     "privacy": {
-      "description": "Choose what we collect on this device.",
+      "description": "Choose what we collect on this device, in every Agora app.",
       "noTelemetry": "We collect no metrics or logs on this device.",
       "title": "Privacy"
     },
@@ -69,7 +69,7 @@ export default interface Resources {
       "unavailable": "Login is temporarily unavailable. Please try again in a few minutes."
     },
     "telemetryConsent": {
-      "change": "Change this anytime from the Privacy page.",
+      "change": "Your answer applies to every Agora app on this device. Change it anytime from the Privacy page.",
       "message": "We sometimes collect error logs and performance metrics to improve our products. No personal information is recorded or shared.",
       "title": "Metrics and log collection"
     }
