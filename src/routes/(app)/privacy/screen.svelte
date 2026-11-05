@@ -34,7 +34,6 @@
             controller={telemetrySwitch}
             label={t("telemetryConsent.title")}
             description={t("telemetryConsent.message")}
-            disabled={telemetry.pending}
           />
         {:else}
           <p>{t("privacy.noTelemetry")}</p>

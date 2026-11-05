@@ -6,9 +6,9 @@ import { Canvas, Meta, ResponsiveStoryPair } from "@a-novel-kit/uikit-storybook"
 
 # Privacy
 
-The consent banner records the visitor's telemetry answer on this device, for this platform alone.
-This page changes it, signed in or not. The shell lists it only while the platform collects browser
-telemetry.
+The consent banner records the visitor's telemetry answer on this device, for every Agora app. This
+page changes it for logged-out visitors and sends logged-in ones to their account's privacy tab. The
+shell lists it under the sign-in links while the platform collects browser telemetry.
 
 <ResponsiveStoryPair
   desktop={PrivacyStories.AcceptedDesktop}
@@ -23,12 +23,6 @@ telemetry.
 ## Not answered
 
 <Canvas of={PrivacyStories.NotAnswered} />
-
-## Reading the answer
-
-The answer lives on the device, so the switch waits until the page runs there.
-
-<Canvas of={PrivacyStories.ReadingTheAnswer} />
 
 ## Not collecting
 

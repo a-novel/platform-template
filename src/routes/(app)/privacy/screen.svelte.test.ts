@@ -9,8 +9,8 @@ import { page } from "vitest/browser";
 
 import type { TelemetryChoice } from "@a-novel-kit/nodelib-browser/telemetry";
 
-function answer(choice: TelemetryChoice | undefined, pending = false) {
-  return { pending, choice, choose: vi.fn<TelemetryPreference["choose"]>() };
+function answer(choice: TelemetryChoice | undefined) {
+  return { choice, choose: vi.fn<TelemetryPreference["choose"]>() };
 }
 
 describe("privacy screen", () => {
@@ -27,12 +27,6 @@ describe("privacy screen", () => {
     else await expect.element(setting).not.toBeChecked();
     await page.getByText("Metrics and log collection").click();
     expect(telemetry.choose).toHaveBeenCalledExactlyOnceWith(next);
-  });
-
-  it("waits for the device's answer before offering to change it", async () => {
-    render(PrivacyScreen, { telemetry: answer(undefined, true) }, withLocale());
-
-    await expect.element(page.getByRole("switch")).toBeDisabled();
   });
 
   it("says so when the platform collects nothing", async () => {

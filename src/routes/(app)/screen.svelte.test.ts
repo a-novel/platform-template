@@ -120,7 +120,7 @@ describe("shell screen", () => {
     await expect.element(page.getByRole("link", { name: "M’inscrire" })).toBeVisible();
   });
 
-  it("lists Privacy only while the platform collects browser telemetry", async () => {
+  it("lists Privacy under the sign-in links only while it collects browser telemetry", async () => {
     const view = await render(ShellStory, { model: model() }, withLocale());
     await expect.element(page.getByRole("link", { name: "Privacy" })).not.toBeInTheDocument();
     await view.unmount();
@@ -128,6 +128,14 @@ describe("shell screen", () => {
     render(ShellStory, { model: model({ activeNavigation: "privacy" }), collectsTelemetry: true }, withLocale("fr"));
     await expect.element(page.getByRole("link", { name: "Confidentialité" })).toHaveAttribute("aria-current", "page");
     await expect.element(page.getByRole("link", { name: "Accueil" })).not.toHaveAttribute("aria-current");
+  });
+
+  it("leaves Privacy to the account once the visitor is logged in", async () => {
+    const authenticated = model({ session: { status: "authenticated", displayName: "Maya Chen", initials: "MC" } });
+    render(ShellStory, { model: authenticated, collectsTelemetry: true }, withLocale());
+
+    await expect.element(page.getByRole("button", { name: "Log out" })).toBeVisible();
+    await expect.element(page.getByRole("link", { name: "Privacy" })).not.toBeInTheDocument();
   });
 
   it("names the account and opens its page on the account platform in a new tab", async () => {

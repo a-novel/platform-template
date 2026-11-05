@@ -113,6 +113,8 @@ browser bundle.
 | `OTEL_EXPORTER_OTLP_ENDPOINT`    | No             | Exports traces over OTLP/HTTP to this base URL instead of stdout.                                                                                                                             |
 | `OTEL_EXPORTER_OTLP_HEADERS`     | No             | Headers each export sends, such as the backend's key. Inject it as a secret.                                                                                                                  |
 | `OTEL_EXPORTER_OTLP_COMPRESSION` | No             | `gzip` compresses each export.                                                                                                                                                                |
+| `PUBLIC_FARO_URL`                | No             | Collector URL of the platform's Faro app. Without it, the browser reports nothing and asks no consent.                                                                                        |
+| `PUBLIC_CONSENT_DOMAIN`          | No             | Domain every Agora platform runs under, where the browser keeps the visitor's telemetry answer for all of them. Without it, the answer stays with this host.                                  |
 | `HOST`                           | No             | Listen address. The image sets `0.0.0.0`.                                                                                                                                                     |
 | `PORT`                           | No             | Listen port. The image sets `3000`.                                                                                                                                                           |
 

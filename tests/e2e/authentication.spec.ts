@@ -83,13 +83,13 @@ test("signs in from signed out through the account platform and returns to the p
   isMobile,
 }, info) => {
   const callback = page.waitForRequest((request) => request.url().startsWith(`${platformOrigin}/auth/callback?`));
-  await signIn(page, account, isMobile, "/privacy");
+  await signIn(page, account, isMobile);
 
   // The callback strips the code from the address bar and from any referrer.
   const response = await (await callback).response();
   expect(response?.status()).toBe(303);
   expect(response?.headers()).toMatchObject({
-    location: "/privacy",
+    location: "/",
     // The callback sets the session, so the request hook keeps it out of every cache.
     "cache-control": "private, no-store",
     "referrer-policy": "no-referrer",
@@ -120,10 +120,10 @@ test("signs in without a form while the account platform's session is open", asy
   await openAccountSession(page, account);
 
   // "Log in" comes back signed in after two redirects, with no form on the account platform.
-  await page.goto("/privacy");
+  await page.goto("/");
   await openAccountControls(page, isMobile);
   await page.getByRole("link", { name: "Log in", exact: true }).click();
-  await expect(page).toHaveURL("/privacy");
+  await expect(page).toHaveURL("/");
   await expect(await accountLink(page, isMobile)).toBeVisible();
 });
 
@@ -191,14 +191,14 @@ test("a failed exchange returns to the signed-out page, whose retry signs in", a
 
   // The browser's own requests follow the sign-in to the code, which reaches the platform altered, so
   // Authentication refuses the exchange.
-  const authorization = await page.request.get("/auth/sign-in?returnTo=%2Fprivacy", { maxRedirects: 0 });
+  const authorization = await page.request.get("/auth/sign-in?returnTo=%2F", { maxRedirects: 0 });
   const response = await page.request.get(authorization.headers().location ?? "", { maxRedirects: 0 });
   const callback = new URL(response.headers().location ?? "");
   expect(callback.searchParams.get("code")).toEqual(expect.any(String));
   callback.searchParams.set("code", "forged-code");
   await page.goto(callback.href);
 
-  await expect(page).toHaveURL("/auth/sign-in/failed?returnTo=%2Fprivacy");
+  await expect(page).toHaveURL("/auth/sign-in/failed?returnTo=%2F");
   await expect(page).toHaveTitle("We couldn’t log you in | Agora");
   await expect(page.getByRole("heading", { name: "We couldn’t log you in", level: 1 })).toBeVisible();
   expect(await tokenCookies(context)).toEqual([]);
@@ -206,7 +206,7 @@ test("a failed exchange returns to the signed-out page, whose retry signs in", a
 
   // The account platform's session is still open, so the retry comes back signed in without a form.
   await page.getByRole("link", { name: "Try again", exact: true }).click();
-  await expect(page).toHaveURL("/privacy");
+  await expect(page).toHaveURL("/");
   await expect(await accountLink(page, isMobile)).toBeVisible();
 });
 
@@ -286,7 +286,7 @@ test.describe("without JavaScript", () => {
     await page.getByRole("link", { name: "Log in", exact: true }).click();
     await logInOnAccountPlatform(page, account);
 
-    await expect(page).toHaveURL("/privacy");
-    await expect(page).toHaveTitle("Privacy | Agora");
+    // A logged-in visitor changes the shared answer from their account, so Privacy hands them over.
+    await expect(page).toHaveURL(`${accountOrigin}/account/privacy`);
   });
 });
