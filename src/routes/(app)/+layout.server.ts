@@ -1,6 +1,7 @@
 import { type AuthenticationEvent, getAuthenticationContext } from "#lib/server/auth/context.js";
 import type { ResolvedSession } from "#lib/server/auth/session.js";
 import { readPlatformDowntime } from "#lib/server/downtime.js";
+import { type ProfileSummary, getProfileContext, summarizeProfile } from "#lib/server/profile/context.js";
 import { getRuntimeConfig } from "#lib/server/runtime-config.server.js";
 
 import type { LayoutServerLoad } from "./$types";
@@ -50,7 +51,7 @@ function readAccountLinks(): { accountHref: string | null; invitationHref: strin
   }
 }
 
-/** Resolves the session the shell shows, exposing only a display name to the browser. */
+/** Resolves the session the shell shows, exposing only a display identity to the browser. */
 async function readShellSession(event: AuthenticationEvent): Promise<ShellSession> {
   // A started downtime stops Authentication, so the shell doesn't ask it for the session.
   if (isDowntimeStarted(await readPlatformDowntime())) return { status: "downtime" };
@@ -59,8 +60,26 @@ async function readShellSession(event: AuthenticationEvent): Promise<ShellSessio
   if (resolved.status === "downtime") return { status: "downtime" };
   if (resolved.status === "unavailable") return { status: "error" };
   if (resolved.status === "none" || !resolved.claims.userID) return { status: "anonymous" };
-  if (resolved.identityHandle) return { status: "authenticated", ...accountDisplayFromHandle(resolved.identityHandle) };
-  return { status: "authenticated" };
+
+  const { username, picture } = await readProfile(event, resolved.accessToken);
+  // Without the email handle, only a username names the account.
+  const display = resolved.identityHandle
+    ? accountDisplayFromHandle(resolved.identityHandle, username)
+    : { displayName: username };
+  return { status: "authenticated", ...display, picture };
+}
+
+/**
+ * Reads the visitor's username and the address of their picture on the account platform. Without the
+ * profile service, the shell names the account by its email handle and shows initials.
+ */
+async function readProfile(event: AuthenticationEvent, accessToken: string): Promise<ProfileSummary> {
+  try {
+    const profile = await getProfileContext(event).self(accessToken);
+    return summarizeProfile(profile, getRuntimeConfig().accountUrl);
+  } catch {
+    return {};
+  }
 }
 
 /** Reads the visitor's session, treating a server that cannot reach Authentication as an outage. */

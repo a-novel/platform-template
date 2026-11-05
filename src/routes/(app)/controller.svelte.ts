@@ -13,7 +13,13 @@ export type ShellSession =
   | { status: "loading" }
   | { status: "error" }
   | { status: "downtime" }
-  | { status: "authenticated"; displayName?: string; initials?: string };
+  | {
+      status: "authenticated";
+      displayName?: string;
+      initials?: string;
+      /** The address of the account's picture, which replaces the initials. */
+      picture?: string;
+    };
 
 /** Serializable state consumed by the pure application shell. */
 export interface ShellViewModel {

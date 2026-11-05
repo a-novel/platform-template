@@ -46,9 +46,24 @@ platform.
   meta={ShellStories}
 />
 
+### With a picture
+
+A username the visitor set on the account platform names the account, and their picture replaces the
+initials. While the profile service is unreachable, the button keeps the name and initials of the
+email.
+
+<ResponsiveStoryPair
+  desktop={ShellStories.AuthenticatedWithAPicture}
+  mobile={ShellStories.AuthenticatedWithAPictureMobile}
+  meta={ShellStories}
+/>
+
+<Canvas of={ShellStories.CollapsedWithAPicture} />
+
 ### Account without a name
 
-When the platform cannot read the account's email at sign-in, the button names no one.
+When the platform can read neither the account's email at sign-in nor a username, the button names
+no one.
 
 <Canvas of={ShellStories.AccountWithoutAName} />
 

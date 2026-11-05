@@ -10,6 +10,8 @@ import { json } from "@sveltejs/kit";
 /** Probes the platform's service registry and preserves each service-owned dependency map. */
 export const GET: RequestHandler = async ({ fetch }) => {
   const health = await aggregateHealth({
+    // The profile service only decorates the rail, which falls back to initials without it, so its
+    // outage leaves the platform ready and goes unprobed.
     config: {
       authentication: () => {
         const config = getRuntimeConfig();

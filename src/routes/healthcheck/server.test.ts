@@ -18,6 +18,7 @@ const config: RuntimeConfig = {
   healthcheckTimeoutMs: 500,
   accountUrl: "https://account.example.test",
   jsonKeysServiceUrl: "http://json-keys:8080",
+  profileServiceUrl: "http://profile:8080",
 };
 
 const authenticationDependencies = {
