@@ -175,6 +175,9 @@ services:
     environment:
       AUTHENTICATION_SERVICE_URL: http://authentication-network:8080
       JSON_KEYS_SERVICE_URL: http://json-keys-rest:8080
+      # No profile service runs here: the discard port refuses at once, and the account platform
+      # names the visitor by their email handle with initials.
+      PROFILE_SERVICE_URL: http://127.0.0.1:9
       SERVICE_TOKEN_PATH: /tmp/service-token
       # The platform derives its origin, which its form posts and its issuer use, from each request,
       # over https unless this header names another protocol. The journeys' browser sends it.
