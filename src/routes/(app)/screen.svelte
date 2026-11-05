@@ -24,13 +24,13 @@
     IconButton,
     InlineMessage,
     NavList,
+    Separator,
     SkipLink,
     VisuallyHidden,
   } from "@a-novel-kit/uikit";
 
   import {
     CircleUserRound,
-    ExternalLink,
     House,
     LogIn,
     LogOut,
@@ -51,6 +51,9 @@
   const logoutAction = $derived(controller.state.logoutAction);
   const privacyHref = $derived(controller.state.privacyHref);
   const platformDowntime = $derived(controller.state.platformDowntime);
+
+  /** The height of the maintenance banner that sticks above the content, which a page's sticky part sits under. */
+  let bannerBlockSize = $state(0);
 
   const componentId = $props.id();
   const desktopNavigationId = `${componentId}-desktop-navigation`;
@@ -127,6 +130,28 @@
   </nav>
 {/snippet}
 
+<!-- A logged-in visitor changes their answer from their account. -->
+{#snippet privacyLink(compact: boolean, href: string)}
+  <Button
+    class="shell-account-button {compact ? 'compact-control' : ''}"
+    variant="ghost"
+    tone="neutral"
+    size="sm"
+    square={compact}
+    aria-label={compact ? t("shell.privacy") : undefined}
+    aria-current={model.activeNavigation === "privacy" ? "page" : undefined}
+    title={compact ? t("shell.privacy") : undefined}
+    {href}
+  >
+    <span class="account-action-icon" aria-hidden="true">
+      <ShieldCheck size="var(--icon-size-sm)" />
+    </span>
+    {#if !compact}<span>{t("shell.privacy")}</span>{/if}
+  </Button>
+{/snippet}
+
+<!-- Links of one group touch. The account and the logout stand apart, so a click meant for one never lands
+     on the other. -->
 {#snippet accountWidget(compact: boolean)}
   <div class="account-widget" data-session={model.session.status}>
     {#if sessionNotice}
@@ -138,10 +163,11 @@
         <!-- A title crowds the narrow rail, so the alert has none. -->
         <Alert tone={sessionNotice.tone}>{sessionNotice.message}</Alert>
       {/if}
+      {#if privacyHref}{@render privacyLink(compact, privacyHref)}{/if}
     {:else if authenticatedSession}
       {#if accountHref}
         {@const name = authenticatedSession.displayName}
-        <!-- The account platform serves the account page, which opens beside the platform. -->
+        <!-- The account platform serves the account page, which opens in this tab like every other link. -->
         <Button
           class="shell-account-button {compact ? 'compact-control' : ''}"
           variant="ghost"
@@ -150,8 +176,6 @@
           square={compact}
           title={name ? t("shell.manageAccountFor", { name }) : compact ? t("shell.manageAccount") : undefined}
           href={accountHref}
-          target="_blank"
-          rel="noopener noreferrer"
         >
           <span class="account-action-icon" aria-hidden="true">
             {#if name}
@@ -169,10 +193,9 @@
             <VisuallyHidden>{name ? t("shell.manageAccountFor", { name }) : t("shell.manageAccount")}</VisuallyHidden>
           {:else}
             <span class="account-label">{name ?? t("shell.manageAccount")}</span>
-            <span class="new-tab-icon" aria-hidden="true"><ExternalLink size="var(--icon-size-sm)" /></span>
           {/if}
-          <VisuallyHidden>{t("shell.opensInNewTab")}</VisuallyHidden>
         </Button>
+        <Separator decorative />
       {/if}
       <form class="logout-form" method="POST" action={logoutAction} onsubmit={submitLogout}>
         <Button
@@ -192,59 +215,43 @@
         </Button>
       </form>
     {:else}
-      <!-- The sign-in route redirects to the account platform, which the client router cannot render. -->
-      <Button
-        class="shell-account-button {compact ? 'compact-control' : ''}"
-        variant="ghost"
-        tone="neutral"
-        size="sm"
-        square={compact}
-        aria-label={compact ? t("shell.signIn") : undefined}
-        title={compact ? t("shell.signIn") : undefined}
-        href={controller.signInHref()}
-        data-sveltekit-reload
-      >
-        <span class="account-action-icon" aria-hidden="true">
-          <LogIn size="var(--icon-size-sm)" />
-        </span>
-        {#if !compact}<span>{t("shell.signIn")}</span>{/if}
-      </Button>
-      {#if invitationHref}
+      <div class="link-group">
+        <!-- The sign-in route redirects to the account platform, which the client router cannot render. -->
         <Button
           class="shell-account-button {compact ? 'compact-control' : ''}"
           variant="ghost"
           tone="neutral"
           size="sm"
           square={compact}
-          aria-label={compact ? t("shell.register") : undefined}
-          title={compact ? t("shell.register") : undefined}
-          href={invitationHref}
+          aria-label={compact ? t("shell.signIn") : undefined}
+          title={compact ? t("shell.signIn") : undefined}
+          href={controller.signInHref()}
+          data-sveltekit-reload
         >
           <span class="account-action-icon" aria-hidden="true">
-            <UserRoundPlus size="var(--icon-size-sm)" />
+            <LogIn size="var(--icon-size-sm)" />
           </span>
-          {#if !compact}<span>{t("shell.register")}</span>{/if}
+          {#if !compact}<span>{t("shell.signIn")}</span>{/if}
         </Button>
-      {/if}
-    {/if}
-    {#if privacyHref && !authenticatedSession}
-      <!-- A logged-in visitor changes their answer from their account. -->
-      <Button
-        class="shell-account-button {compact ? 'compact-control' : ''}"
-        variant="ghost"
-        tone="neutral"
-        size="sm"
-        square={compact}
-        aria-label={compact ? t("shell.privacy") : undefined}
-        aria-current={model.activeNavigation === "privacy" ? "page" : undefined}
-        title={compact ? t("shell.privacy") : undefined}
-        href={privacyHref}
-      >
-        <span class="account-action-icon" aria-hidden="true">
-          <ShieldCheck size="var(--icon-size-sm)" />
-        </span>
-        {#if !compact}<span>{t("shell.privacy")}</span>{/if}
-      </Button>
+        {#if invitationHref}
+          <Button
+            class="shell-account-button {compact ? 'compact-control' : ''}"
+            variant="ghost"
+            tone="neutral"
+            size="sm"
+            square={compact}
+            aria-label={compact ? t("shell.register") : undefined}
+            title={compact ? t("shell.register") : undefined}
+            href={invitationHref}
+          >
+            <span class="account-action-icon" aria-hidden="true">
+              <UserRoundPlus size="var(--icon-size-sm)" />
+            </span>
+            {#if !compact}<span>{t("shell.register")}</span>{/if}
+          </Button>
+        {/if}
+        {#if privacyHref}{@render privacyLink(compact, privacyHref)}{/if}
+      </div>
     {/if}
   </div>
 {/snippet}
@@ -273,16 +280,18 @@
         </IconButton>
       </div>
 
-      <div id={desktopNavigationId} class="rail-navigation">
-        {@render primaryNavigation(compactRail)}
-      </div>
+      <div class="rail-body">
+        <div id={desktopNavigationId} class="rail-navigation">
+          {@render primaryNavigation(compactRail)}
+        </div>
 
-      <div class="rail-account">
-        {@render accountWidget(compactRail)}
+        <div class="rail-account">
+          {@render accountWidget(compactRail)}
+        </div>
       </div>
     </aside>
 
-    <div class="workspace">
+    <div class="workspace" style:--shell-banner-block-size="{bannerBlockSize}px">
       <header class="mobile-header">
         {@render brand(false)}
         <IconButton
@@ -300,7 +309,7 @@
       </header>
 
       {#if platformDowntime?.downtime}
-        <div class="downtime">
+        <div class="downtime" bind:offsetHeight={bannerBlockSize}>
           <DowntimeBanner
             start={platformDowntime.downtime.start}
             end={platformDowntime.downtime.end}
@@ -360,7 +369,7 @@
   .rail {
     display: grid;
     position: sticky;
-    grid-template-rows: auto minmax(0, 1fr) auto;
+    grid-template-rows: auto minmax(0, 1fr);
     gap: var(--space-4);
     z-index: var(--layer-sticky);
     box-sizing: border-box;
@@ -419,7 +428,18 @@
     block-size: var(--icon-size-lg);
   }
 
-  .rail-navigation {
+  /* The links above and the account below stay far apart, however long the links run: the links scroll. */
+  .rail-body,
+  .drawer-content {
+    display: grid;
+    grid-template-rows: minmax(0, 1fr) auto;
+    gap: var(--space-8);
+    min-inline-size: 0;
+    min-block-size: 0;
+  }
+
+  .rail-navigation,
+  .drawer-navigation {
     min-block-size: 0;
     overflow-y: auto;
     overscroll-behavior-block: contain;
@@ -433,6 +453,11 @@
   .account-widget {
     display: grid;
     gap: var(--space-2);
+    min-inline-size: 0;
+  }
+
+  .link-group {
+    display: grid;
     min-inline-size: 0;
   }
 
@@ -457,12 +482,6 @@
     white-space: nowrap;
   }
 
-  .new-tab-icon {
-    display: inline-flex;
-    flex: none;
-    color: var(--color-text-secondary);
-  }
-
   .compact-status {
     display: grid;
     place-items: center;
@@ -483,8 +502,12 @@
     text-align: start;
   }
 
-  /* A column, so the sticky header and banner can stay in view across the whole content. */
+  /* A column, so the sticky header and banner can stay in view across the whole content. A page sticks its own
+     parts under them at --shell-sticky-top. */
   .workspace {
+    --shell-header-block-size: calc(var(--control-height-sm) + var(--space-2));
+    --shell-sticky-top: var(--shell-banner-block-size);
+
     display: flex;
     flex-direction: column;
     min-inline-size: 0;
@@ -513,20 +536,6 @@
     outline-offset: calc(var(--focus-ring-offset) * -1);
   }
 
-  .drawer-navigation {
-    min-block-size: 0;
-    overflow-y: auto;
-    overscroll-behavior-block: contain;
-  }
-
-  .drawer-content {
-    display: grid;
-    grid-template-rows: minmax(0, 1fr) auto;
-    gap: var(--space-2);
-    min-inline-size: 0;
-    min-block-size: 0;
-  }
-
   @container app-shell (max-width: 47.999rem) {
     .shell {
       grid-template-columns: minmax(0, 1fr);
@@ -536,6 +545,10 @@
       display: none;
     }
 
+    .workspace {
+      --shell-sticky-top: var(--shell-header-block-size);
+    }
+
     /* On narrow screens it waits at the bottom, away from where reading starts, and never covers the end. */
     .downtime {
       order: 1;
@@ -543,6 +556,7 @@
       inset-block-start: auto;
     }
 
+    /* One control tall, so a phone keeps its height for the page. */
     .mobile-header {
       display: flex;
       position: sticky;
@@ -550,8 +564,10 @@
       align-items: center;
       gap: var(--space-2);
       z-index: var(--layer-sticky);
+      box-sizing: border-box;
       inset-block-start: 0;
-      padding: var(--space-4);
+      padding-inline: var(--space-2);
+      block-size: var(--shell-header-block-size);
     }
   }
 

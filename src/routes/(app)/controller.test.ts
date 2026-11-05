@@ -15,7 +15,7 @@ const links = {
 
 function shell(options: Partial<ShellControllerOptions> = {}) {
   return createShellController({
-    getData: () => ({ activeNavigation: "home", session: { status: "anonymous" }, ...accountLinks }),
+    getData: () => ({ activeNavigation: "home", rail: "expanded", session: { status: "anonymous" }, ...accountLinks }),
     ...links,
     allowNativeLogout: false,
     ...options,
@@ -26,7 +26,12 @@ describe("createShellController", () => {
   it("accepts semantic shell transitions", () => {
     const onRailChange = vi.fn();
     const onDrawerChange = vi.fn();
-    let data: ShellData = { activeNavigation: "home", session: { status: "anonymous" }, ...accountLinks };
+    let data: ShellData = {
+      activeNavigation: "home",
+      rail: "expanded",
+      session: { status: "anonymous" },
+      ...accountLinks,
+    };
     const controller = shell({ getData: () => data, onRailChange, onDrawerChange });
 
     controller.navigationDialog.open();
@@ -65,12 +70,15 @@ describe("createShellController", () => {
   });
 
   it("derives the menu from the URL and the rest of the shell from the load data", () => {
-    let data: ShellData = { activeNavigation: "home", session: { status: "anonymous" }, ...accountLinks };
+    let data: ShellData = {
+      activeNavigation: "home",
+      rail: "collapsed",
+      session: { status: "anonymous" },
+      ...accountLinks,
+    };
     let url = new URL("https://template.example.test/?menu=open");
     const controller = shell({ getData: () => data, getUrl: () => url });
 
-    controller.synchronizeRail("collapsed");
-    controller.synchronizeRail("collapsed");
     expect(controller.state.model).toEqual({
       activeNavigation: "home",
       rail: "collapsed",
@@ -78,7 +86,13 @@ describe("createShellController", () => {
       session: { status: "anonymous" },
     });
 
-    data = { activeNavigation: null, session: { status: "authenticated" }, accountHref: null, invitationHref: null };
+    data = {
+      activeNavigation: null,
+      rail: "collapsed",
+      session: { status: "authenticated" },
+      accountHref: null,
+      invitationHref: null,
+    };
     url = new URL("https://template.example.test/privacy");
     expect(controller.state).toEqual({
       model: { activeNavigation: null, rail: "collapsed", drawerOpen: false, session: { status: "authenticated" } },
@@ -94,7 +108,12 @@ describe("createShellController", () => {
 
   it("allows native logout without replacing the authenticated session", () => {
     const controller = shell({
-      getData: () => ({ activeNavigation: "home", session: { status: "authenticated" }, ...accountLinks }),
+      getData: () => ({
+        activeNavigation: "home",
+        rail: "expanded",
+        session: { status: "authenticated" },
+        ...accountLinks,
+      }),
       allowNativeLogout: true,
     });
 

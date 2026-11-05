@@ -1,17 +1,18 @@
 <script lang="ts">
   import { getPlatformDowntime } from "#lib/ui/downtime.svelte.js";
   import { hasTelemetryPreference } from "#lib/ui/telemetry-preference.js";
+  import { PUBLIC_PLATFORM_DOMAIN } from "$app/env/public";
   import { afterNavigate, goto } from "$app/navigation";
   import { resolve } from "$app/paths";
   import { page } from "$app/state";
 
   import { createShellController } from "./controller.svelte";
   import { withNavigationOpen } from "./navigation-state";
-  import { readRailCollapsed, writeRailCollapsed } from "./rail-preference";
   import Screen from "./screen.svelte";
 
   import { onMount } from "svelte";
 
+  import { saveNavigationRail } from "@a-novel-kit/nodelib-browser/preferences";
   import { AuthorizationProvider } from "@a-novel-kit/uikit";
   import { createAuthorizationController } from "@a-novel-kit/uikit/authorization";
 
@@ -30,7 +31,8 @@
     platformDowntime: getPlatformDowntime(),
     getUrl: () => new URL(currentHref),
     onDrawerChange: (open) => showShallow(withNavigationOpen(new URL(window.location.href), open)),
-    onRailChange: (rail) => writeRailCollapsed(window.localStorage, rail === "collapsed"),
+    // Every Agora app under the shared domain opens with the rail the visitor left.
+    onRailChange: (rail) => saveNavigationRail(rail, { domain: PUBLIC_PLATFORM_DOMAIN }),
   });
 
   afterNavigate(async ({ complete, shallow }) => {
@@ -42,8 +44,6 @@
   });
 
   onMount(() => {
-    controller.synchronizeRail(readRailCollapsed(window.localStorage) ? "collapsed" : "expanded");
-
     window.addEventListener("popstate", synchronizeUrl);
 
     return () => window.removeEventListener("popstate", synchronizeUrl);

@@ -21,7 +21,7 @@ export const variables = defineEnvVars({
   },
   PROFILE_SERVICE_URL: {
     schema: (value) => value,
-    description: "Base HTTP or HTTPS URL of the profile service, which stores each user's username and picture.",
+    description: "Base HTTP or HTTPS URL of the profile service, which stores each user's public profile.",
   },
   PROFILE_SERVICE_TOKEN_PATH: {
     schema: (value) => value,
@@ -39,11 +39,11 @@ export const variables = defineEnvVars({
     schema: (value) => value === "true",
     description: "Records and exports traces when `true`.",
   },
-  PUBLIC_CONSENT_DOMAIN: {
+  PUBLIC_PLATFORM_DOMAIN: {
     public: true,
     schema: (value) => value || undefined,
     description:
-      "Domain every Agora platform runs under, where the browser keeps the visitor's telemetry answer for all of them. Without it, the answer stays with this host.",
+      "Domain every Agora platform runs under, where the browser keeps the choices the visitor shares across them. Without it, they stay with this host.",
   },
   PUBLIC_FARO_URL: {
     public: true,

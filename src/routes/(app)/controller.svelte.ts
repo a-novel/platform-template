@@ -44,8 +44,8 @@ export interface ShellControllerState {
   platformDowntime?: PlatformDowntime;
 }
 
-/** The layout's load data the shell renders: the page's destination, the session and the account links. */
-export type ShellData = Pick<ShellViewModel, "activeNavigation" | "session"> &
+/** The layout's load data the shell renders: the page's destination, the session, the rail and the account links. */
+export type ShellData = Pick<ShellViewModel, "activeNavigation" | "session" | "rail"> &
   Pick<ShellControllerState, "accountHref" | "invitationHref">;
 
 /** Pure state and transitions consumed by the application shell component. */
@@ -63,8 +63,6 @@ export interface ShellController {
   toggleRail(): void;
   /** Requests logout and reports whether native form submission should continue. */
   logout(): boolean;
-  /** Reconciles the persisted navigation-rail preference. */
-  synchronizeRail(rail: ShellViewModel["rail"]): void;
 }
 
 /** Configuration for the default shell controller. */
@@ -93,7 +91,8 @@ export function createShellController({
   getUrl = () => new SvelteURL(homeHref, "https://template.invalid"),
   onDrawerChange,
 }: ShellControllerOptions): ShellController {
-  let rail = $state<ShellViewModel["rail"]>("expanded");
+  // The rail the server read from the visitor's cookie, until they toggle it.
+  let rail = $derived(getData().rail);
   // The URL owns the menu: a transition opens or closes it at once, and the next URL, such as Back's, decides again.
   let drawerOpen = $derived(readNavigationOpen(getUrl().searchParams));
   // A logout the browser does not submit signs the shell out until the next load.
@@ -149,9 +148,6 @@ export function createShellController({
       if (session.status !== "authenticated") return false;
       if (!allowNativeLogout) session = { status: "anonymous" };
       return allowNativeLogout;
-    },
-    synchronizeRail(next) {
-      rail = next;
     },
   };
 }

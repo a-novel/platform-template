@@ -8,6 +8,7 @@ import type { LayoutServerLoad } from "./$types";
 import { accountDisplayFromHandle } from "./account-display";
 import type { ShellSession, ShellViewModel } from "./controller.svelte";
 
+import { NAVIGATION_RAIL_COOKIE, parseNavigationRail } from "@a-novel-kit/nodelib-browser/preferences";
 import { isDowntimeStarted } from "@a-novel-kit/nodelib-server";
 import type { AuthorizationStatus } from "@a-novel-kit/uikit/authorization";
 
@@ -29,6 +30,8 @@ export const load: LayoutServerLoad = async (event) => {
 
   return {
     activeNavigation: navigation[event.url.pathname] ?? null,
+    // The browser sends the rail the visitor left on any Agora app, so the page renders it from the start.
+    rail: parseNavigationRail(event.cookies.get(NAVIGATION_RAIL_COOKIE)),
     ...readAccountLinks(),
     session,
     authorization: shellAuthorization[session.status],

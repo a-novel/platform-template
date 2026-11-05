@@ -52,7 +52,6 @@ export default interface Resources {
       "manageAccountFor": "Manage account for {{name}}",
       "navigation": "Agora navigation",
       "openNavigation": "Open navigation",
-      "opensInNewTab": "(opens in a new tab)",
       "privacy": "Privacy",
       "register": "Register",
       "sessionDowntime": "Account unavailable during maintenance.",
