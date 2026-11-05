@@ -1,5 +1,5 @@
 import { version } from "$app/env";
-import { PUBLIC_CONSENT_DOMAIN, PUBLIC_FARO_URL } from "$app/env/public";
+import { PUBLIC_FARO_URL, PUBLIC_PLATFORM_DOMAIN } from "$app/env/public";
 
 import { BrowserTelemetry } from "@a-novel-kit/nodelib-browser/telemetry";
 
@@ -8,5 +8,5 @@ export const telemetry = new BrowserTelemetry({
   url: PUBLIC_FARO_URL,
   name: "platform-template",
   version,
-  consentDomain: PUBLIC_CONSENT_DOMAIN,
+  consentDomain: PUBLIC_PLATFORM_DOMAIN,
 });

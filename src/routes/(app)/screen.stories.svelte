@@ -128,9 +128,9 @@
   async function verifyAuthenticatedActions({ canvasElement, globals }: PlayContext) {
     const canvas = within(canvasElement);
     const t = createStorybookTranslator(globals);
-    const account = canvas.getByRole("link", { name: `Maya Chen ${t("shell.opensInNewTab")}` });
+    const account = canvas.getByRole("link", { name: "Maya Chen" });
     await expect(account).toHaveAttribute("href", "#account");
-    await expect(account).toHaveAttribute("target", "_blank");
+    await expect(account).not.toHaveAttribute("target");
     await expect(canvas.getByRole("button", { name: t("shell.logout") })).toBeVisible();
     await userEvent.click(canvas.getByRole("button", { name: t("shell.logout") }));
     await expect(account).toBeVisible();

@@ -52,7 +52,7 @@ async function signIn(page: Page, account: Account, isMobile: boolean, path = "/
 /** The account link, named after the email of the fixtures' accounts, which tells the visitor is signed in. */
 async function accountLink(page: Page, isMobile: boolean) {
   await openAccountControls(page, isMobile);
-  return page.getByRole("link", { name: "Template Tester (opens in a new tab)", exact: true });
+  return page.getByRole("link", { name: "Template Tester", exact: true });
 }
 
 /** The platform's cookies, the pending sign-in's included. The account platform's share the host. */
@@ -219,7 +219,7 @@ test("Register opens the account platform's invitation request", async ({ page, 
   await expect(page.getByRole("dialog", { name: "Join the Agora invitation list" })).toBeVisible();
 });
 
-test("navigation controls preserve the rail preference and drawer focus", async ({ page, isMobile }) => {
+test("navigation controls keep the rail from the first paint, and the drawer focus", async ({ page, isMobile }) => {
   await page.goto("/");
   if (isMobile) {
     await page.getByRole("link", { name: "Open navigation", exact: true }).click();
@@ -232,6 +232,9 @@ test("navigation controls preserve the rail preference and drawer focus", async 
   await page.getByRole("button", { name: "Collapse navigation", exact: true }).click();
   await expect(page.getByRole("button", { name: "Expand navigation", exact: true })).toBeVisible();
 
+  // The server renders the rail the visitor left, so the page never shows it expanded first.
+  const html = await (await page.request.get("/")).text();
+  expect(html).toContain('data-rail="collapsed"');
   await page.reload();
   await expect(page.getByRole("button", { name: "Expand navigation", exact: true })).toBeVisible();
   await page.getByRole("button", { name: "Expand navigation", exact: true }).click();

@@ -27,6 +27,6 @@ describe("fixed visual review controllers", () => {
     await menu.getByRole("button", { name: "Log out" }).click();
 
     await expect.element(menu).toBeVisible();
-    await expect.element(menu.getByRole("link", { name: "Manage your account (opens in a new tab)" })).toBeVisible();
+    await expect.element(menu.getByRole("link", { name: "Manage your account" })).toBeVisible();
   });
 });

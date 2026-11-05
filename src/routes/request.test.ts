@@ -99,10 +99,16 @@ afterEach(() => {
 });
 
 describe("session at the request boundary", () => {
+  it("renders the rail the visitor left on any Agora app", async () => {
+    const { event } = request("/", { "navigation-rail": "collapsed" });
+    await expect(loadShell(event)).resolves.toMatchObject({ rail: "collapsed" });
+  });
+
   it("serves an anonymous home without calling authentication", async () => {
     const { event } = request("/");
     await expect(loadShell(event)).resolves.toEqual({
       activeNavigation: "home",
+      rail: "expanded",
       ...accountLinks,
       session: { status: "anonymous" },
       authorization: "anonymous",
@@ -116,6 +122,7 @@ describe("session at the request boundary", () => {
     fetchService.mockResolvedValueOnce(Response.json(identity));
     await expect(loadShell(event)).resolves.toEqual({
       activeNavigation: null,
+      rail: "expanded",
       ...accountLinks,
       session: { status: "authenticated", displayName: "Maya Chen", initials: "MC" },
       authorization: "allowed",
@@ -191,6 +198,7 @@ describe("session at the request boundary", () => {
 
     await expect(loadShell(event)).resolves.toEqual({
       activeNavigation: "home",
+      rail: "expanded",
       ...accountLinks,
       session: {
         status: "authenticated",
@@ -223,6 +231,7 @@ describe("session at the request boundary", () => {
 
     await expect(loadShell(event)).resolves.toEqual({
       activeNavigation: "home",
+      rail: "expanded",
       ...accountLinks,
       session: { status: "authenticated", displayName: "Maya Chen", initials: "MC" },
       authorization: "allowed",
@@ -236,6 +245,7 @@ describe("session at the request boundary", () => {
 
     await expect(loadShell(event)).resolves.toEqual({
       activeNavigation: "home",
+      rail: "expanded",
       ...accountLinks,
       session: { status: "authenticated", displayName: "Maya" },
       authorization: "allowed",
@@ -256,6 +266,7 @@ describe("session at the request boundary", () => {
     const { event } = request("/", tokenCookies);
     await expect(loadShell(event)).resolves.toEqual({
       activeNavigation: "home",
+      rail: "expanded",
       accountHref: null,
       invitationHref: null,
       session: { status: "error" },
@@ -271,6 +282,7 @@ describe("session at the request boundary", () => {
       .mockResolvedValueOnce(new Response("private service detail", { status: 503 }));
     await expect(loadShell(event)).resolves.toEqual({
       activeNavigation: "home",
+      rail: "expanded",
       ...accountLinks,
       session: { status: "error" },
       authorization: "unavailable",
@@ -558,6 +570,7 @@ describe("planned downtime at the request boundary", () => {
 
     await expect(loadShell(event)).resolves.toEqual({
       activeNavigation: "home",
+      rail: "expanded",
       ...accountLinks,
       session: { status: "downtime" },
       authorization: "unavailable",
