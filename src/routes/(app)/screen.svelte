@@ -337,7 +337,7 @@
   }
 
   .shell {
-    --shell-rail-width: clamp(var(--layout-sidebar-min), var(--layout-sidebar), 18rem);
+    --shell-rail-width: var(--layout-sidebar);
 
     display: grid;
     grid-template-columns: var(--shell-rail-width) minmax(0, 1fr);

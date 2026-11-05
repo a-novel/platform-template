@@ -77,6 +77,6 @@
     place-items: center;
     box-sizing: border-box;
     padding: var(--space-6);
-    min-block-size: 100svh;
+    min-block-size: 100dvb;
   }
 </style>
