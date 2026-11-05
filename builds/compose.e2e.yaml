@@ -151,7 +151,7 @@ services:
 
   # The account platform, where the platform signs people in.
   account:
-    image: ghcr.io/a-novel/platform-account:v1.2.1@sha256:9c12c8b7ebc154b6a819f170296e4abcafbd7aa6b2c5cbc63d2547c96814020f
+    image: ghcr.io/a-novel/platform-account:v1.5.0@sha256:5d805304a9ec4734f158e99b7c29b0795451b0c2997e51e0992086158c5ac05b
     ports:
       - "127.0.0.1:14102:3000"
     depends_on:
