@@ -236,7 +236,7 @@ importers:
     devDependencies:
       '@a-novel-kit/nodelib-config':
         specifier: 2.9.0
-        version: 2.9.0(03b6179567df79321e5258c5987b5512)
+        version: 2.9.0(e91a70f10e8510031f8ff703ef69aa84)
       '@a-novel-kit/nodelib-test':
         specifier: 2.9.0
         version: 2.9.0(@a-novel-kit/nodelib-browser@2.9.0(@grafana/faro-web-sdk@2.13.0)(@grafana/faro-web-tracing@2.13.0)(zod@4.6.7))(jsdom@30.1.3)(playwright@1.64.1)
@@ -310,8 +310,8 @@ importers:
         specifier: 10.6.5
         version: 10.6.5(eslint@10.14.0(jiti@2.7.0))(typescript@6.0.3)
       eslint-plugin-svelte:
-        specifier: 3.23.1
-        version: 3.23.1(eslint@10.14.0(jiti@2.7.0))(svelte@5.57.3(@typescript-eslint/types@8.72.1))
+        specifier: 3.24.0
+        version: 3.24.0(eslint@10.14.0(jiti@2.7.0))(svelte@5.57.3(@typescript-eslint/types@8.72.1))
       estree-walker:
         specifier: 3.0.3
         version: 3.0.3
@@ -319,11 +319,11 @@ importers:
         specifier: 17.14.0
         version: 17.14.0
       i18next-cli:
-        specifier: 1.82.1
-        version: 1.82.1(@types/node@26.6.6)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(typescript@6.0.3)
+        specifier: 1.82.4
+        version: 1.82.4(@types/node@26.6.6)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(typescript@6.0.3)
       i18next-cli-plugin-svelte:
         specifier: 2.5.0
-        version: 2.5.0(estree-walker@3.0.3)(i18next-cli@1.82.1(@types/node@26.6.6)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(typescript@6.0.3))(svelte@5.57.3(@typescript-eslint/types@8.72.1))
+        version: 2.5.0(estree-walker@3.0.3)(i18next-cli@1.82.4(@types/node@26.6.6)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(typescript@6.0.3))(svelte@5.57.3(@typescript-eslint/types@8.72.1))
       jsdom:
         specifier: 30.1.3
         version: 30.1.3
@@ -2221,8 +2221,8 @@ packages:
     peerDependencies:
       eslint: '>=8'
 
-  eslint-plugin-svelte@3.23.1:
-    resolution: {integrity: sha512-+w86Jlx4IRUuuvtqD6j4njql+akx+81JnpvbN5de3AV5iq2SexvST/Jr51CiTlKeY0i+vhoKjPO/ywFKIP75sA==}
+  eslint-plugin-svelte@3.24.0:
+    resolution: {integrity: sha512-nppLmSSkWFs4JmPfcXJTFXsGILlYQhVSbJiP803kyMF0d9VxEJ5UIF5QjdbVx0U4bV6g8qkuvZUqkhsusrOzXA==}
     engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
     peerDependencies:
       eslint: ^8.57.1 || ^9.0.0 || ^10.0.0
@@ -2411,8 +2411,8 @@ packages:
       i18next-cli: ^1.51.6
       svelte: ^5.53.11
 
-  i18next-cli@1.82.1:
-    resolution: {integrity: sha512-aX9NFlpcymarghdQNWq/6bv876BQqP/vYQlyWBITxEYdjhUoF29QRAJnlwXBMjpK7LpOph3vQYQSabKltl9i7w==}
+  i18next-cli@1.82.4:
+    resolution: {integrity: sha512-6etrx4jpQFE2fHadWDoYealI5mTiOsMBYDFpv10PIIvZRQ+rw2F/ObRKc5lrBh8Kbssj3EtUNCeVch9MuBfoVg==}
     engines: {node: '>=22'}
     hasBin: true
 
@@ -3501,7 +3501,7 @@ snapshots:
       '@grafana/faro-web-tracing': 2.13.0
       zod: 4.6.7
 
-  '@a-novel-kit/nodelib-config@2.9.0(03b6179567df79321e5258c5987b5512)':
+  '@a-novel-kit/nodelib-config@2.9.0(e91a70f10e8510031f8ff703ef69aa84)':
     dependencies:
       '@eslint/compat': 2.1.1(eslint@10.14.0(jiti@2.7.0))
       '@eslint/config-helpers': 0.7.0
@@ -3515,11 +3515,11 @@ snapshots:
       eslint: 10.14.0(jiti@2.7.0)
       eslint-config-prettier: 10.1.8(eslint@10.14.0(jiti@2.7.0))
       eslint-plugin-storybook: 10.6.5(eslint@10.14.0(jiti@2.7.0))(typescript@6.0.3)
-      eslint-plugin-svelte: 3.23.1(eslint@10.14.0(jiti@2.7.0))(svelte@5.57.3(@typescript-eslint/types@8.72.1))
+      eslint-plugin-svelte: 3.24.0(eslint@10.14.0(jiti@2.7.0))(svelte@5.57.3(@typescript-eslint/types@8.72.1))
       estree-walker: 3.0.3
       globals: 17.14.0
-      i18next-cli: 1.82.1(@types/node@26.6.6)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(typescript@6.0.3)
-      i18next-cli-plugin-svelte: 2.5.0(estree-walker@3.0.3)(i18next-cli@1.82.1(@types/node@26.6.6)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(typescript@6.0.3))(svelte@5.57.3(@typescript-eslint/types@8.72.1))
+      i18next-cli: 1.82.4(@types/node@26.6.6)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(typescript@6.0.3)
+      i18next-cli-plugin-svelte: 2.5.0(estree-walker@3.0.3)(i18next-cli@1.82.4(@types/node@26.6.6)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(typescript@6.0.3))(svelte@5.57.3(@typescript-eslint/types@8.72.1))
       playwright: 1.64.1
       prettier: 3.9.10
       prettier-plugin-css-order: 2.2.0(postcss@8.5.32)(prettier@3.9.10)
@@ -5132,7 +5132,7 @@ snapshots:
       - supports-color
       - typescript
 
-  eslint-plugin-svelte@3.23.1(eslint@10.14.0(jiti@2.7.0))(svelte@5.57.3(@typescript-eslint/types@8.72.1)):
+  eslint-plugin-svelte@3.24.0(eslint@10.14.0(jiti@2.7.0))(svelte@5.57.3(@typescript-eslint/types@8.72.1)):
     dependencies:
       '@eslint-community/eslint-utils': 4.10.1(eslint@10.14.0(jiti@2.7.0))
       '@jridgewell/sourcemap-codec': 1.6.0
@@ -5332,14 +5332,14 @@ snapshots:
 
   html-parse-stringify@4.0.1: {}
 
-  i18next-cli-plugin-svelte@2.5.0(estree-walker@3.0.3)(i18next-cli@1.82.1(@types/node@26.6.6)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(typescript@6.0.3))(svelte@5.57.3(@typescript-eslint/types@8.72.1)):
+  i18next-cli-plugin-svelte@2.5.0(estree-walker@3.0.3)(i18next-cli@1.82.4(@types/node@26.6.6)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(typescript@6.0.3))(svelte@5.57.3(@typescript-eslint/types@8.72.1)):
     dependencies:
       estree-walker: 3.0.3
-      i18next-cli: 1.82.1(@types/node@26.6.6)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(typescript@6.0.3)
+      i18next-cli: 1.82.4(@types/node@26.6.6)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(typescript@6.0.3)
       recast: 0.23.21
       svelte: 5.57.3(@typescript-eslint/types@8.72.1)
 
-  i18next-cli@1.82.1(@types/node@26.6.6)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(typescript@6.0.3):
+  i18next-cli@1.82.4(@types/node@26.6.6)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(typescript@6.0.3):
     dependencies:
       '@croct/json5-parser': 0.2.2
       '@formatjs/icu-messageformat-parser': 3.5.22
@@ -5357,7 +5357,7 @@ snapshots:
       jsonc-parser: 3.3.1
       magic-string: 1.4.5
       messageformat: 4.1.0
-      minimatch: 11.0.1
+      minimatch: 11.0.4
       nano-spawn: 2.1.0
       react-i18next: 17.1.12(i18next@26.7.1(typescript@6.0.3))(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(typescript@6.0.3)
       yaml: 2.9.1
