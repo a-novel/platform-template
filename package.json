@@ -7,7 +7,7 @@
     "type": "git",
     "url": "git+https://github.com/a-novel/platform-template.git"
   },
-  "license": "AGPL-3.0",
+  "license": "RPL-1.5",
   "type": "module",
   "imports": {
     "#lib/*": "./src/lib/*"
