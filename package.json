@@ -52,7 +52,7 @@
     "@a-novel-kit/uikit": "0.15.0",
     "@a-novel-kit/uikit-fonts": "0.15.0",
     "@a-novel-kit/uikit-tokens": "0.15.0",
-    "@a-novel/service-authentication-rest": "2.25.3",
+    "@a-novel/service-authentication-rest": "2.25.4",
     "@a-novel/service-json-keys-rest": "2.15.7",
     "@a-novel/service-profile-rest": "1.0.1",
     "@grafana/faro-web-sdk": "2.13.0",
