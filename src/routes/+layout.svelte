@@ -59,12 +59,22 @@
 </I18nProvider>
 
 <style>
-  /* The lamp lives on the root, so pages leave the canvas bare and contrast checks read its color. */
+  /* The root keeps the canvas color contrast checks read, and the lamp hangs on a layer fixed behind
+     the page: iOS ignores a fixed background and would scroll the lamp away. */
   :global(html) {
-    background: var(--fill-canvas);
+    background: var(--color-surface-canvas);
     /* WCAG 1.4.10 reflows content down to 320 CSS pixels; a narrower window scrolls instead. */
     min-inline-size: 20rem;
     color-scheme: dark;
+  }
+
+  :global(html)::before {
+    position: fixed;
+    z-index: -1;
+    inset: 0;
+    background: var(--fill-canvas);
+    pointer-events: none;
+    content: "";
   }
 
   :global(body) {
