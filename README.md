@@ -9,6 +9,7 @@ A scaffold for new A-Novel platforms: fork it, rename it, and build your own scr
 
 ![GitHub repo file or directory count](https://img.shields.io/github/directory-file-count/a-novel/platform-template)
 ![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/a-novel/platform-template)
+[![License: RPL-1.5](https://img.shields.io/badge/license-RPL--1.5-blue)](LICENSE)
 ![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/a-novel/platform-template/main.yaml)
 [![codecov](https://codecov.io/gh/a-novel/platform-template/graph/badge.svg)](https://codecov.io/gh/a-novel/platform-template)
 
