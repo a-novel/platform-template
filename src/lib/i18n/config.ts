@@ -8,7 +8,13 @@ export const defaultNamespace = "common";
 export type Locale = (typeof supportedLocales)[number];
 export type Namespace = (typeof namespaces)[number];
 
-/** Picks the supported locale an `Accept-Language` header prefers, or the default one. */
-export function resolveLocale(acceptLanguage: string | null): Locale {
-  return resolveAcceptLanguage(acceptLanguage, supportedLocales, defaultLocale);
+/** Each locale's name in its own language, which reads the same in every language. */
+export const localeNames: Record<Locale, string> = { en: "English", fr: "Français" };
+
+/**
+ * Picks the language the visitor chose on any Agora app, else the supported locale an `Accept-Language`
+ * header prefers, else the default one.
+ */
+export function resolveLocale(chosen: Locale | undefined, acceptLanguage: string | null): Locale {
+  return chosen ?? resolveAcceptLanguage(acceptLanguage, supportedLocales, defaultLocale);
 }
