@@ -166,9 +166,9 @@ test("logging out of the account platform ends the platform's session at its nex
 }) => {
   await signIn(page, account, isMobile);
 
-  await page.goto(`${accountOrigin}/`);
+  await page.goto(`${accountOrigin}/account`);
   await page.getByRole("button", { name: "Log out", exact: true }).last().click();
-  await expect(page).toHaveURL(`${accountOrigin}/`);
+  await expect(page).toHaveURL(`${accountOrigin}/account?auth=login&returnTo=%2Faccount`);
 
   // Within five minutes of its last check, the platform trusts the token's signature alone.
   await page.goto("/");
