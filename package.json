@@ -54,7 +54,7 @@
     "@a-novel-kit/uikit-tokens": "0.17.0",
     "@a-novel/service-authentication-rest": "2.25.4",
     "@a-novel/service-json-keys-rest": "2.15.8",
-    "@a-novel/service-profile-rest": "1.0.2",
+    "@a-novel/service-profile-rest": "1.0.3",
     "@grafana/faro-web-sdk": "2.13.0",
     "@grafana/faro-web-tracing": "2.13.0",
     "@lucide/svelte": "1.68.0",
