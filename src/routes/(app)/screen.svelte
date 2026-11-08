@@ -538,15 +538,12 @@
     display: none;
   }
 
+  /* The skip link's target takes focus without a ring, so a click or a scrolling key never outlines the whole
+     page; the next Tab reaches a control, which shows its own. */
   .main-content {
     flex: 1;
     outline: none;
     min-inline-size: 0;
-  }
-
-  .main-content:focus-visible {
-    outline: var(--focus-ring-width) solid var(--color-focus-ring);
-    outline-offset: calc(var(--focus-ring-offset) * -1);
   }
 
   @container app-shell (max-width: 47.999rem) {

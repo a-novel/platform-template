@@ -60,7 +60,8 @@
 
 <style>
   /* The root keeps the canvas color contrast checks read, and the lamp hangs on a layer fixed behind
-     the page: iOS ignores a fixed background and would scroll the lamp away. */
+     the page: iOS ignores a fixed background and would scroll the lamp away. The layer asks for a
+     compositing layer of its own, without which iOS drops it from the screen once the page scrolls far. */
   :global(html) {
     background: var(--color-surface-canvas);
     /* WCAG 1.4.10 reflows content down to 320 CSS pixels; a narrower window scrolls instead. */
@@ -68,11 +69,12 @@
     color-scheme: dark;
   }
 
-  :global(html)::before {
+  :global(body)::before {
     position: fixed;
     z-index: -1;
+    will-change: transform;
     inset: 0;
-    background: var(--fill-canvas);
+    background: var(--gradient-lamp);
     pointer-events: none;
     content: "";
   }
