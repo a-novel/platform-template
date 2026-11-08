@@ -29,13 +29,13 @@ async function submitLogin(page: Page, account: Account) {
 
 /** Logs in on the account platform, where a sign-in from the platform lands a visitor signed out there. */
 async function logInOnAccountPlatform(page: Page, account: Account) {
-  await expect(page).toHaveURL(/^http:\/\/127\.0\.0\.1:14102\/\?auth=login&returnTo=%2Fauthorize%3F/);
+  await expect(page).toHaveURL(/^http:\/\/127\.0\.0\.1:14102\/account\?auth=login&returnTo=%2Fauthorize%3F/);
   await submitLogin(page, account);
 }
 
 /** Opens a session on the account platform itself, before the visitor reaches the platform. */
 async function openAccountSession(page: Page, account: Account) {
-  await page.goto(`${accountOrigin}/?auth=login`);
+  await page.goto(`${accountOrigin}/account?auth=login`);
   await submitLogin(page, account);
   await expect(page.getByRole("button", { name: "Log out", exact: true }).last()).toBeAttached();
 }
@@ -149,7 +149,7 @@ test("logging out of the platform ends the session on the account platform too",
   // The account platform trusts a recent check for five minutes, then finds the session ended.
   await context.clearCookies({ name: "__Host-account_session_checked" });
   await page.goto(`${accountOrigin}/account`);
-  await expect(page).toHaveURL(/^http:\/\/127\.0\.0\.1:14102\/\?auth=login&returnTo=%2Faccount$/);
+  await expect(page).toHaveURL(/^http:\/\/127\.0\.0\.1:14102\/account\?auth=login&returnTo=%2Faccount$/);
 
   // A new sign-in from the platform asks for the password again.
   await page.goto("/");
@@ -166,9 +166,9 @@ test("logging out of the account platform ends the platform's session at its nex
 }) => {
   await signIn(page, account, isMobile);
 
-  await page.goto(`${accountOrigin}/`);
+  await page.goto(`${accountOrigin}/account`);
   await page.getByRole("button", { name: "Log out", exact: true }).last().click();
-  await expect(page).toHaveURL(`${accountOrigin}/`);
+  await expect(page).toHaveURL(`${accountOrigin}/account?auth=login&returnTo=%2Faccount`);
 
   // Within five minutes of its last check, the platform trusts the token's signature alone.
   await page.goto("/");
@@ -215,7 +215,7 @@ test("Register opens the account platform's invitation request", async ({ page, 
   await openAccountControls(page, isMobile);
   await page.getByRole("link", { name: "Register", exact: true }).click();
 
-  await expect(page).toHaveURL(`${accountOrigin}/?auth=register`);
+  await expect(page).toHaveURL(`${accountOrigin}/account?auth=register`);
   await expect(page.getByRole("dialog", { name: "Join the Agora invitation list" })).toBeVisible();
 });
 
