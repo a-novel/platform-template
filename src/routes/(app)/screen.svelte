@@ -506,9 +506,11 @@
     max-inline-size: 100%;
   }
 
+  /* Only the width goes: the shorthand would also reset the border's color, which the rail's compact
+     buttons would then fade from, as an outline, each time it collapses. */
   :global(:is(a, button).shell-account-button:not(.compact-control)) {
     justify-content: flex-start;
-    border: 0;
+    border-width: 0;
     padding: var(--space-2) var(--space-3);
     inline-size: 100%;
     overflow: hidden;
@@ -523,6 +525,7 @@
 
     display: flex;
     flex-direction: column;
+    box-sizing: border-box;
     min-inline-size: 0;
     min-block-size: 100dvb;
   }
@@ -557,6 +560,8 @@
 
     .workspace {
       --shell-sticky-top: var(--shell-header-block-size);
+
+      padding-block-start: var(--shell-header-block-size);
     }
 
     /* On narrow screens it waits at the bottom, away from where reading starts, and never covers the end. */
@@ -566,16 +571,18 @@
       inset-block-start: auto;
     }
 
-    /* One control tall, so a phone keeps its height for the page. */
+    /* One control tall, so a phone keeps its height for the page. Fixed to the screen rather than sticky,
+       so iOS stretches the page under it past the top while the header and its light stay in place. */
     .mobile-header {
       display: flex;
-      position: sticky;
+      position: fixed;
       justify-content: space-between;
       align-items: center;
       gap: var(--space-2);
       z-index: var(--layer-sticky);
       box-sizing: border-box;
       inset-block-start: 0;
+      inset-inline: 0;
       padding-inline: var(--space-2);
       block-size: var(--shell-header-block-size);
     }

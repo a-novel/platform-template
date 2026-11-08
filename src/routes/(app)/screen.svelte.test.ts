@@ -149,7 +149,7 @@ describe("shell screen", () => {
     await expect.element(accountLink).toHaveAttribute("href", "https://account.example.test/account");
     await expect.element(accountLink).not.toHaveAttribute("target");
     expect(getComputedStyle(accountLink.element()).backgroundColor).toBe("rgba(0, 0, 0, 0)");
-    expect(getComputedStyle(accountLink.element()).borderTopStyle).toBe("none");
+    expect(getComputedStyle(accountLink.element()).borderTopWidth).toBe("0px");
     await expect.element(page.getByRole("button", { name: "Log out" })).toBeVisible();
     await expect.element(page.getByRole("link", { name: "Log in" })).not.toBeInTheDocument();
     await expect.element(page.getByRole("link", { name: "Register" })).not.toBeInTheDocument();

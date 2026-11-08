@@ -79,6 +79,13 @@
     content: "";
   }
 
+  /* iOS links an email address or a date it finds in the text, underlined: the text reads as it does on
+     a desktop. */
+  :global(a[x-apple-data-detectors]) {
+    color: inherit;
+    text-decoration: none;
+  }
+
   :global(body) {
     margin: 0;
     min-block-size: 100dvb;
