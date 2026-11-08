@@ -1,9 +1,13 @@
-<!-- @component Renders a protected page once access is allowed, and otherwise the access state that stops it. -->
+<!--
+@component
+Renders a protected page once access is allowed, and otherwise the access state that stops it. A visitor
+who has not logged in finds the page locked under a dialog that leads to the login or back home.
+-->
 <script lang="ts">
   import type { Snippet } from "svelte";
 
   import { getI18nContext } from "@a-novel-kit/nodelib-i18n/svelte";
-  import { AuthorizationBoundary, Link, StatusState } from "@a-novel-kit/uikit";
+  import { AuthorizationBoundary, Button, Dialog, type DialogController, Link, StatusState } from "@a-novel-kit/uikit";
   import type { AuthorizationController } from "@a-novel-kit/uikit/authorization";
 
   interface Props {
@@ -22,6 +26,9 @@
 
   let { controller, when, children, unavailable, signInHref, homeHref, retryHref }: Props = $props();
   const { t } = getI18nContext();
+
+  // The dialog stays open: closing it would only show the locked page, so it leads to the login or home.
+  const locked: DialogController = { state: { open: true }, open: () => {}, close: () => {}, toggle: () => {} };
 </script>
 
 <AuthorizationBoundary {controller} {when}>
@@ -33,15 +40,19 @@
         {#if status === "pending"}
           <StatusState tone="loading" title={t("access.pending.title")} headingLevel={1} />
         {:else if status === "anonymous"}
-          <StatusState
+          <Dialog
+            controller={locked}
             title={t("access.anonymous.title")}
             description={t("access.anonymous.description")}
-            headingLevel={1}
+            size="sm"
+            closeOnBackdrop={false}
           >
             {#snippet actions()}
-              <Link href={signInHref} data-sveltekit-reload>{t("shell.signIn")}</Link>
+              <Button href={homeHref} variant="text" tone="neutral">{t("access.home")}</Button>
+              <!-- The sign-in route redirects to the account platform, which the client router cannot render. -->
+              <Button href={signInHref} data-sveltekit-reload>{t("shell.signIn")}</Button>
             {/snippet}
-          </StatusState>
+          </Dialog>
         {:else if status === "forbidden"}
           <StatusState
             tone="error"

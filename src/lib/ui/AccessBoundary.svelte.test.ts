@@ -6,7 +6,7 @@ import { createRawSnippet } from "svelte";
 
 import { describe, expect, it } from "vitest";
 import { render } from "vitest-browser-svelte";
-import { page } from "vitest/browser";
+import { page, userEvent } from "vitest/browser";
 
 import type { AuthorizationStatus } from "@a-novel-kit/uikit/authorization";
 
@@ -20,12 +20,19 @@ describe("protected page presentation", () => {
     async (status) => {
       render(AccessBoundary, { ...links, controller: { state: { status } }, children }, withLocale());
       await expect.element(page.getByText("Private content")).not.toBeInTheDocument();
-      await expect.element(page.getByRole("heading", { level: 1 })).toBeVisible();
       if (status === "anonymous") {
-        const signIn = page.getByRole("link", { name: "Log in", exact: true });
+        // The page stays locked under a dialog, which leads to the login or home.
+        const dialog = page.getByRole("dialog", { name: "Agora account required" });
+        await expect.element(dialog).toBeVisible();
+        await expect.element(dialog.getByRole("link", { name: "Return home" })).toHaveAttribute("href", links.homeHref);
+        await userEvent.keyboard("{Escape}");
+        await expect.element(dialog).toBeVisible();
+        const signIn = dialog.getByRole("link", { name: "Log in", exact: true });
         await expect.element(signIn).toHaveAttribute("href", links.signInHref);
         // The sign-in route redirects to the account platform, which the client router cannot render.
         await expect.element(signIn).toHaveAttribute("data-sveltekit-reload", "true");
+      } else {
+        await expect.element(page.getByRole("heading", { level: 1 })).toBeVisible();
       }
       if (status === "unavailable")
         await expect
