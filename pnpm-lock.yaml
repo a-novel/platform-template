@@ -2062,8 +2062,8 @@ packages:
   colorjs.io@0.7.1:
     resolution: {integrity: sha512-LY7OHnJZxHwT5UlzNa9bbhHHDbzB6yE5+3MIPwJEQKRvSCt/T4G7epsj+9j2BExUIIfXFIJGsIXUKdfrK9Q5tA==}
 
-  commander@15.0.0:
-    resolution: {integrity: sha512-z67u4ZhzCL/Tydu1lJARtEZYWbWaN7oYLHbsuzocr6y4N6WZAagG3RQ4FW61V1/0+jImpj293XfrcYnd1qxtPg==}
+  commander@15.1.0:
+    resolution: {integrity: sha512-cgnQ88TRrWcC7pVq46RzJVRMktu3W2RcbnoidnfBsl1bmDCBwJS/udcIZpKoCrbAYYaCqsz1yZCVIgbIaU3ddQ==}
     engines: {node: '>=22.12.0'}
 
   convert-source-map@2.0.0:
@@ -5001,7 +5001,7 @@ snapshots:
 
   colorjs.io@0.7.1: {}
 
-  commander@15.0.0: {}
+  commander@15.1.0: {}
 
   convert-source-map@2.0.0: {}
 
@@ -5360,7 +5360,7 @@ snapshots:
       '@inquirer/select': 5.2.8(@types/node@26.6.6)
       '@swc/core': 1.16.22
       chokidar: 5.0.0
-      commander: 15.0.0
+      commander: 15.1.0
       glob: 14.0.4
       i18next: 26.7.1(typescript@6.0.3)
       i18next-resources-for-ts: 2.1.2
