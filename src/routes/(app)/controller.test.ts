@@ -4,7 +4,7 @@ import { describe, expect, it, vi } from "vitest";
 
 const accountLinks = {
   accountHref: "https://account.example.test/account",
-  invitationHref: "https://account.example.test/?auth=register",
+  invitationHref: "https://account.example.test/account?auth=register",
 };
 
 const links = {

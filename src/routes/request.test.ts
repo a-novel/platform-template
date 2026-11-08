@@ -63,7 +63,7 @@ const tokenCookies = {
 const profile = { id: "019a4e2c-7d1f-7c3a-9b2e-5f1d0c8a4b21", username: "Maya" };
 const accountLinks = {
   accountHref: "https://account.test/account",
-  invitationHref: "https://account.test/?auth=register",
+  invitationHref: "https://account.test/account?auth=register",
 };
 
 function request(path: string, cookieValues: Record<string, string> = {}) {

@@ -47,7 +47,7 @@ function readAccountLinks(): { accountHref: string | null; invitationHref: strin
     const { accountUrl } = getRuntimeConfig();
     return {
       accountHref: new URL("/account", accountUrl).href,
-      invitationHref: new URL("/?auth=register", accountUrl).href,
+      invitationHref: new URL("/account?auth=register", accountUrl).href,
     };
   } catch {
     return { accountHref: null, invitationHref: null };
