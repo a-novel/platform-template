@@ -10,7 +10,6 @@
     parameters: { layout: "fullscreen" },
     args: {
       status: 503,
-      signInHref: "/auth/sign-in?returnTo=%2Faccount",
       homeHref: "/",
       retryHref: "/account",
     },

@@ -2,10 +2,6 @@
 export default interface Resources {
   "common": {
     "access": {
-      "anonymous": {
-        "description": "Log in to view this page.",
-        "title": "Agora account required"
-      },
       "downtime": {
         "title": "Maintenance in progress"
       },
