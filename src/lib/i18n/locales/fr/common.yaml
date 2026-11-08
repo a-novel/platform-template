@@ -1,7 +1,4 @@
 access:
-  anonymous:
-    description: Connectez-vous pour consulter cette page.
-    title: Compte Agora requis
   downtime:
     title: Maintenance en cours
   error:

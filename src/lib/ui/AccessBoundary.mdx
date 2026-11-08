@@ -34,13 +34,16 @@ export const load: PageServerLoad = async (event) => {
 };
 ```
 
-Anonymous requests sign in through the account platform, then return to a sanitized destination.
-Denied accounts receive HTTP 403. A failed verification receives HTTP 503 and keeps the session.
+Anonymous requests go straight to the sign-in, which lands on the account platform's login. The
+sign-in then returns them to a sanitized destination. Denied accounts receive HTTP 403. A failed
+verification receives HTTP 503 and keeps the session.
 
 A protected route wraps its UI in `AccessBoundary.svelte`. The wrapper inherits the
 provider. Its `when` prop further restricts access, and its `controller` prop supplies a fixed
-preview state. Its `unavailable` snippet renders **public** content only. The account page uses it
-for the failed recap and its logout form, and the logout action does its own server work.
+preview state. The load redirects an anonymous visitor before the page renders, so the wrapper shows
+an anonymous decision as the access check. Its `unavailable` snippet renders **public** content only.
+The account page uses it for the failed recap and its logout form, and the logout action does its own
+server work.
 
 ## Conditional content
 
@@ -67,14 +70,6 @@ Read `access.state.status` reactively. Do not copy it into a second state store.
 <ResponsiveStoryPair
   desktop={AccessStories.CheckingAccess}
   mobile={AccessStories.CheckingAccess}
-  meta={AccessStories}
-/>
-
-## Account required
-
-<ResponsiveStoryPair
-  desktop={AccessStories.AccountRequired}
-  mobile={AccessStories.AccountRequired}
   meta={AccessStories}
 />
 

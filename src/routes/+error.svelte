@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { signInHref } from "#lib/application/auth/navigation.js";
   import { errorPageTitle } from "#lib/i18n/page-titles.js";
   import PageTitle from "#lib/ui/PageTitle.svelte";
   import { getPlatformDowntime } from "#lib/ui/downtime.svelte.js";
@@ -22,10 +21,4 @@
 
 <PageTitle title={errorPageTitle(t, page.status, downtime !== undefined)} />
 
-<Screen
-  status={page.status}
-  signInHref={signInHref(currentPath)}
-  homeHref={resolve("")}
-  retryHref={currentPath}
-  {downtime}
-/>
+<Screen status={page.status} homeHref={resolve("")} retryHref={currentPath} {downtime} />

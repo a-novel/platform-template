@@ -9,7 +9,6 @@
     tags: ["!autodocs"],
     parameters: { layout: "fullscreen" },
     args: {
-      signInHref: "/auth/sign-in?returnTo=%2Faccount",
       homeHref: "/",
       retryHref: "/account",
     },
@@ -17,6 +16,5 @@
 </script>
 
 <Story name="Checking access" args={{ controller: { state: { status: "pending" } } }} />
-<Story name="Account required" args={{ controller: { state: { status: "anonymous" } } }} />
 <Story name="Access denied" args={{ controller: { state: { status: "forbidden" } } }} />
 <Story name="Service unavailable" args={{ controller: { state: { status: "unavailable" } } }} />

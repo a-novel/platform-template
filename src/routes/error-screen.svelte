@@ -6,13 +6,11 @@
 
   let {
     status,
-    signInHref,
     homeHref,
     retryHref,
     downtime,
   }: {
     status: number;
-    signInHref: string;
     homeHref: string;
     retryHref: string;
     /** Set when a planned downtime stopped the services the page needs. */
@@ -32,7 +30,6 @@
 {:else if status === 403 || status === 503}
   <AccessBoundary
     controller={{ state: { status: status === 403 ? "forbidden" : "unavailable" } }}
-    {signInHref}
     {homeHref}
     {retryHref}
   />

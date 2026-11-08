@@ -6,40 +6,36 @@ import { createRawSnippet } from "svelte";
 
 import { describe, expect, it } from "vitest";
 import { render } from "vitest-browser-svelte";
-import { page, userEvent } from "vitest/browser";
+import { page } from "vitest/browser";
 
 import type { AuthorizationStatus } from "@a-novel-kit/uikit/authorization";
 
-const links = { signInHref: "/auth/sign-in?returnTo=%2Faccount", homeHref: "/", retryHref: "/account?panel=email" };
+const links = { homeHref: "/", retryHref: "/account?panel=email" };
 const children = createRawSnippet(() => ({ render: () => "<p>Private content</p>" }));
 const unavailable = createRawSnippet(() => ({ render: () => "<p>Blank public form</p>" }));
 
+/**
+ * The heading each unresolved or refused decision shows. The load sends an anonymous visitor to the
+ * sign-in before the page renders, so an anonymous decision shows the access check.
+ */
+const statusTitles: [AuthorizationStatus, string][] = [
+  ["pending", "Checking access"],
+  ["anonymous", "Checking access"],
+  ["forbidden", "Access denied"],
+  ["unavailable", "Access temporarily unavailable"],
+];
+
 describe("protected page presentation", () => {
-  it.each<AuthorizationStatus>(["pending", "anonymous", "forbidden", "unavailable"])(
-    "withholds private content for %s",
-    async (status) => {
-      render(AccessBoundary, { ...links, controller: { state: { status } }, children }, withLocale());
-      await expect.element(page.getByText("Private content")).not.toBeInTheDocument();
-      if (status === "anonymous") {
-        // The page stays locked under a dialog, which leads to the login or home.
-        const dialog = page.getByRole("dialog", { name: "Agora account required" });
-        await expect.element(dialog).toBeVisible();
-        await expect.element(dialog.getByRole("link", { name: "Return home" })).toHaveAttribute("href", links.homeHref);
-        await userEvent.keyboard("{Escape}");
-        await expect.element(dialog).toBeVisible();
-        const signIn = dialog.getByRole("link", { name: "Log in", exact: true });
-        await expect.element(signIn).toHaveAttribute("href", links.signInHref);
-        // The sign-in route redirects to the account platform, which the client router cannot render.
-        await expect.element(signIn).toHaveAttribute("data-sveltekit-reload", "true");
-      } else {
-        await expect.element(page.getByRole("heading", { level: 1 })).toBeVisible();
-      }
-      if (status === "unavailable")
-        await expect
-          .element(page.getByRole("link", { name: "Reload page" }))
-          .toHaveAttribute("data-sveltekit-reload", "true");
-    }
-  );
+  it.each(statusTitles)("withholds private content for %s and shows %s", async (status, title) => {
+    render(AccessBoundary, { ...links, controller: { state: { status } }, children }, withLocale());
+    await expect.element(page.getByText("Private content")).not.toBeInTheDocument();
+    await expect.element(page.getByRole("heading", { name: title, level: 1 })).toBeVisible();
+    await expect.element(page.getByRole("dialog")).not.toBeInTheDocument();
+    if (status === "unavailable")
+      await expect
+        .element(page.getByRole("link", { name: "Reload page" }))
+        .toHaveAttribute("data-sveltekit-reload", "true");
+  });
 
   it("renders authorized content without a status page", async () => {
     render(AccessBoundary, { ...links, controller: { state: { status: "allowed" } }, children }, withLocale());
