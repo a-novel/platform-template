@@ -67,6 +67,9 @@ const sessionFeedback = [
   [1280, "error"],
 ] as const;
 
+// Chrome 158 reports `justify-content: flex-start` as flow-start.
+const startAligned = /^(flex|flow)-start$/;
+
 describe("shell screen", () => {
   beforeEach(async () => {
     await page.viewport(1280, 800);
@@ -83,11 +86,11 @@ describe("shell screen", () => {
     await expect.element(signIn).toHaveAttribute("href", "/auth/sign-in?returnTo=%2F");
     // The sign-in route redirects to the account platform, which the client router cannot render.
     await expect.element(signIn).toHaveAttribute("data-sveltekit-reload", "true");
-    expect(getComputedStyle(signIn.element()).justifyContent).toBe("flex-start");
+    expect(getComputedStyle(signIn.element()).justifyContent).toMatch(startAligned);
 
     const invitation = page.getByRole("link", { name: "Register" });
     await expect.element(invitation).toHaveAttribute("href", "https://account.example.test/account?auth=register");
-    expect(getComputedStyle(invitation.element()).justifyContent).toBe("flex-start");
+    expect(getComputedStyle(invitation.element()).justifyContent).toMatch(startAligned);
     await expect.element(page.getByRole("button", { name: "Log out" })).not.toBeInTheDocument();
   });
 
