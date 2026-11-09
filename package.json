@@ -57,7 +57,7 @@
     "@a-novel/service-profile-rest": "1.0.3",
     "@grafana/faro-web-sdk": "2.13.0",
     "@grafana/faro-web-tracing": "2.13.0",
-    "@lucide/svelte": "1.69.0",
+    "@lucide/svelte": "1.70.0",
     "@opentelemetry/api": "1.10.0",
     "@opentelemetry/exporter-trace-otlp-proto": "0.301.0",
     "@opentelemetry/instrumentation": "0.301.0",
