@@ -45,9 +45,9 @@
     "test:unit": "vitest run --project=unit --coverage.reportsDirectory=coverage/unit"
   },
   "dependencies": {
-    "@a-novel-kit/nodelib-browser": "2.10.0",
-    "@a-novel-kit/nodelib-i18n": "2.10.0",
-    "@a-novel-kit/nodelib-server": "2.10.0",
+    "@a-novel-kit/nodelib-browser": "2.11.0",
+    "@a-novel-kit/nodelib-i18n": "2.11.0",
+    "@a-novel-kit/nodelib-server": "2.11.0",
     "@a-novel-kit/ui-images": "0.2.0",
     "@a-novel-kit/uikit": "0.17.2",
     "@a-novel-kit/uikit-fonts": "0.17.2",
@@ -68,8 +68,8 @@
     "zod": "4.6.7"
   },
   "devDependencies": {
-    "@a-novel-kit/nodelib-config": "2.10.0",
-    "@a-novel-kit/nodelib-test": "2.10.0",
+    "@a-novel-kit/nodelib-config": "2.11.0",
+    "@a-novel-kit/nodelib-test": "2.11.0",
     "@a-novel-kit/uikit-storybook": "0.17.2",
     "@eslint/compat": "2.1.1",
     "@eslint/config-helpers": "0.7.0",
@@ -93,10 +93,10 @@
     "eslint-config-prettier": "10.1.8",
     "eslint-plugin-prettier": "5.5.7",
     "eslint-plugin-storybook": "10.6.6",
-    "eslint-plugin-svelte": "3.24.0",
+    "eslint-plugin-svelte": "3.24.1",
     "estree-walker": "3.0.3",
     "globals": "17.14.0",
-    "i18next-cli": "1.86.0",
+    "i18next-cli": "1.87.0",
     "i18next-cli-plugin-svelte": "2.5.0",
     "jsdom": "31.0.0",
     "playwright": "1.65.0",
