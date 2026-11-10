@@ -4,9 +4,14 @@ import { flushSync } from "svelte";
 
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
+const captureError = vi.hoisted(() => vi.fn());
+
+vi.mock("#lib/client/telemetry.js", () => ({ telemetry: { captureError } }));
+
 describe("retryWhile", () => {
   beforeEach(() => {
     vi.useFakeTimers();
+    captureError.mockClear();
   });
 
   afterEach(() => {
@@ -81,7 +86,28 @@ describe("retryWhile", () => {
     destroy();
   });
 
-  it("leaves no timer once its owner is gone", () => {
+  it("reports the failures of a bounded run that ends on a rejected attempt", async () => {
+    let retries: ReturnType<typeof retryWhile> | undefined;
+    const destroy = $effect.root(() => {
+      retries = retryWhile(
+        () => true,
+        async () => {
+          throw new Error("still down");
+        },
+        { maxRetries: 1 }
+      );
+    });
+    flushSync();
+
+    await vi.advanceTimersByTimeAsync(250);
+
+    expect(retries?.exhausted).toBe(true);
+    expect(captureError).toHaveBeenCalledExactlyOnceWith(expect.any(AggregateError));
+
+    destroy();
+  });
+
+  it("leaves no timer and reports nothing once its owner is gone", async () => {
     const destroy = $effect.root(
       () =>
         void retryWhile(
@@ -93,7 +119,22 @@ describe("retryWhile", () => {
     expect(vi.getTimerCount()).toBe(1);
 
     destroy();
+    await vi.advanceTimersByTimeAsync(0);
 
     expect(vi.getTimerCount()).toBe(0);
+    expect(captureError).not.toHaveBeenCalled();
+  });
+
+  it("aborts the signal its attempts receive once its owner is gone", async () => {
+    const attempt = vi.fn(async (_signal: AbortSignal) => {});
+    const destroy = $effect.root(() => void retryWhile(() => true, attempt));
+    flushSync();
+
+    await vi.advanceTimersByTimeAsync(250);
+    const signal = attempt.mock.lastCall?.[0];
+    expect(signal?.aborted).toBe(false);
+
+    destroy();
+    expect(signal?.aborted).toBe(true);
   });
 });

@@ -1,3 +1,5 @@
+import { telemetry } from "#lib/client/telemetry.js";
+
 import { type RetryBackoffOptions, retryWithBackoff } from "@a-novel-kit/nodelib-browser/utils";
 
 /**
@@ -8,7 +10,7 @@ import { type RetryBackoffOptions, retryWithBackoff } from "@a-novel-kit/nodelib
  */
 export function retryWhile(
   missing: () => boolean,
-  attempt: () => Promise<unknown>,
+  attempt: (signal: AbortSignal) => Promise<unknown>,
   options?: Omit<RetryBackoffOptions, "signal">
 ): { readonly exhausted: boolean } {
   // Each load replaces the data `missing` reads. A derived value keeps a load that changed nothing from restarting the backoff.
@@ -20,9 +22,13 @@ export function retryWhile(
 
     exhausted = false;
     const owner = new AbortController();
-    void retryWithBackoff(attempt, { ...options, signal: owner.signal }).then(() => {
-      exhausted = !owner.signal.aborted;
-    });
+    void retryWithBackoff(attempt, { ...options, signal: owner.signal })
+      .catch((error: unknown) => {
+        if (!owner.signal.aborted) telemetry.captureError(error);
+      })
+      .finally(() => {
+        exhausted = !owner.signal.aborted;
+      });
 
     return () => owner.abort();
   });
