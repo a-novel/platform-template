@@ -16,15 +16,14 @@
   import agoraIcon48 from "@a-novel-kit/ui-images/files/icon/48x48/agora-icon.png";
   import agoraIcon96 from "@a-novel-kit/ui-images/files/icon/96x96/agora-icon.png";
   import {
-    Alert,
     Avatar,
     Button,
     Dialog,
     DowntimeBanner,
     IconButton,
-    InlineMessage,
     NavList,
     Separator,
+    Skeleton,
     SkipLink,
     VisuallyHidden,
   } from "@a-novel-kit/uikit";
@@ -61,13 +60,6 @@
   const compactRail = $derived(model.rail === "collapsed");
   const { t } = getI18nContext();
   const authenticatedSession = $derived(model.session.status === "authenticated" ? model.session : null);
-  /** The account widget's notice while the session is loading, unavailable or stopped for maintenance. */
-  const sessionNotice = $derived.by(() => {
-    if (model.session.status === "loading") return { tone: "loading", message: t("shell.sessionLoading") } as const;
-    if (model.session.status === "error") return { tone: "error", message: t("shell.sessionUnavailable") } as const;
-    if (model.session.status === "downtime") return { tone: "warning", message: t("shell.sessionDowntime") } as const;
-    return null;
-  });
 
   function closeDrawerAfterNavigation(event: MouseEvent) {
     if (event.target instanceof Element && event.target.closest("a")) controller.navigationDialog.close();
@@ -154,31 +146,25 @@
      on the other. -->
 {#snippet accountWidget(compact: boolean)}
   <div class="account-widget" data-session={model.session.status}>
-    {#if sessionNotice}
-      {#if compact}
-        <div class="compact-status" title={sessionNotice.message}>
-          <InlineMessage tone={sessionNotice.tone} aria-label={sessionNotice.message} />
-        </div>
-      {:else}
-        <!-- A title crowds the narrow rail, so the alert has none. -->
-        <Alert tone={sessionNotice.tone}>{sessionNotice.message}</Alert>
-      {/if}
-      {#if privacyHref}{@render privacyLink(compact, privacyHref)}{/if}
-    {:else if authenticatedSession}
+    {#if model.session.status !== "anonymous"}
       {#if accountHref}
-        {@const name = authenticatedSession.displayName}
-        <!-- The account platform serves the account page, which opens in this tab like every other link. -->
+        {@const name = authenticatedSession?.displayName}
+        {@const label = name ? t("shell.manageAccountFor", { name }) : t("shell.manageAccount")}
+        <!-- The account platform serves the account page, which opens in this tab like every other link, even
+             while the account's details load. -->
         <Button
           class="shell-account-button {compact ? 'compact-control' : ''}"
           variant="ghost"
           tone="neutral"
           size="sm"
           square={compact}
-          title={name ? t("shell.manageAccountFor", { name }) : compact ? t("shell.manageAccount") : undefined}
+          title={name || compact ? label : undefined}
           href={accountHref}
         >
-          <span class="account-action-icon" class:account-picture={name} aria-hidden="true">
-            {#if name}
+          <span class="account-action-icon" class:account-picture={name || !authenticatedSession} aria-hidden="true">
+            {#if !authenticatedSession}
+              <Skeleton class="account-picture-skeleton" shape="rectangle" />
+            {:else if name}
               <Avatar
                 label={name}
                 initials={authenticatedSession.initials}
@@ -190,10 +176,11 @@
               <CircleUserRound size="var(--icon-size-sm)" />
             {/if}
           </span>
-          {#if compact}
-            <VisuallyHidden>{name ? t("shell.manageAccountFor", { name }) : t("shell.manageAccount")}</VisuallyHidden>
-          {:else}
+          {#if authenticatedSession && !compact}
             <span class="account-label">{name ?? t("shell.manageAccount")}</span>
+          {:else}
+            <VisuallyHidden>{label}</VisuallyHidden>
+            {#if !compact}<Skeleton class="account-label-skeleton" />{/if}
           {/if}
         </Button>
         <Separator decorative />
@@ -495,11 +482,15 @@
     white-space: nowrap;
   }
 
-  .compact-status {
-    display: grid;
-    place-items: center;
+  .account-action-icon :global(.account-picture-skeleton) {
     inline-size: var(--control-height-sm);
     block-size: var(--control-height-sm);
+    min-block-size: 0;
+  }
+
+  :global(.shell-account-button) > :global(.account-label-skeleton) {
+    flex: 1;
+    min-inline-size: 0;
   }
 
   :global(.shell-account-button) {

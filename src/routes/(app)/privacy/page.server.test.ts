@@ -23,7 +23,7 @@ describe("public privacy page", () => {
     ["a logged-out visitor", { session: { status: "anonymous" }, accountHref: "https://account.test/account" }],
     [
       "a visitor whose session cannot be checked",
-      { session: { status: "error" }, accountHref: "https://account.test/account" },
+      { session: { status: "loading" }, accountHref: "https://account.test/account" },
     ],
     ["a server without the account platform's address", { session: { status: "authenticated" }, accountHref: null }],
   ] as const)("shows the public page to %s", async (_, parent) => {

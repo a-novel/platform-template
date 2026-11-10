@@ -43,14 +43,6 @@
     ...anonymous,
     session: { status: "loading" },
   };
-  const accountError: ShellViewModel = {
-    ...anonymous,
-    session: { status: "error" },
-  };
-  const maintenance: ShellViewModel = {
-    ...anonymous,
-    session: { status: "downtime" },
-  };
   // Fixed times keep every rendering identical.
   const downtime = { start: new Date("2026-10-12T06:00:00Z"), end: new Date("2026-10-12T08:30:00Z") };
 
@@ -269,26 +261,16 @@
   <StoryHarness model={withOpenMobileNavigation(loadingAccount)} />
 </Story>
 
-<Story name="Account error" asChild>
-  <StoryHarness model={accountError} />
-</Story>
-
-<Story
-  name="Account error — mobile"
-  exportName="AccountErrorMobile"
-  globals={reviewStoryGlobals.mobile}
-  asChild
-  play={verifyExpandedMobileNavigation}
->
-  <StoryHarness model={withOpenMobileNavigation(accountError)} />
-</Story>
-
 <Story name="Maintenance" asChild>
-  <StoryHarness model={maintenance} {downtime}><ScrollPreview /></StoryHarness>
+  <StoryHarness model={anonymous} {downtime}><ScrollPreview /></StoryHarness>
 </Story>
 
 <Story name="Maintenance — mobile" exportName="MaintenanceMobile" globals={reviewStoryGlobals.mobile} asChild>
-  <StoryHarness model={maintenance} {downtime}><ScrollPreview /></StoryHarness>
+  <StoryHarness model={anonymous} {downtime}><ScrollPreview /></StoryHarness>
+</Story>
+
+<Story name="Maintenance with an account" asChild>
+  <StoryHarness model={loadingAccount} {downtime}><ScrollPreview /></StoryHarness>
 </Story>
 
 <Story name="Upcoming maintenance" asChild>

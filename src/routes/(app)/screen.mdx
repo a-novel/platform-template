@@ -49,8 +49,7 @@ platform.
 ### With a picture
 
 A username the visitor set on the account platform names the account, and their picture replaces the
-initials. While the profile service is unreachable, the button keeps the name and initials of the
-email.
+initials.
 
 <ResponsiveStoryPair
   desktop={ShellStories.AuthenticatedWithAPicture}
@@ -84,12 +83,12 @@ where they change the consent banner's answer. A logged-in visitor changes it fr
 
 ### Loading account
 
+While the platform can't read the account, during an Authentication or profile outage or a planned
+downtime, a placeholder takes the place of the picture and the name. The account link and "Log out"
+stay, and the shell keeps asking. A visitor without an account session keeps the sign-in links.
+
 <ResponsiveStoryPair
   desktop={ShellStories.LoadingAccount}
   mobile={ShellStories.LoadingAccountMobile}
   meta={ShellStories}
 />
-
-### Account unavailable
-
-<ResponsiveStoryPair desktop={ShellStories.AccountError} mobile={ShellStories.AccountErrorMobile} meta={ShellStories} />

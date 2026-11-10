@@ -6,7 +6,7 @@
   import { createPlatformDowntime, setPlatformDowntime } from "#lib/ui/downtime.svelte.js";
   import "#lib/ui/lamp.css";
   import { setTelemetryPreference } from "#lib/ui/telemetry-preference.js";
-  import { afterNavigate } from "$app/navigation";
+  import { afterNavigate, invalidateAll } from "$app/navigation";
   import { page } from "$app/state";
 
   import { onMount } from "svelte";
@@ -26,7 +26,9 @@
 
   // The shell places the banner where it leaves its navigation in place, so the root layout only
   // shares the downtime.
-  setPlatformDowntime(createPlatformDowntime(() => data));
+  // A page left open as a downtime starts loads again, so it shows what a new visit would and offers no action
+  // the downtime stops.
+  setPlatformDowntime(createPlatformDowntime(() => data, invalidateAll));
 
   const preference = createTelemetryPreference(telemetry, () => data.telemetryChoice);
   if (telemetry.enabled) setTelemetryPreference(preference);

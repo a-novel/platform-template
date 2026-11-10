@@ -255,9 +255,8 @@ test("an authentication outage preserves the session and recovers after reload",
     await compose("stop", "authentication");
     await page.reload();
     await openAccountControls(page, isMobile);
-    await expect(
-      page.getByText("Account details are unavailable.", { exact: true }).filter({ visible: true })
-    ).toBeVisible();
+    await expect(page.getByRole("link", { name: "Manage your account", exact: true })).toBeVisible();
+    await expect(page.getByRole("button", { name: "Log out", exact: true })).toBeVisible();
     expect(await context.cookies()).toEqual(cookies);
     await screenshot(page, info, "recoverable-service-outage");
   } finally {

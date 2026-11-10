@@ -21,10 +21,12 @@ const maxTimerDelay = 2 ** 31 - 1;
 /**
  * Tracks the downtime a load returned. It flips to started once the start passes on the visitor's
  * clock. It moves to the visitor's time zone after hydration, so the server and the first render
- * agree. Call it during component initialization.
+ * agree. `onStart` runs when the start passes under a page left open. Call it during component
+ * initialization.
  */
 export function createPlatformDowntime(
-  load: () => { downtime: Downtime | null; downtimeStarted: boolean }
+  load: () => { downtime: Downtime | null; downtimeStarted: boolean },
+  onStart?: () => void
 ): PlatformDowntime {
   let reached = $state(false);
   let timeZone = $state("UTC");
@@ -41,7 +43,10 @@ export function createPlatformDowntime(
     const delay = start.getTime() - Date.now();
     if (delay > maxTimerDelay) return;
 
-    const timer = setTimeout(() => (reached = true), delay);
+    const timer = setTimeout(() => {
+      reached = true;
+      onStart?.();
+    }, delay);
     return () => clearTimeout(timer);
   });
 

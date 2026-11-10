@@ -50,9 +50,6 @@ export default interface Resources {
       "openNavigation": "Open navigation",
       "privacy": "Privacy",
       "register": "Register",
-      "sessionDowntime": "Account unavailable during maintenance.",
-      "sessionLoading": "Loading account",
-      "sessionUnavailable": "Account details are unavailable.",
       "signIn": "Log in",
       "skipToContent": "Skip to content"
     },

@@ -280,6 +280,11 @@ export function hasSession(cookies: SessionCookies): boolean {
   return cookies.get(accessTokenCookie) !== undefined || cookies.get(refreshTokenCookie) !== undefined;
 }
 
+/** Tells whether a request carries an account's session. An anonymous session holds no refresh token. */
+export function hasAccountSession(cookies: SessionCookies): boolean {
+  return cookies.get(refreshTokenCookie) !== undefined;
+}
+
 /**
  * Binds the session API to an authentication client, and to the verifier of the access tokens JSON
  * keys signs for Authentication.

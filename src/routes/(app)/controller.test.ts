@@ -50,11 +50,9 @@ describe("createShellController", () => {
     expect(controller.navigationDialog.state.open).toBe(false);
     expect(onDrawerChange.mock.calls).toEqual([[true], [false], [true], [false]]);
 
-    for (const session of [{ status: "anonymous" }, { status: "loading" }, { status: "error" }] as const) {
-      data = { ...data, session };
-      expect(controller.logout()).toBe(false);
-      expect(controller.state.model.session).toEqual(session);
-    }
+    data = { ...data, session: { status: "anonymous" } };
+    expect(controller.logout()).toBe(false);
+    expect(controller.state.model.session).toEqual({ status: "anonymous" });
   });
 
   it("links the menu and a sign-in that returns to the current page without the open menu", () => {
@@ -106,18 +104,18 @@ describe("createShellController", () => {
     expect(controller.state.model.session.status).toBe("anonymous");
   });
 
-  it("allows native logout without replacing the authenticated session", () => {
+  it.each(["authenticated", "loading"] as const)("allows native logout without replacing the %s session", (status) => {
     const controller = shell({
       getData: () => ({
         activeNavigation: "home",
         rail: "expanded",
-        session: { status: "authenticated" },
+        session: { status },
         ...accountLinks,
       }),
       allowNativeLogout: true,
     });
 
     expect(controller.logout()).toBe(true);
-    expect(controller.state.model.session.status).toBe("authenticated");
+    expect(controller.state.model.session.status).toBe(status);
   });
 });
