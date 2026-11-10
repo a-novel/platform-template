@@ -8,5 +8,6 @@ export default composeSetup({
   ready: async () =>
     (await fetch("http://127.0.0.1:14100/v2/ping")).ok &&
     (await fetch("http://127.0.0.1:14103/v2/ping")).ok &&
+    (await fetch("http://127.0.0.1:14104/v1/ping")).ok &&
     (await fetch(`${accountOrigin}/ping`)).ok,
 });
