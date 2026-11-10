@@ -14,13 +14,9 @@ const links = { homeHref: "/", retryHref: "/account?panel=email" };
 const children = createRawSnippet(() => ({ render: () => "<p>Private content</p>" }));
 const unavailable = createRawSnippet(() => ({ render: () => "<p>Blank public form</p>" }));
 
-/**
- * The heading each unresolved or refused decision shows. The load sends an anonymous visitor to the
- * sign-in before the page renders, so an anonymous decision shows the access check.
- */
+/** The heading each unresolved or refused decision shows. */
 const statusTitles: [AuthorizationStatus, string][] = [
   ["pending", "Checking access"],
-  ["anonymous", "Checking access"],
   ["forbidden", "Access denied"],
   ["unavailable", "Access temporarily unavailable"],
 ];
@@ -35,6 +31,13 @@ describe("protected page presentation", () => {
       await expect
         .element(page.getByRole("link", { name: "Reload page" }))
         .toHaveAttribute("data-sveltekit-reload", "true");
+  });
+
+  it("shows nothing to a visitor without an account, whom the load sends to the sign-in", async () => {
+    render(AccessBoundary, { ...links, controller: { state: { status: "anonymous" } }, children }, withLocale());
+
+    await expect.element(page.getByText("Private content")).not.toBeInTheDocument();
+    await expect.element(page.getByRole("heading")).not.toBeInTheDocument();
   });
 
   it("renders authorized content without a status page", async () => {

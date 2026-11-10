@@ -20,4 +20,11 @@ describe("error page presentation", () => {
     render(ErrorPage, { ...links, status }, withLocale("fr"));
     await expect.element(page.getByRole("heading", { name: title, level: 1 })).toBeVisible();
   });
+
+  it("leaves a page that needs a login to the sign-in", async () => {
+    render(ErrorPage, { ...links, status: 401 }, withLocale());
+
+    await expect.element(page.getByRole("heading")).not.toBeInTheDocument();
+    await expect.element(page.getByRole("link")).not.toBeInTheDocument();
+  });
 });

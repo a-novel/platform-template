@@ -41,7 +41,7 @@ verification receives HTTP 503 and keeps the session.
 A protected route wraps its UI in `AccessBoundary.svelte`. The wrapper inherits the
 provider. Its `when` prop further restricts access, and its `controller` prop supplies a fixed
 preview state. The load redirects an anonymous visitor before the page renders, so the wrapper shows
-an anonymous decision as the access check. Its `unavailable` snippet renders **public** content only.
+nothing for an anonymous decision. Its `unavailable` snippet renders **public** content only.
 The account page uses it for the failed recap and its logout form, and the logout action does its own
 server work.
 

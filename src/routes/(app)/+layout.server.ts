@@ -1,5 +1,5 @@
 import { type AuthenticationEvent, getAuthenticationContext } from "#lib/server/auth/context.js";
-import type { ResolvedSession } from "#lib/server/auth/session.js";
+import { type ResolvedSession, hasAccountSession } from "#lib/server/auth/session.js";
 import { readPlatformDowntime } from "#lib/server/downtime.js";
 import { type ProfileSummary, getProfileContext, summarizeProfile } from "#lib/server/profile/context.js";
 import { getRuntimeConfig } from "#lib/server/runtime-config.server.js";
@@ -7,6 +7,7 @@ import { getRuntimeConfig } from "#lib/server/runtime-config.server.js";
 import type { LayoutServerLoad } from "./$types";
 import { accountDisplayFromHandle } from "./account-display";
 import type { ShellSession, ShellViewModel } from "./controller.svelte";
+import { shellSessionData } from "./dependencies";
 
 import { NAVIGATION_RAIL_COOKIE, parseNavigationRail } from "@a-novel-kit/nodelib-browser/preferences";
 import { isDowntimeStarted } from "@a-novel-kit/nodelib-server";
@@ -15,9 +16,7 @@ import type { AuthorizationStatus } from "@a-novel-kit/uikit/authorization";
 /** The page authorization each shell session grants. */
 const shellAuthorization = {
   anonymous: "anonymous",
-  loading: "anonymous",
-  error: "unavailable",
-  downtime: "unavailable",
+  loading: "unavailable",
   authenticated: "allowed",
 } as const satisfies Record<ShellSession["status"], AuthorizationStatus>;
 
@@ -26,6 +25,7 @@ const navigation: Record<string, ShellViewModel["activeNavigation"]> = { "/": "h
 
 /** Loads the shell's navigation state, account platform links, session and page authorization. */
 export const load: LayoutServerLoad = async (event) => {
+  event.depends(shellSessionData);
   const session = await readShellSession(event);
 
   return {
@@ -57,14 +57,18 @@ function readAccountLinks(): { accountHref: string | null; invitationHref: strin
 /** Resolves the session the shell shows, exposing only a display identity to the browser. */
 async function readShellSession(event: AuthenticationEvent): Promise<ShellSession> {
   // A started downtime stops Authentication, so the shell doesn't ask it for the session.
-  if (isDowntimeStarted(await readPlatformDowntime())) return { status: "downtime" };
+  const resolved = isDowntimeStarted(await readPlatformDowntime()) ? null : await currentSession(event);
 
-  const resolved = await currentSession(event);
-  if (resolved.status === "downtime") return { status: "downtime" };
-  if (resolved.status === "unavailable") return { status: "error" };
+  // While Authentication can't answer, only the cookies tell an account from a visitor.
+  if (!resolved || resolved.status === "downtime" || resolved.status === "unavailable") {
+    return hasAccountSession(event.cookies) ? { status: "loading" } : { status: "anonymous" };
+  }
   if (resolved.status === "none" || !resolved.claims.userID) return { status: "anonymous" };
 
-  const { username, picture } = await readProfile(event, resolved.accessToken);
+  const profile = await readProfile(event, resolved.accessToken);
+  if (!profile) return { status: "loading" };
+
+  const { username, picture } = profile;
   // Without the email handle, only a username names the account.
   const display = resolved.identityHandle
     ? accountDisplayFromHandle(resolved.identityHandle, username)
@@ -73,15 +77,15 @@ async function readShellSession(event: AuthenticationEvent): Promise<ShellSessio
 }
 
 /**
- * Reads the visitor's username and the address of their picture on the account platform. Without the
- * profile service, the shell names the account by its email handle and shows initials.
+ * Reads the visitor's username and the address of their picture on the account platform, or null
+ * while the profile service can't answer.
  */
-async function readProfile(event: AuthenticationEvent, accessToken: string): Promise<ProfileSummary> {
+async function readProfile(event: AuthenticationEvent, accessToken: string): Promise<ProfileSummary | null> {
   try {
     const profile = await getProfileContext(event).self(accessToken);
     return summarizeProfile(profile, getRuntimeConfig().accountUrl);
   } catch {
-    return {};
+    return null;
   }
 }
 

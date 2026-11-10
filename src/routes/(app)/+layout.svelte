@@ -1,12 +1,14 @@
 <script lang="ts">
+  import { retryWhile } from "#lib/client/retry.svelte.js";
   import { getPlatformDowntime } from "#lib/ui/downtime.svelte.js";
   import { hasTelemetryPreference } from "#lib/ui/telemetry-preference.js";
   import { PUBLIC_PLATFORM_DOMAIN } from "$app/env/public";
-  import { afterNavigate, goto } from "$app/navigation";
+  import { afterNavigate, goto, invalidate } from "$app/navigation";
   import { resolve } from "$app/paths";
   import { page } from "$app/state";
 
   import { createShellController } from "./controller.svelte";
+  import { shellSessionData } from "./dependencies";
   import { withNavigationOpen } from "./navigation-state";
   import Screen from "./screen.svelte";
 
@@ -34,6 +36,11 @@
     // Every Agora app under the shared domain opens with the rail the visitor left.
     onRailChange: (rail) => saveNavigationRail(rail, { domain: PUBLIC_PLATFORM_DOMAIN }),
   });
+
+  retryWhile(
+    () => data.session.status === "loading",
+    () => invalidate(shellSessionData)
+  );
 
   afterNavigate(async ({ complete, shallow }) => {
     if (shallow) return;

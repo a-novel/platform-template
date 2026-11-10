@@ -39,10 +39,14 @@ test.describe("scheduled maintenance", () => {
 test.describe("maintenance in progress", () => {
   test.use({ baseURL: platformOrigin("started") });
 
-  test("locks sign-in until operators clear it", async ({ page }, info) => {
+  test("locks sign-in until operators clear it", async ({ page, isMobile }, info) => {
     await page.goto("/");
     await expect(banner(page, "Maintenance in progress")).toContainText("Jan 12, 2099");
-    await expect(page.getByRole("link", { name: "Log in", exact: true })).toHaveCount(0);
+    if (!isMobile) {
+      const rail = page.getByRole("complementary");
+      await expect(rail.getByRole("link", { name: "Log in", exact: true })).toBeVisible();
+      await expect(rail.getByRole("link", { name: "Register", exact: true })).toBeVisible();
+    }
 
     // The account platform's app list opens this address too.
     const signIn = await page.goto("/auth/sign-in");

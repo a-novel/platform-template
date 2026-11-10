@@ -33,7 +33,7 @@
     {homeHref}
     {retryHref}
   />
-{:else}
+{:else if status !== 401}
   <div class="error-page">
     <StatusState
       tone="error"
@@ -47,6 +47,8 @@
     </StatusState>
   </div>
 {/if}
+
+<!-- A page that needs a login shows nothing of its own: its load sends the visitor to the sign-in. -->
 
 <style>
   .error-page {

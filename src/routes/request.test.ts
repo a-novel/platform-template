@@ -78,7 +78,7 @@ function request(path: string, cookieValues: Record<string, string> = {}) {
     }),
   };
   const url = new URL(path, "https://template.test");
-  const event = { cookies, getClientAddress: () => "192.0.2.1", url } as unknown as never;
+  const event = { cookies, getClientAddress: () => "192.0.2.1", url, depends: () => {} } as unknown as never;
   return { event, cookies, values };
 }
 
@@ -218,13 +218,25 @@ describe("session at the request boundary", () => {
     });
   });
 
+  it("names the account by its email with initials before the profile's first write", async () => {
+    const { event } = request("/", { ...tokenCookies, "__Host-template_identity_handle": "maya.chen" });
+    fetchService.mockImplementation(async () => Response.json(identity));
+
+    await expect(loadShell(event)).resolves.toEqual({
+      activeNavigation: "home",
+      rail: "expanded",
+      ...accountLinks,
+      session: { status: "authenticated", displayName: "Maya Chen", initials: "MC" },
+      authorization: "allowed",
+    });
+  });
+
   const profileFailures: Array<[string, () => Promise<Response>]> = [
-    ["before the profile's first write", async () => new Response(null, { status: 404 })],
     ["while the profile service fails", async () => new Response("private service detail", { status: 503 })],
     ["while the profile service is unreachable", async () => Promise.reject(new Error("connection refused"))],
   ];
 
-  it.each(profileFailures)("names the account by its email with initials %s", async (_, answer) => {
+  it.each(profileFailures)("holds the account's place %s", async (_, answer) => {
     const { event } = request("/", { ...tokenCookies, "__Host-template_identity_handle": "maya.chen" });
     fetchService.mockImplementation(async () => Response.json(identity));
     fetchProfile.mockImplementation(answer);
@@ -233,8 +245,8 @@ describe("session at the request boundary", () => {
       activeNavigation: "home",
       rail: "expanded",
       ...accountLinks,
-      session: { status: "authenticated", displayName: "Maya Chen", initials: "MC" },
-      authorization: "allowed",
+      session: { status: "loading" },
+      authorization: "unavailable",
     });
   });
 
@@ -261,7 +273,7 @@ describe("session at the request boundary", () => {
     });
   });
 
-  it("renders an unavailable session when runtime configuration is missing", async () => {
+  it("holds an account's place when runtime configuration is missing", async () => {
     env.AUTHENTICATION_SERVICE_URL = "";
     const { event } = request("/", tokenCookies);
     await expect(loadShell(event)).resolves.toEqual({
@@ -269,7 +281,7 @@ describe("session at the request boundary", () => {
       rail: "expanded",
       accountHref: null,
       invitationHref: null,
-      session: { status: "error" },
+      session: { status: "loading" },
       authorization: "unavailable",
     });
     expect(fetchService).not.toHaveBeenCalled();
@@ -284,7 +296,7 @@ describe("session at the request boundary", () => {
       activeNavigation: "home",
       rail: "expanded",
       ...accountLinks,
-      session: { status: "error" },
+      session: { status: "loading" },
       authorization: "unavailable",
     });
     expect(sentRequest()).toEqual({
@@ -561,7 +573,7 @@ describe("planned downtime at the request boundary", () => {
   });
   const downtimeRefusal = { status: 503, body: { message: "Planned downtime", downtime: true } };
 
-  it("shows a maintenance session without calling authentication once a downtime has started", async () => {
+  it("holds an account's place without calling authentication once a downtime has started", async () => {
     published.downtime = started();
     const { event } = request("/", {
       "__Host-template_access_token": "access",
@@ -572,8 +584,19 @@ describe("planned downtime at the request boundary", () => {
       activeNavigation: "home",
       rail: "expanded",
       ...accountLinks,
-      session: { status: "downtime" },
+      session: { status: "loading" },
       authorization: "unavailable",
+    });
+    expect(fetchService).not.toHaveBeenCalled();
+  });
+
+  it("keeps the sign-in links for a visitor without an account during a downtime", async () => {
+    published.downtime = started();
+    const { event } = request("/", { "__Host-template_access_token": "anonymous-access" });
+
+    await expect(loadShell(event)).resolves.toMatchObject({
+      session: { status: "anonymous" },
+      authorization: "anonymous",
     });
     expect(fetchService).not.toHaveBeenCalled();
   });
@@ -612,6 +635,6 @@ describe("planned downtime at the request boundary", () => {
       loadShell(
         request("/", { "__Host-template_access_token": "access", "__Host-template_refresh_token": "refresh" }).event
       )
-    ).resolves.toMatchObject({ session: { status: "downtime" }, authorization: "unavailable" });
+    ).resolves.toMatchObject({ session: { status: "loading" }, authorization: "unavailable" });
   });
 });

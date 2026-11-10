@@ -38,9 +38,6 @@ shell:
   openNavigation: Ouvrir la navigation
   privacy: Confidentialité
   register: M’inscrire
-  sessionDowntime: Compte indisponible pendant la maintenance.
-  sessionLoading: Chargement du compte
-  sessionUnavailable: Informations du compte indisponibles.
   signIn: Me connecter
   skipToContent: Aller au contenu
 signInFailed:

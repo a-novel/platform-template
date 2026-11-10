@@ -1,8 +1,8 @@
 <!--
 @component
 Renders a protected page once access is allowed, and otherwise the access state that stops it. The
-page's server load sends a visitor who has not logged in to the sign-in first, so the boundary shows an
-anonymous decision as the access check.
+page's server load sends a visitor who has not logged in to the sign-in first, so the boundary shows
+nothing for an anonymous decision.
 -->
 <script lang="ts">
   import type { Snippet } from "svelte";
@@ -32,9 +32,9 @@ anonymous decision as the access check.
   {#snippet fallback(status)}
     {#if status === "unavailable" && unavailable}
       {@render unavailable()}
-    {:else}
+    {:else if status !== "anonymous"}
       <div class="access-page">
-        {#if status === "pending" || status === "anonymous"}
+        {#if status === "pending"}
           <StatusState tone="loading" title={t("access.pending.title")} headingLevel={1} />
         {:else if status === "forbidden"}
           <StatusState
