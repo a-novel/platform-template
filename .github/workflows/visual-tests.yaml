@@ -20,9 +20,10 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 5
     concurrency:
-      # A completion event names no PR, so each one gets its own group.
+      # A completion event names no PR, so each one gets its own group. Each label change
+      # records its own approval, so the PR's events queue.
       group: visual-approval-${{ github.event.pull_request.number || github.run_id }}
-      cancel-in-progress: false
+      queue: max
     permissions:
       contents: read
       actions: write
@@ -39,8 +40,9 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     concurrency:
+      # Cleanup runs post checks on PR heads and master, so bursts of events queue.
       group: visual-maintenance
-      cancel-in-progress: false
+      queue: max
     permissions:
       contents: read
       actions: read
