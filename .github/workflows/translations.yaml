@@ -11,8 +11,9 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     concurrency:
+      # Every event runs in order, since a push's run revokes the approval labels.
       group: translations-${{ github.event.pull_request.number }}
-      cancel-in-progress: false
+      queue: max
     permissions:
       actions: write
       contents: read
