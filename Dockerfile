@@ -1,4 +1,4 @@
-# syntax=docker/dockerfile:1.28
+# syntax=docker/dockerfile:1.29
 
 FROM docker.io/library/node:26.13.0-alpine3.23 AS base
 
