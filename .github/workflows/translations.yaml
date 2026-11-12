@@ -19,6 +19,6 @@ jobs:
       contents: read
       pull-requests: write
     steps:
-      - uses: a-novel-kit/workflows/generic-actions/approve-translations@v1.85.0
+      - uses: a-novel-kit/workflows/generic-actions/approve-translations@v1.86.0
         with:
           github_token: ${{ github.token }}
