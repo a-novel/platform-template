@@ -190,7 +190,7 @@ services:
       SERVICE_TOKEN_CALLERS: system:serviceaccount:account:web,system:serviceaccount:template:web
 
   account:
-    image: ghcr.io/a-novel/platform-account:v1.8.0@sha256:ceca602214b1117cd7c473cfff9a3412320cfb2ef9cf7a0fcd605197c2a64a77
+    image: ghcr.io/a-novel/platform-account:v1.8.1@sha256:8e91a307d99c31607fa68782dc4499964d1022c15bc8f0abd8cc55e3ad0bffd8
     ports:
       - "127.0.0.1:14102:3000"
     depends_on:
