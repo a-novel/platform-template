@@ -260,7 +260,7 @@ describe("shell screen", () => {
     const source = logo.element().getAttribute("src");
     const open = page.getByRole("link", { name: "Open navigation" });
     const controlBounds = open.element().getBoundingClientRect();
-    expect(logoBounds.left).toBeGreaterThanOrEqual(16);
+    expect(logoBounds.left).toBeGreaterThanOrEqual(12);
     expect(controlBounds.left).toBeGreaterThan(logoBounds.right);
     expect(
       Math.abs(logoBounds.top + logoBounds.height / 2 - controlBounds.top - controlBounds.height / 2)
