@@ -183,14 +183,14 @@ importers:
         specifier: 0.2.0
         version: 0.2.0
       '@a-novel-kit/uikit':
-        specifier: 0.21.0
-        version: 0.21.0(@a-novel-kit/nodelib-i18n@2.11.0(i18next@27.1.1(typescript@6.0.3))(svelte@5.57.3(@typescript-eslint/types@8.72.2)))(i18next@27.1.1(typescript@6.0.3))(svelte@5.57.3(@typescript-eslint/types@8.72.2))
+        specifier: 0.22.0
+        version: 0.22.0(@a-novel-kit/nodelib-i18n@2.11.0(i18next@27.1.1(typescript@6.0.3))(svelte@5.57.3(@typescript-eslint/types@8.72.2)))(i18next@27.1.1(typescript@6.0.3))(svelte@5.57.3(@typescript-eslint/types@8.72.2))
       '@a-novel-kit/uikit-fonts':
-        specifier: 0.21.0
-        version: 0.21.0
+        specifier: 0.22.0
+        version: 0.22.0
       '@a-novel-kit/uikit-tokens':
-        specifier: 0.21.0
-        version: 0.21.0
+        specifier: 0.22.0
+        version: 0.22.0
       '@a-novel/service-authentication-rest':
         specifier: 2.26.0
         version: 2.26.0(@a-novel-kit/nodelib-browser@2.11.0(@grafana/faro-web-sdk@2.14.0)(@grafana/faro-web-tracing@2.14.0)(zod@4.6.7))(zod@4.6.7)
@@ -241,8 +241,8 @@ importers:
         specifier: 2.11.0
         version: 2.11.0(@a-novel-kit/nodelib-browser@2.11.0(@grafana/faro-web-sdk@2.14.0)(@grafana/faro-web-tracing@2.14.0)(zod@4.6.7))(jsdom@31.0.0)(playwright@1.65.0)
       '@a-novel-kit/uikit-storybook':
-        specifier: 0.21.0
-        version: 0.21.0(@storybook/addon-a11y@10.6.7(storybook@10.6.7(prettier@3.9.10)(react@19.3.1)))(@storybook/addon-docs@10.6.7(storybook@10.6.7(prettier@3.9.10)(react@19.3.1)))(@storybook/addon-svelte-csf@5.1.6(@storybook/svelte@10.6.7(storybook@10.6.7(prettier@3.9.10)(react@19.3.1))(svelte@5.57.3(@typescript-eslint/types@8.72.2)))(@sveltejs/vite-plugin-svelte@7.3.1(svelte@5.57.3(@typescript-eslint/types@8.72.2))(vite@8.3.7(@types/node@26.6.6)(esbuild@0.28.2)(jiti@2.7.0)(yaml@2.9.1)))(storybook@10.6.7(prettier@3.9.10)(react@19.3.1))(svelte@5.57.3(@typescript-eslint/types@8.72.2))(vite@8.3.7(@types/node@26.6.6)(esbuild@0.28.2)(jiti@2.7.0)(yaml@2.9.1)))(@storybook/addon-vitest@10.6.7(@vitest/browser-playwright@5.1.0)(@vitest/browser@5.1.0)(react@19.3.1)(storybook@10.6.7(prettier@3.9.10)(react@19.3.1))(vitest@5.1.0))(react@19.3.1)(storybook@10.6.7(prettier@3.9.10)(react@19.3.1))(svelte@5.57.3(@typescript-eslint/types@8.72.2))
+        specifier: 0.22.0
+        version: 0.22.0(@storybook/addon-a11y@10.6.7(storybook@10.6.7(prettier@3.9.10)(react@19.3.1)))(@storybook/addon-docs@10.6.7(storybook@10.6.7(prettier@3.9.10)(react@19.3.1)))(@storybook/addon-svelte-csf@5.1.6(@storybook/svelte@10.6.7(storybook@10.6.7(prettier@3.9.10)(react@19.3.1))(svelte@5.57.3(@typescript-eslint/types@8.72.2)))(@sveltejs/vite-plugin-svelte@7.3.1(svelte@5.57.3(@typescript-eslint/types@8.72.2))(vite@8.3.7(@types/node@26.6.6)(esbuild@0.28.2)(jiti@2.7.0)(yaml@2.9.1)))(storybook@10.6.7(prettier@3.9.10)(react@19.3.1))(svelte@5.57.3(@typescript-eslint/types@8.72.2))(vite@8.3.7(@types/node@26.6.6)(esbuild@0.28.2)(jiti@2.7.0)(yaml@2.9.1)))(@storybook/addon-vitest@10.6.7(@vitest/browser-playwright@5.1.0)(@vitest/browser@5.1.0)(react@19.3.1)(storybook@10.6.7(prettier@3.9.10)(react@19.3.1))(vitest@5.1.0))(react@19.3.1)(storybook@10.6.7(prettier@3.9.10)(react@19.3.1))(svelte@5.57.3(@typescript-eslint/types@8.72.2))
       '@eslint/compat':
         specifier: 2.1.1
         version: 2.1.1(eslint@10.14.0(jiti@2.7.0))
@@ -447,11 +447,11 @@ packages:
   '@a-novel-kit/ui-images@0.2.0':
     resolution: {integrity: sha512-8WgqUiYmnOFIZkulE8LSlc3wqz6vY3hBSbue+diiG+HW6nRg7RTueFxPAhKW7ybxc4/QLKhBI6gHbq1Mlh7UQg==, tarball: https://npm.pkg.github.com/download/@a-novel-kit/ui-images/0.2.0/0449ebd1efdd219d3040b0f42cf91ac35a444cd4}
 
-  '@a-novel-kit/uikit-fonts@0.21.0':
-    resolution: {integrity: sha512-3vW1b/LmV1bQKvw29+4JiFrvTqhvDG9m7gAOw2a47+1nsSWlGaa+xK/LiAgwKYRxcw4LBsy8DcLXg58gd174kg==, tarball: https://npm.pkg.github.com/download/@a-novel-kit/uikit-fonts/0.21.0/0c2b2bf2573955708fcd1265097c342dadc8c4ab}
+  '@a-novel-kit/uikit-fonts@0.22.0':
+    resolution: {integrity: sha512-ZEeO3Fp3YKEpWzCoRDhrbGq7GLubt2lBxjzsmsOrOlug76GdQdOdtD2NUz3Cc1CV3OcCOarUmFH000fu+LcN1A==, tarball: https://npm.pkg.github.com/download/@a-novel-kit/uikit-fonts/0.22.0/20e1afb309426abe05a630069023c622fea14add}
 
-  '@a-novel-kit/uikit-storybook@0.21.0':
-    resolution: {integrity: sha512-yMUIdeGMo9pwVd6ZgiB2DBERjLgV3pjq4kiqbnqNefRj2ppIPNvOyxlrkosxWjHzSCdi0/4LWardKeWJ6akuxg==, tarball: https://npm.pkg.github.com/download/@a-novel-kit/uikit-storybook/0.21.0/fb595f3d4a51240eae1fd5c274f5c74f5f66d229}
+  '@a-novel-kit/uikit-storybook@0.22.0':
+    resolution: {integrity: sha512-LR99FrKLIs35BOEn0TRWMvjnEX4dg6e2Mda+WS0OfNn01Lz2ls2m0V6bdIfnscSX+Z09XuOTzUDx/UQmwVf+0w==, tarball: https://npm.pkg.github.com/download/@a-novel-kit/uikit-storybook/0.22.0/7c7bfc9fd7396707062a954efe6743b04bb510f7}
     peerDependencies:
       '@storybook/addon-a11y': ^10.6.7
       '@storybook/addon-docs': ^10.6.7
@@ -461,11 +461,11 @@ packages:
       storybook: ^10.6.7
       svelte: ^5.57.3
 
-  '@a-novel-kit/uikit-tokens@0.21.0':
-    resolution: {integrity: sha512-mN6JbcEXsHUcHjiIk+kJPz+3gqxKgsB0s9gp7Mb/tc+bscVYfmWgewf/xorinWpQ+KRnrBd6R8+/76W7XlzpmA==, tarball: https://npm.pkg.github.com/download/@a-novel-kit/uikit-tokens/0.21.0/faeb53df1b4815e88c1ede70449d0b8ac8c1335c}
+  '@a-novel-kit/uikit-tokens@0.22.0':
+    resolution: {integrity: sha512-ZoIVioSzgJyXZvSRrtI6c61qnScCCpWUWs3aopCkEJgJVR7cO5nqWBilPvIlHLBAD4N/20zaYA9WgsUg2cPKpA==, tarball: https://npm.pkg.github.com/download/@a-novel-kit/uikit-tokens/0.22.0/558dd0d820a5fa622bb5bc9c9905c90969c60244}
 
-  '@a-novel-kit/uikit@0.21.0':
-    resolution: {integrity: sha512-AibDbCRpy+6N3sCF3I6+EygNcZni0MW6xkf7ENvZOb95CK0qiERItc67v2FztdVg/EH8K9kYey/sP4FvsIDLcg==, tarball: https://npm.pkg.github.com/download/@a-novel-kit/uikit/0.21.0/f871dabe026a7402cf48e5534d57494b050ac08f}
+  '@a-novel-kit/uikit@0.22.0':
+    resolution: {integrity: sha512-3sIBIqpE46bNvrY9rWhNa0Q6yV0CHoD2nQjQeUHBy9bDm7503Mfi6YoKOb8OR5GNtIKSyr0NWipvgnxguLrpkA==, tarball: https://npm.pkg.github.com/download/@a-novel-kit/uikit/0.22.0/8a1e739b025061f2a17411026a478e7d143f9439}
     peerDependencies:
       '@a-novel-kit/nodelib-i18n': ^2.11.0
       i18next: ^27.1.1
@@ -3529,12 +3529,12 @@ snapshots:
 
   '@a-novel-kit/ui-images@0.2.0': {}
 
-  '@a-novel-kit/uikit-fonts@0.21.0': {}
+  '@a-novel-kit/uikit-fonts@0.22.0': {}
 
-  '@a-novel-kit/uikit-storybook@0.21.0(@storybook/addon-a11y@10.6.7(storybook@10.6.7(prettier@3.9.10)(react@19.3.1)))(@storybook/addon-docs@10.6.7(storybook@10.6.7(prettier@3.9.10)(react@19.3.1)))(@storybook/addon-svelte-csf@5.1.6(@storybook/svelte@10.6.7(storybook@10.6.7(prettier@3.9.10)(react@19.3.1))(svelte@5.57.3(@typescript-eslint/types@8.72.2)))(@sveltejs/vite-plugin-svelte@7.3.1(svelte@5.57.3(@typescript-eslint/types@8.72.2))(vite@8.3.7(@types/node@26.6.6)(esbuild@0.28.2)(jiti@2.7.0)(yaml@2.9.1)))(storybook@10.6.7(prettier@3.9.10)(react@19.3.1))(svelte@5.57.3(@typescript-eslint/types@8.72.2))(vite@8.3.7(@types/node@26.6.6)(esbuild@0.28.2)(jiti@2.7.0)(yaml@2.9.1)))(@storybook/addon-vitest@10.6.7(@vitest/browser-playwright@5.1.0)(@vitest/browser@5.1.0)(react@19.3.1)(storybook@10.6.7(prettier@3.9.10)(react@19.3.1))(vitest@5.1.0))(react@19.3.1)(storybook@10.6.7(prettier@3.9.10)(react@19.3.1))(svelte@5.57.3(@typescript-eslint/types@8.72.2))':
+  '@a-novel-kit/uikit-storybook@0.22.0(@storybook/addon-a11y@10.6.7(storybook@10.6.7(prettier@3.9.10)(react@19.3.1)))(@storybook/addon-docs@10.6.7(storybook@10.6.7(prettier@3.9.10)(react@19.3.1)))(@storybook/addon-svelte-csf@5.1.6(@storybook/svelte@10.6.7(storybook@10.6.7(prettier@3.9.10)(react@19.3.1))(svelte@5.57.3(@typescript-eslint/types@8.72.2)))(@sveltejs/vite-plugin-svelte@7.3.1(svelte@5.57.3(@typescript-eslint/types@8.72.2))(vite@8.3.7(@types/node@26.6.6)(esbuild@0.28.2)(jiti@2.7.0)(yaml@2.9.1)))(storybook@10.6.7(prettier@3.9.10)(react@19.3.1))(svelte@5.57.3(@typescript-eslint/types@8.72.2))(vite@8.3.7(@types/node@26.6.6)(esbuild@0.28.2)(jiti@2.7.0)(yaml@2.9.1)))(@storybook/addon-vitest@10.6.7(@vitest/browser-playwright@5.1.0)(@vitest/browser@5.1.0)(react@19.3.1)(storybook@10.6.7(prettier@3.9.10)(react@19.3.1))(vitest@5.1.0))(react@19.3.1)(storybook@10.6.7(prettier@3.9.10)(react@19.3.1))(svelte@5.57.3(@typescript-eslint/types@8.72.2))':
     dependencies:
-      '@a-novel-kit/uikit-fonts': 0.21.0
-      '@a-novel-kit/uikit-tokens': 0.21.0
+      '@a-novel-kit/uikit-fonts': 0.22.0
+      '@a-novel-kit/uikit-tokens': 0.22.0
       '@storybook/addon-a11y': 10.6.7(storybook@10.6.7(prettier@3.9.10)(react@19.3.1))
       '@storybook/addon-docs': 10.6.7(storybook@10.6.7(prettier@3.9.10)(react@19.3.1))
       '@storybook/addon-svelte-csf': 5.1.6(@storybook/svelte@10.6.7(storybook@10.6.7(prettier@3.9.10)(react@19.3.1))(svelte@5.57.3(@typescript-eslint/types@8.72.2)))(@sveltejs/vite-plugin-svelte@7.3.1(svelte@5.57.3(@typescript-eslint/types@8.72.2))(vite@8.3.7(@types/node@26.6.6)(esbuild@0.28.2)(jiti@2.7.0)(yaml@2.9.1)))(storybook@10.6.7(prettier@3.9.10)(react@19.3.1))(svelte@5.57.3(@typescript-eslint/types@8.72.2))(vite@8.3.7(@types/node@26.6.6)(esbuild@0.28.2)(jiti@2.7.0)(yaml@2.9.1))
@@ -3547,13 +3547,13 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@a-novel-kit/uikit-tokens@0.21.0': {}
+  '@a-novel-kit/uikit-tokens@0.22.0': {}
 
-  '@a-novel-kit/uikit@0.21.0(@a-novel-kit/nodelib-i18n@2.11.0(i18next@27.1.1(typescript@6.0.3))(svelte@5.57.3(@typescript-eslint/types@8.72.2)))(i18next@27.1.1(typescript@6.0.3))(svelte@5.57.3(@typescript-eslint/types@8.72.2))':
+  '@a-novel-kit/uikit@0.22.0(@a-novel-kit/nodelib-i18n@2.11.0(i18next@27.1.1(typescript@6.0.3))(svelte@5.57.3(@typescript-eslint/types@8.72.2)))(i18next@27.1.1(typescript@6.0.3))(svelte@5.57.3(@typescript-eslint/types@8.72.2))':
     dependencies:
       '@a-novel-kit/nodelib-i18n': 2.11.0(i18next@27.1.1(typescript@6.0.3))(svelte@5.57.3(@typescript-eslint/types@8.72.2))
-      '@a-novel-kit/uikit-fonts': 0.21.0
-      '@a-novel-kit/uikit-tokens': 0.21.0
+      '@a-novel-kit/uikit-fonts': 0.22.0
+      '@a-novel-kit/uikit-tokens': 0.22.0
       '@lucide/svelte': 1.71.0(svelte@5.57.3(@typescript-eslint/types@8.72.2))
       i18next: 27.1.1(typescript@6.0.3)
       svelte: 5.57.3(@typescript-eslint/types@8.72.2)
