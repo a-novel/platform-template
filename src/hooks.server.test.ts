@@ -3,7 +3,7 @@ import { handle } from "./hooks.server";
 import { describe, expect, it, vi } from "vitest";
 
 import { SpanStatusCode, TraceFlags, trace } from "@opentelemetry/api";
-import { BasicTracerProvider, InMemorySpanExporter, SimpleSpanProcessor } from "@opentelemetry/sdk-trace-node";
+import { InMemorySpanExporter, SimpleSpanProcessor, TracerProvider } from "@opentelemetry/sdk-trace";
 import type { RequestEvent } from "@sveltejs/kit";
 import type { Handle } from "@sveltejs/kit/hooks";
 
@@ -90,7 +90,7 @@ describe("request hook", () => {
     { name: "a fault", method: "GET", route: "/", status: 500, want: { name: "GET /", code: SpanStatusCode.ERROR } },
   ])("traces the response to $name on the request's span", async ({ method, route, status, want }) => {
     const exporter = new InMemorySpanExporter();
-    const provider = new BasicTracerProvider({ spanProcessors: [new SimpleSpanProcessor(exporter)] });
+    const provider = new TracerProvider({ spanProcessors: [new SimpleSpanProcessor({ exporter })] });
     const root = provider.getTracer("test").startSpan("sveltekit.handle.root");
     const request = {
       ...event("/"),
