@@ -10,10 +10,9 @@ on:
     types: [opened, synchronize, reopened, labeled, unlabeled]
   merge_group:
 
-# A pull request's newer run supersedes the older one, which could otherwise post a stale screenshot
-# verdict last; other runs each get their own group and always finish. A label event's run gets its
-# own group too: a pull request takes its labels in the second it opens, and GitHub can admit those
-# runs out of order, cancelling the newest.
+# A newer push to a pull request cancels its older run, which could otherwise post a stale
+# screenshot verdict last. Each label event, which GitHub can admit out of order, and every non-PR
+# run gets a group of its own.
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.run_id }}${{ endsWith(github.event.action, 'labeled') && format('-{0}', github.run_id) || '' }}
   cancel-in-progress: true
@@ -167,7 +166,7 @@ jobs:
           coverage_files: unitcover/lcov.info,browsercover/lcov.info,storybookcover/lcov.info
           coverage_artifact_ids: ${{ needs.test-unit.outputs.artifact-id }},${{ needs.test-browser.outputs.artifact-id }},${{ needs.test-storybook.outputs.artifact-id }}
 
-  audit-node:
+  audit-js:
     runs-on: ubuntu-latest
     permissions:
       contents: read
