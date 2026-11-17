@@ -189,8 +189,8 @@ importers:
         specifier: 2.12.0
         version: 2.12.0(@opentelemetry/api@1.10.0)(@opentelemetry/context-async-hooks@3.1.1(@opentelemetry/api@1.10.0))(@opentelemetry/core@3.1.1(@opentelemetry/api@1.10.0))(@opentelemetry/exporter-trace-otlp-proto@0.301.2(@opentelemetry/api@1.10.0))(@opentelemetry/instrumentation-undici@0.35.1(@opentelemetry/api@1.10.0))(@opentelemetry/instrumentation@0.301.2(@opentelemetry/api@1.10.0))(@opentelemetry/resources@3.1.1(@opentelemetry/api@1.10.0))(@opentelemetry/sdk-trace@3.1.1(@opentelemetry/api@1.10.0))
       '@a-novel-kit/ui-images':
-        specifier: 0.2.0
-        version: 0.2.0
+        specifier: 0.3.0
+        version: 0.3.0
       '@a-novel-kit/uikit':
         specifier: 0.23.0
         version: 0.23.0(@a-novel-kit/nodelib-i18n@2.12.0(i18next@27.1.1(typescript@6.0.3))(svelte@5.57.3(@typescript-eslint/types@8.72.2)))(i18next@27.1.1(typescript@6.0.3))(svelte@5.57.3(@typescript-eslint/types@8.72.2))
@@ -461,8 +461,8 @@ packages:
       jsdom: ^30.0.0
       playwright: ^1.63.0
 
-  '@a-novel-kit/ui-images@0.2.0':
-    resolution: {integrity: sha512-8WgqUiYmnOFIZkulE8LSlc3wqz6vY3hBSbue+diiG+HW6nRg7RTueFxPAhKW7ybxc4/QLKhBI6gHbq1Mlh7UQg==, tarball: https://npm.pkg.github.com/download/@a-novel-kit/ui-images/0.2.0/0449ebd1efdd219d3040b0f42cf91ac35a444cd4}
+  '@a-novel-kit/ui-images@0.3.0':
+    resolution: {integrity: sha512-XISdfMiwMWfaFNfxdwrJN83oBjcnz90TO2FhjEgIkkcayTEIWXJSDJ1CRcNpVgZRcp4dswAhzvB1Jpridvw42Q==, tarball: https://npm.pkg.github.com/download/@a-novel-kit/ui-images/0.3.0/39d74d81f8a64bd4574424c738c14f0d9053cc57}
 
   '@a-novel-kit/uikit-fonts@0.23.0':
     resolution: {integrity: sha512-uqBfoBskMeyAgBnHM2zgxYHCMUfq9wERWG/gp6yDQeLfqVl1CmSqour0KORGqndJQEmFzAjTciRh58abaz+RRg==, tarball: https://npm.pkg.github.com/download/@a-novel-kit/uikit-fonts/0.23.0/990bb79fb21f33be6f1c283ad13fa2c7d87f641a}
@@ -3534,7 +3534,7 @@ snapshots:
       jsdom: 31.0.1
       playwright: 1.65.0
 
-  '@a-novel-kit/ui-images@0.2.0': {}
+  '@a-novel-kit/ui-images@0.3.0': {}
 
   '@a-novel-kit/uikit-fonts@0.23.0': {}
 
