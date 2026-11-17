@@ -11,9 +11,11 @@ on:
   merge_group:
 
 # A pull request's newer run supersedes the older one, which could otherwise post a stale screenshot
-# verdict last; other runs each get their own group and always finish.
+# verdict last; other runs each get their own group and always finish. A label event's run gets its
+# own group too: a pull request takes its labels in the second it opens, and GitHub can admit those
+# runs out of order, cancelling the newest.
 concurrency:
-  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.run_id }}
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.run_id }}${{ endsWith(github.event.action, 'labeled') && format('-{0}', github.run_id) || '' }}
   cancel-in-progress: true
 
 jobs:
@@ -68,44 +70,26 @@ jobs:
     permissions:
       contents: read
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          persist-credentials: false
       - uses: a-novel-kit/workflows/generic-actions/lint-dockerfile@v1.87.0
-        with:
-          # renovate: datasource=custom.hadolint depName=hadolint/hadolint
-          version: "2.15.1"
-          sha256: "c7187db94eeeeca956519a6af171adc31453941a1e777961f6e680f697c8c507"
 
   scan-secrets:
     runs-on: ubuntu-latest
     permissions:
       contents: read
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          persist-credentials: false
       - uses: a-novel-kit/workflows/security-actions/scan-secrets@v1.87.0
         with:
           config: .gitleaks.toml
-          # renovate: datasource=github-releases depName=gitleaks/gitleaks
-          version: "8.30.1"
 
   lint-workflows:
     runs-on: ubuntu-latest
     permissions:
       contents: read
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          persist-credentials: false
       - uses: a-novel-kit/workflows/security-actions/lint-workflows@v1.87.0
-        with:
-          # renovate: datasource=docker depName=ghcr.io/zizmorcore/zizmor
-          version: "1.32.0@sha256:3014cc8f68f663935f69b3c3e0e41f5ce102b268d97db13db0f62208747f860d"
 
   test-unit:
-    needs: [build-node, lint-types]
+    needs: [build-js, lint-types]
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -122,7 +106,7 @@ jobs:
           coverage_file: coverage/unit/lcov.info
 
   test-browser:
-    needs: [build-node, lint-types]
+    needs: [build-js, lint-types]
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     permissions:
@@ -133,7 +117,7 @@ jobs:
       statuses: write
       id-token: write
     env:
-      COMPOSE_PROJECT_NAME: template-e2e-${{ github.run_id }}-${{ github.run_attempt }}
+      COMPOSE_PROJECT_NAME: ${{ github.event.repository.name }}-e2e-${{ github.run_id }}-${{ github.run_attempt }}
     outputs:
       artifact-id: ${{ steps.test.outputs.artifact-id }}
     steps:
@@ -142,7 +126,7 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           compose_file: builds/compose.e2e.yaml
-          report_artifact: template-browser-report
+          report_artifact: ${{ github.event.repository.name }}-browser-report
           drive_ci_provider: ${{ vars.VISUAL_CI_PROVIDER }}
           drive_ci_account: ${{ vars.VISUAL_CI_ACCOUNT }}
           drive_maintenance_provider: ${{ vars.VISUAL_MAINTENANCE_PROVIDER }}
@@ -152,7 +136,7 @@ jobs:
           seed_sha: ${{ vars.VISUAL_SEED_SHA }}
 
   test-storybook:
-    needs: [build-node, lint-types]
+    needs: [build-js, lint-types]
     runs-on: ubuntu-latest
     container:
       # renovate: datasource=npm depName=playwright
@@ -195,7 +179,7 @@ jobs:
       - name: Audit production and development dependencies
         run: pnpm run audit
 
-  build-node:
+  build-js:
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -207,7 +191,7 @@ jobs:
           build_action: "build:ci"
 
   build-platform:
-    needs: [build-node, lint-types]
+    needs: [build-js, lint-types]
     runs-on: ubuntu-latest
     permissions:
       attestations: write
