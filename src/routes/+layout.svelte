@@ -1,16 +1,19 @@
 <script lang="ts">
-  import { createTelemetryPreference } from "#lib/client/telemetry-preference.svelte.js";
   import { telemetry } from "#lib/client/telemetry.js";
   import I18nProvider from "#lib/i18n/I18nProvider.svelte";
   import TelemetryConsent from "#lib/ui/TelemetryConsent.svelte";
-  import { createPlatformDowntime, setPlatformDowntime } from "#lib/ui/downtime.svelte.js";
   import "#lib/ui/lamp.css";
-  import { setTelemetryPreference } from "#lib/ui/telemetry-preference.js";
   import { afterNavigate, invalidateAll } from "$app/navigation";
   import { page } from "$app/state";
 
   import { onMount } from "svelte";
 
+  import {
+    createPlatformDowntime,
+    createTelemetryPreference,
+    setPlatformDowntime,
+    setTelemetryPreference,
+  } from "@a-novel-kit/nodelib-svelte";
   import lightFavicon from "@a-novel-kit/ui-images/files/icon/32x32/agora-icon-light.png?no-inline";
   // Each icon follows the browser theme; the app itself stays dark. Firefox ignores `media` and
   // shows the last icon, so the light one comes last. The icons stay files rather than inline data:

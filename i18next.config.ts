@@ -3,7 +3,6 @@ import { defaultLocale, defaultNamespace, supportedLocales } from "./src/lib/i18
 import { I18next } from "@a-novel-kit/nodelib-config/i18next";
 
 export default I18next({
-  catalogFormat: "yaml",
   defaultNamespace,
   locales: supportedLocales,
   primaryLanguage: defaultLocale,

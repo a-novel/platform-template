@@ -1,7 +1,5 @@
 <script lang="ts">
-  import { retryWhile } from "#lib/client/retry.svelte.js";
-  import { getPlatformDowntime } from "#lib/ui/downtime.svelte.js";
-  import { hasTelemetryPreference } from "#lib/ui/telemetry-preference.js";
+  import { telemetry } from "#lib/client/telemetry.js";
   import { PUBLIC_PLATFORM_DOMAIN } from "$app/env/public";
   import { goto, invalidate } from "$app/navigation";
   import { resolve } from "$app/paths";
@@ -13,6 +11,7 @@
   import Screen from "./screen.svelte";
 
   import { saveNavigationRail } from "@a-novel-kit/nodelib-browser/preferences";
+  import { getPlatformDowntime, hasTelemetryPreference, retryWhile } from "@a-novel-kit/nodelib-svelte";
   import { AuthorizationProvider } from "@a-novel-kit/uikit";
   import { createAuthorizationController } from "@a-novel-kit/uikit/authorization";
 
@@ -40,7 +39,8 @@
 
   retryWhile(
     () => data.session.status === "loading",
-    () => invalidate(shellSessionData)
+    () => invalidate(shellSessionData),
+    { onError: (error) => telemetry.captureError(error) }
   );
 </script>
 

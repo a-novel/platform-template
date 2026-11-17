@@ -1,13 +1,13 @@
 <script lang="ts">
   import { errorPageTitle } from "#lib/i18n/page-titles.js";
   import PageTitle from "#lib/ui/PageTitle.svelte";
-  import { getPlatformDowntime } from "#lib/ui/downtime.svelte.js";
   import { resolve } from "$app/paths";
   import { page } from "$app/state";
 
   import Screen from "./error-screen.svelte";
 
   import { getI18nContext } from "@a-novel-kit/nodelib-i18n/svelte";
+  import { getPlatformDowntime } from "@a-novel-kit/nodelib-svelte";
 
   const { t } = getI18nContext();
   const platformDowntime = getPlatformDowntime();

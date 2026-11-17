@@ -1,10 +1,10 @@
 import { signInHref } from "#lib/application/auth/navigation.js";
-import type { PlatformDowntime } from "#lib/ui/downtime.svelte.js";
 
 import { readNavigationOpen, withNavigationOpen } from "./navigation-state";
 
 import { SvelteURL } from "svelte/reactivity";
 
+import type { PlatformDowntime } from "@a-novel-kit/nodelib-svelte";
 import type { OpenController } from "@a-novel-kit/uikit";
 
 /** Session states the shell can render without owning session logic. */

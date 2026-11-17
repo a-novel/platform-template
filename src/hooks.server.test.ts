@@ -77,40 +77,24 @@ describe("request hook", () => {
     expect(response.headers.get("x-frame-options")).toBe("DENY");
   });
 
-  it.each([
-    { name: "a page", method: "GET", route: "/", status: 200, want: { name: "GET /", code: SpanStatusCode.UNSET } },
-    {
-      name: "a refusal",
-      method: "POST",
-      route: "/",
-      status: 400,
-      want: { name: "POST /", code: SpanStatusCode.UNSET },
-    },
-    {
-      name: "an unknown path",
-      method: "GET",
-      route: null,
-      status: 404,
-      want: { name: "GET", code: SpanStatusCode.UNSET },
-    },
-    { name: "a fault", method: "GET", route: "/", status: 500, want: { name: "GET /", code: SpanStatusCode.ERROR } },
-  ])("traces the response to $name on the request's span", async ({ method, route, status, want }) => {
+  // nodelib-server's own tests cover how a span is named; this one proves the hook traces each response.
+  it("traces a failed response on the request's span", async () => {
     const exporter = new InMemorySpanExporter();
     const provider = new TracerProvider({ spanProcessors: [new SimpleSpanProcessor({ exporter })] });
     const root = provider.getTracer("test").startSpan("sveltekit.handle.root");
     const request = {
       ...event("/"),
-      request: new Request("https://template.test/", { method }),
-      route: { id: route },
+      request: new Request("https://template.test/", { method: "GET" }),
+      route: { id: "/" },
       tracing: { enabled: true, root, current: root },
     } as unknown as RequestEvent;
 
-    await handle({ event: request, resolve: async () => new Response(null, { status }) });
+    await handle({ event: request, resolve: async () => new Response(null, { status: 500 }) });
     root.end();
 
     const [span] = exporter.getFinishedSpans();
-    expect(span?.name).toBe(want.name);
-    expect(span?.attributes["http.response.status_code"]).toBe(status);
-    expect(span?.status.code).toBe(want.code);
+    expect(span?.name).toBe("GET /");
+    expect(span?.attributes["http.response.status_code"]).toBe(500);
+    expect(span?.status.code).toBe(SpanStatusCode.ERROR);
   });
 });

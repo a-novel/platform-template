@@ -188,6 +188,9 @@ importers:
       '@a-novel-kit/nodelib-server':
         specifier: 2.13.0
         version: 2.13.0(@opentelemetry/api@1.10.0)(@opentelemetry/context-async-hooks@3.1.1(@opentelemetry/api@1.10.0))(@opentelemetry/core@3.1.1(@opentelemetry/api@1.10.0))(@opentelemetry/exporter-trace-otlp-proto@0.301.2(@opentelemetry/api@1.10.0))(@opentelemetry/instrumentation-undici@0.35.1(@opentelemetry/api@1.10.0))(@opentelemetry/instrumentation@0.301.2(@opentelemetry/api@1.10.0))(@opentelemetry/resources@3.1.1(@opentelemetry/api@1.10.0))(@opentelemetry/sdk-trace@3.1.1(@opentelemetry/api@1.10.0))
+      '@a-novel-kit/nodelib-svelte':
+        specifier: 2.13.0
+        version: 2.13.0(@a-novel-kit/nodelib-browser@2.13.0(@grafana/faro-web-sdk@2.14.0)(@grafana/faro-web-tracing@2.14.0)(zod@4.6.7))(svelte@5.57.3(@typescript-eslint/types@8.72.2))
       '@a-novel-kit/ui-images':
         specifier: 0.3.0
         version: 0.3.0
@@ -444,6 +447,13 @@ packages:
       '@opentelemetry/instrumentation-undici': ^0.35.1
       '@opentelemetry/resources': ^3.1.1
       '@opentelemetry/sdk-trace': ^3.1.1
+
+  '@a-novel-kit/nodelib-svelte@2.13.0':
+    resolution: {integrity: sha512-0lynu3jIxfAGdfljWJu31rDwyr1RkwsEgo5N9OJ3KauWxA7nHeC79PxHMZL2i87JeqL4UtJQTmAop+LeJTEJlw==, tarball: https://npm.pkg.github.com/download/@a-novel-kit/nodelib-svelte/2.13.0/a2047a5210f896f64057736754c6803d0ce6762d}
+    engines: {node: '>=24.0.0', npm: '>=10.9.2'}
+    peerDependencies:
+      '@a-novel-kit/nodelib-browser': '*'
+      svelte: ^5.57.3
 
   '@a-novel-kit/nodelib-test@2.13.0':
     resolution: {integrity: sha512-l4ZYYhkMGySmaK+XLf2mazqD+Blgmlss0RMuA0ZfY0XSHcKeKUfuhKdph+Npr6Z4vMlkv/hU4SmbJLsKTOWc2Q==, tarball: https://npm.pkg.github.com/download/@a-novel-kit/nodelib-test/2.13.0/2e39cad29c13ceb048420999af81d83cd00d233e}
@@ -3465,6 +3475,11 @@ snapshots:
       '@opentelemetry/instrumentation-undici': 0.35.1(@opentelemetry/api@1.10.0)
       '@opentelemetry/resources': 3.1.1(@opentelemetry/api@1.10.0)
       '@opentelemetry/sdk-trace': 3.1.1(@opentelemetry/api@1.10.0)
+
+  '@a-novel-kit/nodelib-svelte@2.13.0(@a-novel-kit/nodelib-browser@2.13.0(@grafana/faro-web-sdk@2.14.0)(@grafana/faro-web-tracing@2.14.0)(zod@4.6.7))(svelte@5.57.3(@typescript-eslint/types@8.72.2))':
+    dependencies:
+      '@a-novel-kit/nodelib-browser': 2.13.0(@grafana/faro-web-sdk@2.14.0)(@grafana/faro-web-tracing@2.14.0)(zod@4.6.7)
+      svelte: 5.57.3(@typescript-eslint/types@8.72.2)
 
   '@a-novel-kit/nodelib-test@2.13.0(@a-novel-kit/nodelib-browser@2.13.0(@grafana/faro-web-sdk@2.14.0)(@grafana/faro-web-tracing@2.14.0)(zod@4.6.7))(jsdom@31.0.1)(playwright@1.65.0)':
     dependencies:

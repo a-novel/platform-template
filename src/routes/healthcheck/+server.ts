@@ -19,8 +19,11 @@ export const GET: RequestHandler = async ({ fetch }) => {
         return {
           timeoutMs: config.healthcheckTimeoutMs,
           url: new URL("v2/healthcheck", `${config.authenticationServiceUrl}/`),
+          // The probe proves the platform's identity like any call, but is made for no visitor.
+          fetch: serviceFetch({ serviceTokenPath: config.serviceTokenPath }, fetch),
         };
       },
+      // JSON keys' API is public, so its probe carries no token.
       jsonKeys: () => {
         const config = getRuntimeConfig();
 
@@ -30,13 +33,7 @@ export const GET: RequestHandler = async ({ fetch }) => {
         };
       },
     },
-    // Probes prove the platform's identity to Authentication like any call, but are made for no
-    // visitor. JSON keys' API is public, so its probe carries no token.
-    fetch: async (input, init) => {
-      const { authenticationServiceUrl, serviceTokenPath } = getRuntimeConfig();
-      const identity = String(input).startsWith(`${authenticationServiceUrl}/`) ? { serviceTokenPath } : {};
-      return await serviceFetch(identity, fetch)(input, init);
-    },
+    fetch,
   });
 
   return json(health, {

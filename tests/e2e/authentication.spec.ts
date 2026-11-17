@@ -1,13 +1,13 @@
 import { sessionCookies } from "../../src/lib/server/auth/session";
 import { accountOrigin, compose, expect, test } from "./fixtures";
-import { callerFetch, platformCaller } from "./service-token";
+import { platformCaller } from "./service-token";
 
-import { screenshot } from "@a-novel-kit/nodelib-test/playwright";
+import { callerFetch, downtimeOrigin, screenshot } from "@a-novel-kit/nodelib-test/playwright";
 import { AuthenticationApi, refreshTokenGrant } from "@a-novel/service-authentication-rest";
 
 import type { BrowserContext, Page } from "playwright/test";
 
-const platformOrigin = "http://127.0.0.1:4173";
+const platformOrigin = downtimeOrigin("none");
 const platformApi = new AuthenticationApi("http://127.0.0.1:14100", callerFetch(platformCaller));
 
 interface Account {

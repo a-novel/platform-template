@@ -1,10 +1,10 @@
 <script module lang="ts">
   import { createStorybookTranslator } from "#lib/i18n/storybook.js";
-  import type { TelemetryPreference } from "#lib/ui/telemetry-preference.js";
 
   import PrivacyScreen from "./screen.svelte";
 
   import type { TelemetryChoice } from "@a-novel-kit/nodelib-browser/telemetry";
+  import type { TelemetryPreference } from "@a-novel-kit/nodelib-svelte";
   import { reviewStoryGlobals } from "@a-novel-kit/uikit-storybook";
 
   import { defineMeta } from "@storybook/addon-svelte-csf";
