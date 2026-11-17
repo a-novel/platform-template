@@ -51,16 +51,31 @@ describe("request hook", () => {
     expect(request.locals.locale).toBe(want);
   });
 
-  it("keeps a response rendered with a session out of every cache", async () => {
-    const signedIn = {
+  it.each<{ name: string; session: boolean; headers: Record<string, string>; want: string | null }>([
+    { name: "a page rendered with a session", session: true, headers: {}, want: "private, no-store" },
+    {
+      name: "a route's own policy",
+      session: true,
+      headers: { "cache-control": "private, max-age=31536000, immutable" },
+      want: "private, max-age=31536000, immutable",
+    },
+    {
+      name: "a response that refreshes the session's cookies",
+      session: true,
+      headers: { "cache-control": "private, max-age=31536000, immutable", "set-cookie": "token=fresh" },
+      want: "private, no-store",
+    },
+    { name: "a page without a session", session: false, headers: {}, want: null },
+  ])("sends $want for $name", async ({ session, headers, want }) => {
+    const request = {
       ...event("/privacy"),
-      cookies: { get: (name: string) => (name === sessionCookies.refreshToken ? "refresh" : undefined) },
+      cookies: { get: (name: string) => (session && name === sessionCookies.refreshToken ? "refresh" : undefined) },
     } as RequestEvent;
     const response = await handle({
-      event: signedIn,
-      resolve: vi.fn().mockResolvedValue(new Response("page", { headers: { "cache-control": "public, max-age=60" } })),
+      event: request,
+      resolve: vi.fn().mockResolvedValue(new Response("page", { headers })),
     });
-    expect(response.headers.get("cache-control")).toBe("private, no-store");
+    expect(response.headers.get("cache-control")).toBe(want);
   });
 
   it.each([200, 303, 400])("refuses framing of every response with status %s", async (status) => {
