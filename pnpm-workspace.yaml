@@ -19,8 +19,10 @@ overrides:
 
 audit:
   ignore:
-    # FIXME: GHSA-fc5q-39xc-vjpf (picomatch <=4.0.7, ReDoS through repeated extglobs) has no patched
-    # version yet. picomatch reaches this platform only through build tooling (svelte-check > fdir,
-    # vite > tinyglobby), which matches globs this repository writes, never user input, so the server
-    # never runs it. Remove this entry and bump picomatch once a patched version ships.
+    # FIXME: CVE-2026-112366 / GHSA-fc5q-39xc-vjpf (picomatch <=4.0.7, ReDoS through repeated
+    # extglobs) has no patched version: the upstream fixes micromatch/picomatch#194, #238 and #246 are
+    # unmerged, Snyk revoked its entry, and a dispute to withdraw it was filed on 2026-11-17. picomatch
+    # reaches this platform only through build tooling (svelte-check > fdir, vite > tinyglobby), never
+    # user input. Remove this entry once a patched picomatch ships (and bump it) or the advisory is
+    # withdrawn. Tracking: https://github.com/micromatch/picomatch/issues/247
     - GHSA-fc5q-39xc-vjpf
