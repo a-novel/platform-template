@@ -16,3 +16,11 @@ minimumReleaseAgeExclude:
 overrides:
   glob@>=9.0.0 <=14.0.1: 14.0.2
   minimatch@>=7.0.0 <11.0.1: 11.0.1
+
+audit:
+  ignore:
+    # FIXME: GHSA-fc5q-39xc-vjpf (picomatch <=4.0.7, ReDoS through repeated extglobs) has no patched
+    # version yet. picomatch reaches this platform only through build tooling (svelte-check > fdir,
+    # vite > tinyglobby), which matches globs this repository writes, never user input, so the server
+    # never runs it. Remove this entry and bump picomatch once a patched version ships.
+    - GHSA-fc5q-39xc-vjpf
