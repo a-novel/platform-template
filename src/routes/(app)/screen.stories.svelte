@@ -206,6 +206,29 @@
     await expect(rail.queryByRole("link", { name: t("shell.signIn") })).not.toBeInTheDocument();
   }
 
+  /**
+   * Checks that the maintenance banner sits atop the workspace on a wide screen and at its foot on a phone, and
+   * that the shell hands its height to a page's sticky parts on that edge.
+   */
+  function verifyMaintenanceBanner(edge: "top" | "bottom") {
+    return async ({ canvasElement }: PlayContext) => {
+      const canvas = within(canvasElement);
+      const banner = canvas.getByRole("status");
+      const main = canvas.getByRole("main");
+      const bounds = banner.getBoundingClientRect();
+      if (edge === "top") await expect(bounds.bottom).toBeLessThanOrEqual(main.getBoundingClientRect().top + 1);
+      else await expect(bounds.top).toBeGreaterThan(main.getBoundingClientRect().top);
+
+      const workspace = main.parentElement;
+      if (!workspace) throw new Error("The main content must live in the shell workspace");
+      await waitFor(() =>
+        expect(getComputedStyle(workspace).getPropertyValue(`--shell-sticky-${edge}`).trim()).toBe(
+          `${banner.offsetHeight}px`
+        )
+      );
+    };
+  }
+
   async function verifyCollapsedLoadingAccount({ canvasElement, globals }: PlayContext) {
     const t = createStorybookTranslator(globals);
     const rail = within(within(canvasElement).getByRole("complementary"));
@@ -327,11 +350,17 @@
   <StoryHarness model={withOpenMobileNavigation(loadingAccount)} />
 </Story>
 
-<Story name="Maintenance" asChild>
+<Story name="Maintenance" asChild play={verifyMaintenanceBanner("top")}>
   <StoryHarness model={anonymous} {downtime}><ScrollPreview /></StoryHarness>
 </Story>
 
-<Story name="Maintenance — mobile" exportName="MaintenanceMobile" globals={reviewStoryGlobals.mobile} asChild>
+<Story
+  name="Maintenance — mobile"
+  exportName="MaintenanceMobile"
+  globals={reviewStoryGlobals.mobile}
+  asChild
+  play={verifyMaintenanceBanner("bottom")}
+>
   <StoryHarness model={anonymous} {downtime}><ScrollPreview /></StoryHarness>
 </Story>
 

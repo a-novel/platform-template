@@ -1,5 +1,4 @@
 import { resolveLocale, supportedLocales } from "#lib/i18n/config.js";
-import { hasSession } from "#lib/server/auth/session.js";
 
 import { LANGUAGE_COOKIE, parseLanguage } from "@a-novel-kit/nodelib-browser/preferences";
 
@@ -9,7 +8,7 @@ import type { Handle } from "@sveltejs/kit/hooks";
 
 /**
  * Gives each request its locale, the language the visitor chose or else their browser's, refuses framing,
- * keeps signed-in pages out of caches, and traces the response.
+ * keeps personal responses out of caches, and traces the response.
  */
 export const handle: Handle = async ({ event, resolve }) => {
   const chosen = parseLanguage(event.cookies.get(LANGUAGE_COOKIE), supportedLocales);
@@ -25,10 +24,10 @@ export const handle: Handle = async ({ event, resolve }) => {
   // carry `frame-ancestors 'none'` in the CSP that nodelib's SvelteKit preset sends; this header also covers
   // the responses without one.
   response.headers.set("x-frame-options", "DENY");
-  // A response that sets cookies is never kept. One rendered with a session is the visitor's alone, so no
-  // cache may keep it either (RFC 9111 §5.2.2.5), unless its route chose a policy of its own, as an image
-  // whose address names its version may.
-  if (response.headers.has("set-cookie") || (hasSession(event.cookies) && !response.headers.has("cache-control"))) {
+  // A response that sets cookies, or states no cache policy of its own, is the visitor's alone, so no cache
+  // may keep it (RFC 9111 §5.2.2.5). Any other keeps its route's policy, as an image whose address names its
+  // version keeps it for a year.
+  if (response.headers.has("set-cookie") || !response.headers.has("cache-control")) {
     response.headers.set("cache-control", "private, no-store");
   }
 

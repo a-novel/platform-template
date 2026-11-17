@@ -1,5 +1,3 @@
-import { sessionCookies } from "#lib/server/auth/session.js";
-
 import { handle } from "./hooks.server";
 
 import { describe, expect, it, vi } from "vitest";
@@ -51,34 +49,21 @@ describe("request hook", () => {
     expect(request.locals.locale).toBe(want);
   });
 
-  it.each<{ name: string; session: boolean; headers: Record<string, string>; want: string | null }>([
-    { name: "a page rendered with a session", session: true, headers: {}, want: "private, no-store" },
+  it.each<{ name: string; headers: Record<string, string>; want: string }>([
+    { name: "a page without a policy of its own", headers: {}, want: "private, no-store" },
     {
       name: "a route's own policy",
-      session: true,
       headers: { "cache-control": "private, max-age=31536000, immutable" },
       want: "private, max-age=31536000, immutable",
     },
     {
-      name: "a response that refreshes the session's cookies",
-      session: true,
-      headers: { "cache-control": "private, max-age=31536000, immutable", "set-cookie": "token=fresh" },
+      name: "a response that sets cookies, as a session refresh or a started sign-in does",
+      headers: { "cache-control": "private, max-age=31536000, immutable", "set-cookie": "pending=1" },
       want: "private, no-store",
     },
-    {
-      name: "a sign-in that sets its pending cookie",
-      session: false,
-      headers: { "set-cookie": "pending=1" },
-      want: "private, no-store",
-    },
-    { name: "a page without a session", session: false, headers: {}, want: null },
-  ])("sends $want for $name", async ({ session, headers, want }) => {
-    const request = {
-      ...event("/privacy"),
-      cookies: { get: (name: string) => (session && name === sessionCookies.refreshToken ? "refresh" : undefined) },
-    } as RequestEvent;
+  ])("sends $want for $name", async ({ headers, want }) => {
     const response = await handle({
-      event: request,
+      event: event("/privacy"),
       resolve: vi.fn().mockResolvedValue(new Response("page", { headers })),
     });
     expect(response.headers.get("cache-control")).toBe(want);
