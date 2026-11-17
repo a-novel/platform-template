@@ -65,6 +65,12 @@ describe("request hook", () => {
       headers: { "cache-control": "private, max-age=31536000, immutable", "set-cookie": "token=fresh" },
       want: "private, no-store",
     },
+    {
+      name: "a sign-in that sets its pending cookie",
+      session: false,
+      headers: { "set-cookie": "pending=1" },
+      want: "private, no-store",
+    },
     { name: "a page without a session", session: false, headers: {}, want: null },
   ])("sends $want for $name", async ({ session, headers, want }) => {
     const request = {

@@ -4,14 +4,14 @@ import { downtimeError, refuseDuringDowntime } from "../downtime";
 import { type AuthenticationEvent, getAuthenticationContext } from "./context";
 import { type AuthenticatedSession, AuthenticationDowntimeError } from "./session";
 
-import { type RequestEvent, error, redirect } from "@sveltejs/kit";
+import { error, redirect } from "@sveltejs/kit";
 
 /**
  * Verifies each protected load or mutation independently. SDK clients and tokens remain server-only.
  * Optional rules restrict a verified account. An authentication outage never becomes anonymous access.
  */
 export async function requireAuthorization(
-  event: AuthenticationEvent & Pick<RequestEvent, "request">,
+  event: AuthenticationEvent,
   when: (session: AuthenticatedSession) => boolean = () => true
 ) {
   await refuseDuringDowntime();

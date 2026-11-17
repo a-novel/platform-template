@@ -68,10 +68,6 @@
     if (event.target instanceof Element && event.target.closest("a")) controller.navigationDialog.close();
   }
 
-  function submitLogout(event: SubmitEvent) {
-    if (!controller.logout()) event.preventDefault();
-  }
-
   /** Tells whether a click asks for another tab or window, which the browser opens from the link itself. */
   function opensElsewhere(event: MouseEvent): boolean {
     return event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey;
@@ -187,7 +183,7 @@
         </Button>
         <Separator decorative />
       {/if}
-      <form class="logout-form" method="POST" action={logoutAction} onsubmit={submitLogout}>
+      <form class="logout-form" method="POST" action={logoutAction}>
         {@render accountButton(compact, t("shell.logout"), LogOut, { type: "submit" })}
       </form>
     {:else}

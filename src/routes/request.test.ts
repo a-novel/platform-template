@@ -409,6 +409,8 @@ describe("sign-in through the account platform at the request boundary", () => {
     expect(pending.returnTo).toBe("/privacy?panel=telemetry");
     expect(pending.state).toMatch(/^[\w-]{43}$/);
     expect(pending.verifier).toMatch(/^[\w-]{43}$/);
+    // Its `__Host-` prefix keeps a sibling host from planting a sign-in.
+    expect(pendingCookie).toBe("__Host-template_sign_in");
     expect(options).toEqual({ httpOnly: true, path: "/", sameSite: "lax", secure: true, maxAge: 600 });
     expect(fetchService).not.toHaveBeenCalled();
 
