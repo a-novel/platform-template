@@ -66,6 +66,10 @@
     await expect(canvas.getByRole("main")).toBeVisible();
     await expect(canvas.getByRole("link", { name: t("shell.home") })).toHaveAttribute("aria-current", "page");
     await expect(canvas.getByRole("img", { name: t("shell.brand") })).toHaveAttribute("width", "96");
+    await expect(canvas.getByRole("button", { name: t("shell.collapseNavigation") })).toHaveAttribute(
+      "aria-expanded",
+      "true"
+    );
 
     const signIn = canvas.getByRole("link", { name: t("shell.signIn") });
     await expect(signIn).toHaveAttribute("href", "#sign-in");
