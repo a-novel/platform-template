@@ -18,6 +18,8 @@
   import {
     Avatar,
     Button,
+    type ButtonLinkProps,
+    type ButtonProps,
     Dialog,
     DowntimeBanner,
     IconButton,
@@ -33,6 +35,7 @@
     House,
     LogIn,
     LogOut,
+    type LucideIcon,
     Menu,
     PanelLeftClose,
     PanelLeftOpen,
@@ -122,23 +125,22 @@
   </nav>
 {/snippet}
 
-<!-- A logged-in visitor changes their answer from their account. -->
-{#snippet privacyLink(compact: boolean, href: string)}
+<!-- An account control: its icon and label, or in the compact rail its icon alone, named by the label. -->
+{#snippet accountButton(compact: boolean, label: string, Icon: LucideIcon, attributes: ButtonProps | ButtonLinkProps)}
   <Button
     class="shell-account-button {compact ? 'compact-control' : ''}"
     variant="ghost"
     tone="neutral"
     size="sm"
     square={compact}
-    aria-label={compact ? t("shell.privacy") : undefined}
-    aria-current={model.activeNavigation === "privacy" ? "page" : undefined}
-    title={compact ? t("shell.privacy") : undefined}
-    {href}
+    aria-label={compact ? label : undefined}
+    title={compact ? label : undefined}
+    {...attributes}
   >
     <span class="account-action-icon" aria-hidden="true">
-      <ShieldCheck size="var(--icon-size-sm)" />
+      <Icon size="var(--icon-size-sm)" />
     </span>
-    {#if !compact}<span>{t("shell.privacy")}</span>{/if}
+    {#if !compact}<span>{label}</span>{/if}
   </Button>
 {/snippet}
 
@@ -186,59 +188,25 @@
         <Separator decorative />
       {/if}
       <form class="logout-form" method="POST" action={logoutAction} onsubmit={submitLogout}>
-        <Button
-          class="shell-account-button {compact ? 'compact-control' : ''}"
-          type="submit"
-          variant="ghost"
-          tone="neutral"
-          size="sm"
-          square={compact}
-          aria-label={compact ? t("shell.logout") : undefined}
-          title={compact ? t("shell.logout") : undefined}
-        >
-          <span class="account-action-icon" aria-hidden="true">
-            <LogOut size="var(--icon-size-sm)" />
-          </span>
-          {#if !compact}<span>{t("shell.logout")}</span>{/if}
-        </Button>
+        {@render accountButton(compact, t("shell.logout"), LogOut, { type: "submit" })}
       </form>
     {:else}
       <div class="link-group">
         <!-- The sign-in route redirects to the account platform, which the client router cannot render. -->
-        <Button
-          class="shell-account-button {compact ? 'compact-control' : ''}"
-          variant="ghost"
-          tone="neutral"
-          size="sm"
-          square={compact}
-          aria-label={compact ? t("shell.signIn") : undefined}
-          title={compact ? t("shell.signIn") : undefined}
-          href={controller.signInHref()}
-          data-sveltekit-reload
-        >
-          <span class="account-action-icon" aria-hidden="true">
-            <LogIn size="var(--icon-size-sm)" />
-          </span>
-          {#if !compact}<span>{t("shell.signIn")}</span>{/if}
-        </Button>
+        {@render accountButton(compact, t("shell.signIn"), LogIn, {
+          href: controller.signInHref(),
+          "data-sveltekit-reload": true,
+        })}
         {#if invitationHref}
-          <Button
-            class="shell-account-button {compact ? 'compact-control' : ''}"
-            variant="ghost"
-            tone="neutral"
-            size="sm"
-            square={compact}
-            aria-label={compact ? t("shell.register") : undefined}
-            title={compact ? t("shell.register") : undefined}
-            href={invitationHref}
-          >
-            <span class="account-action-icon" aria-hidden="true">
-              <UserRoundPlus size="var(--icon-size-sm)" />
-            </span>
-            {#if !compact}<span>{t("shell.register")}</span>{/if}
-          </Button>
+          {@render accountButton(compact, t("shell.register"), UserRoundPlus, { href: invitationHref })}
         {/if}
-        {#if privacyHref}{@render privacyLink(compact, privacyHref)}{/if}
+        <!-- A logged-in visitor changes their telemetry answer from their account. -->
+        {#if privacyHref}
+          {@render accountButton(compact, t("shell.privacy"), ShieldCheck, {
+            href: privacyHref,
+            "aria-current": model.activeNavigation === "privacy" ? "page" : undefined,
+          })}
+        {/if}
       </div>
     {/if}
   </div>
@@ -509,7 +477,7 @@
   }
 
   /* A column, so the sticky header and banner can stay in view across the whole content. A page sticks its own
-     parts under them at --shell-sticky-top. */
+     parts under them at --shell-sticky-top, and its bottom bars above a bottom banner at --shell-sticky-bottom. */
   .workspace {
     --shell-header-block-size: calc(var(--control-height-sm) + var(--space-2));
     --shell-sticky-top: var(--shell-banner-block-size);
@@ -540,7 +508,7 @@
     min-inline-size: 0;
   }
 
-  @container app-shell (max-width: 47.999rem) {
+  @container app-shell (width < 48rem) {
     .shell {
       grid-template-columns: minmax(0, 1fr);
     }
@@ -551,6 +519,7 @@
 
     .workspace {
       --shell-sticky-top: var(--shell-header-block-size);
+      --shell-sticky-bottom: var(--shell-banner-block-size);
 
       padding-block-start: var(--shell-header-block-size);
     }

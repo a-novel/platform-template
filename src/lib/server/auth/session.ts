@@ -16,14 +16,19 @@ import {
 
 import type { Cookies } from "@sveltejs/kit";
 
-// The `__Host-` prefix makes the browser refuse these cookies unless they come Secure, host-only and
-// on `/` (RFC 6265bis §4.1.3.2), so a sibling host cannot plant a session.
-const accessTokenCookie = "__Host-template_access_token";
-const refreshTokenCookie = "__Host-template_refresh_token";
-const identityHandleCookie = "__Host-template_identity_handle";
-// Present while Authentication's last check of the session is recent: the browser drops it once
-// `sessionCheckSeconds` pass, and the next request asks Authentication again.
-const sessionCheckedCookie = "__Host-template_session_checked";
+/**
+ * The session's cookies, named after the platform: renaming one signs everyone out. The `__Host-` prefix
+ * makes the browser refuse them unless they come Secure, host-only and on `/` (RFC 6265bis §4.1.3.2), so
+ * a sibling host cannot plant a session.
+ */
+export const sessionCookies = {
+  accessToken: "__Host-template_access_token",
+  refreshToken: "__Host-template_refresh_token",
+  identityHandle: "__Host-template_identity_handle",
+  // Present while Authentication's last check of the session is recent: the browser drops it once
+  // `sessionCheckSeconds` pass, and the next request asks Authentication again.
+  sessionChecked: "__Host-template_session_checked",
+} as const;
 const rejectedSessionStatuses = [401, 403] as const;
 
 /**
@@ -101,15 +106,15 @@ export class AuthenticationSession {
   }
 
   private async resolve(): Promise<ResolvedSession> {
-    const accessToken = this.cookies.get(accessTokenCookie);
-    const refreshToken = this.cookies.get(refreshTokenCookie);
+    const accessToken = this.cookies.get(sessionCookies.accessToken);
+    const refreshToken = this.cookies.get(sessionCookies.refreshToken);
 
     if (!accessToken) {
-      if (refreshToken || this.cookies.get(identityHandleCookie)) this.clear();
+      if (refreshToken || this.cookies.get(sessionCookies.identityHandle)) this.clear();
       return { status: "none" };
     }
 
-    const verified = this.cookies.get(sessionCheckedCookie) ? await this.verify(accessToken) : null;
+    const verified = this.cookies.get(sessionCookies.sessionChecked) ? await this.verify(accessToken) : null;
     if (verified) {
       return {
         status: "available",
@@ -206,14 +211,14 @@ export class AuthenticationSession {
   private accept(accessToken: string, refreshToken?: string): void {
     this.check = undefined;
 
-    this.cookies.set(accessTokenCookie, accessToken, this.cookieOptions());
-    if (refreshToken) this.cookies.set(refreshTokenCookie, refreshToken, this.cookieOptions());
+    this.cookies.set(sessionCookies.accessToken, accessToken, this.cookieOptions());
+    if (refreshToken) this.cookies.set(sessionCookies.refreshToken, refreshToken, this.cookieOptions());
     this.markChecked();
   }
 
   /** Remembers that Authentication has just checked the session. The request keeps its session check. */
   private markChecked(): void {
-    this.cookies.set(sessionCheckedCookie, "1", { ...this.cookieOptions(), maxAge: sessionCheckSeconds });
+    this.cookies.set(sessionCookies.sessionChecked, "1", { ...this.cookieOptions(), maxAge: sessionCheckSeconds });
   }
 
   /** Verifies an access token offline, or returns null when it cannot vouch for it. */
@@ -233,25 +238,25 @@ export class AuthenticationSession {
     const handle = separator > 0 ? email.slice(0, separator) : "";
 
     if (handle.length === 0 || handle.length > 64) {
-      this.cookies.delete(identityHandleCookie, { path: "/" });
+      this.cookies.delete(sessionCookies.identityHandle, { path: "/" });
       return;
     }
 
-    this.cookies.set(identityHandleCookie, handle, this.cookieOptions());
+    this.cookies.set(sessionCookies.identityHandle, handle, this.cookieOptions());
   }
 
   /** Removes every session cookie, which signs the visitor out locally. */
   private clear(): void {
     this.check = undefined;
 
-    this.cookies.delete(accessTokenCookie, { path: "/" });
-    this.cookies.delete(refreshTokenCookie, { path: "/" });
-    this.cookies.delete(identityHandleCookie, { path: "/" });
-    this.cookies.delete(sessionCheckedCookie, { path: "/" });
+    this.cookies.delete(sessionCookies.accessToken, { path: "/" });
+    this.cookies.delete(sessionCookies.refreshToken, { path: "/" });
+    this.cookies.delete(sessionCookies.identityHandle, { path: "/" });
+    this.cookies.delete(sessionCookies.sessionChecked, { path: "/" });
   }
 
   private readIdentityHandle(): string | undefined {
-    const handle = this.cookies.get(identityHandleCookie);
+    const handle = this.cookies.get(sessionCookies.identityHandle);
     return handle && handle.length <= 64 && !handle.includes("@") ? handle : undefined;
   }
 
@@ -277,12 +282,14 @@ function isSessionRejection(error: unknown): boolean {
 
 /** Tells whether a request carries a session, which makes its response the visitor's alone. */
 export function hasSession(cookies: SessionCookies): boolean {
-  return cookies.get(accessTokenCookie) !== undefined || cookies.get(refreshTokenCookie) !== undefined;
+  return (
+    cookies.get(sessionCookies.accessToken) !== undefined || cookies.get(sessionCookies.refreshToken) !== undefined
+  );
 }
 
 /** Tells whether a request carries an account's session. An anonymous session holds no refresh token. */
 export function hasAccountSession(cookies: SessionCookies): boolean {
-  return cookies.get(refreshTokenCookie) !== undefined;
+  return cookies.get(sessionCookies.refreshToken) !== undefined;
 }
 
 /**

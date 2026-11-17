@@ -3,7 +3,7 @@
   import { getPlatformDowntime } from "#lib/ui/downtime.svelte.js";
   import { hasTelemetryPreference } from "#lib/ui/telemetry-preference.js";
   import { PUBLIC_PLATFORM_DOMAIN } from "$app/env/public";
-  import { afterNavigate, goto, invalidate } from "$app/navigation";
+  import { goto, invalidate } from "$app/navigation";
   import { resolve } from "$app/paths";
   import { page } from "$app/state";
 
@@ -11,8 +11,6 @@
   import { shellSessionData } from "./dependencies";
   import { withNavigationOpen } from "./navigation-state";
   import Screen from "./screen.svelte";
-
-  import { onMount } from "svelte";
 
   import { saveNavigationRail } from "@a-novel-kit/nodelib-browser/preferences";
   import { AuthorizationProvider } from "@a-novel-kit/uikit";
@@ -23,7 +21,8 @@
     getStatus: () => page.data.authorization ?? data.authorization,
   });
 
-  let currentHref = $state(page.url.href);
+  // A shallow navigation, the shell's or a page's, changes the address bar but not `page.url`.
+  const address = $derived(new URL((page.shallow?.url ?? page.url).href));
   const controller = createShellController({
     getData: () => data,
     homeHref: resolve(""),
@@ -31,8 +30,10 @@
     privacyHref: hasTelemetryPreference() ? resolve("privacy") : null,
     logoutAction: resolve("auth/logout"),
     platformDowntime: getPlatformDowntime(),
-    getUrl: () => new URL(currentHref),
-    onDrawerChange: (open) => showShallow(withNavigationOpen(new URL(window.location.href), open)),
+    getUrl: () => address,
+    onDrawerChange: (open) =>
+      // eslint-disable-next-line svelte/no-navigation-without-resolve -- Shallow routing edits the current, resolved URL.
+      goto(withNavigationOpen(address, open), { shallow: true, replace: true, state: page.state }),
     // Every Agora app under the shared domain opens with the rail the visitor left.
     onRailChange: (rail) => saveNavigationRail(rail, { domain: PUBLIC_PLATFORM_DOMAIN }),
   });
@@ -41,31 +42,6 @@
     () => data.session.status === "loading",
     () => invalidate(shellSessionData)
   );
-
-  afterNavigate(async ({ complete, shallow }) => {
-    if (shallow) return;
-
-    // History updates require the router to finish initial hydration.
-    await complete;
-    synchronizeUrl();
-  });
-
-  onMount(() => {
-    window.addEventListener("popstate", synchronizeUrl);
-
-    return () => window.removeEventListener("popstate", synchronizeUrl);
-  });
-
-  /** Shows a URL change without loading the page, and makes it the shell's current URL. */
-  function showShallow(next: URL) {
-    // eslint-disable-next-line svelte/no-navigation-without-resolve -- Shallow routing edits the current, resolved URL.
-    goto(next, { shallow: true, replace: true, state: page.state });
-    currentHref = next.href;
-  }
-
-  function synchronizeUrl() {
-    currentHref = window.location.href;
-  }
 </script>
 
 <AuthorizationProvider controller={authorization}>

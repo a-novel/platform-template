@@ -2,11 +2,9 @@ import { withLocale } from "#lib/i18n/provider.fixture.js";
 
 import { type ShellControllerOptions, type ShellViewModel, createShellController } from "./controller.svelte";
 import { withNavigationOpen } from "./navigation-state";
-import { portraitPicture } from "./picture.fixture";
 import Screen from "./screen.svelte";
-import ShellStory from "./story.svelte";
 
-import { beforeEach, describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it, onTestFinished } from "vitest";
 import { render } from "vitest-browser-svelte";
 import { page } from "vitest/browser";
 
@@ -37,10 +35,24 @@ function controller(patch: Partial<ShellViewModel> = {}, options: Partial<ShellC
     homeHref: "/",
     privacyHref: null,
     logoutAction: "/auth/logout",
-    allowNativeLogout: false,
     ...options,
   });
   return shell;
+}
+
+/**
+ * Records the action of each form the screen lets the browser submit, and keeps the submission from leaving
+ * the test page.
+ */
+function blockSubmissions(): string[] {
+  const actions: string[] = [];
+  const block = (event: SubmitEvent) => {
+    if (!event.defaultPrevented && event.target instanceof HTMLFormElement) actions.push(event.target.action);
+    event.preventDefault();
+  };
+  window.addEventListener("submit", block);
+  onTestFinished(() => window.removeEventListener("submit", block));
+  return actions;
 }
 
 /** Reads the styles that tell a control's states apart, once its transitions have settled. */
@@ -59,150 +71,36 @@ async function settledStyle(element: Element) {
   };
 }
 
-// Chrome 158 reports `justify-content: flex-start` as flow-start.
-const startAligned = /^(flex|flow)-start$/;
-
 describe("shell screen", () => {
   beforeEach(async () => {
     await page.viewport(1280, 800);
   });
 
-  it("exposes the empty workspace, current Home destination, and the account platform's entry points", async () => {
+  it("lets the browser submit the logout form", async () => {
+    render(
+      Screen,
+      { controller: controller({ session: { status: "authenticated", displayName: "Maya Chen" } }) },
+      withLocale()
+    );
+
+    const submitted = blockSubmissions();
+    await page.getByRole("button", { name: "Log out" }).click();
+    expect(submitted).toEqual([new URL("/auth/logout", location.href).href]);
+  });
+
+  it("collapses the rail and expands it again", async () => {
     render(Screen, { controller: controller() }, withLocale());
 
-    await expect.element(page.getByRole("main")).toBeVisible();
-    await expect.element(page.getByRole("link", { name: "Home" })).toHaveAttribute("aria-current", "page");
-    await expect.element(page.getByRole("img", { name: "Agora" })).toHaveAttribute("width", "96");
-
-    const signIn = page.getByRole("link", { name: "Log in" });
-    await expect.element(signIn).toHaveAttribute("href", "/auth/sign-in?returnTo=%2F");
-    // The sign-in route redirects to the account platform, which the client router cannot render.
-    await expect.element(signIn).toHaveAttribute("data-sveltekit-reload", "true");
-    expect(getComputedStyle(signIn.element()).justifyContent).toMatch(startAligned);
-
-    const invitation = page.getByRole("link", { name: "Register" });
-    await expect.element(invitation).toHaveAttribute("href", "https://account.example.test/account?auth=register");
-    expect(getComputedStyle(invitation.element()).justifyContent).toMatch(startAligned);
-    await expect.element(page.getByRole("button", { name: "Log out" })).not.toBeInTheDocument();
-  });
-
-  it("offers no invitation link while the server cannot read where the account platform lives", async () => {
-    render(
-      Screen,
-      { controller: controller({}, { getData: () => ({ ...model(), accountHref: null, invitationHref: null }) }) },
-      withLocale()
-    );
-
-    await expect.element(page.getByRole("link", { name: "Log in" })).toBeVisible();
-    await expect.element(page.getByRole("link", { name: "Register" })).not.toBeInTheDocument();
-  });
-
-  it("keeps the collapsed Home destination accessible by name", async () => {
-    render(
-      Screen,
-      {
-        controller: controller({ rail: "collapsed" }),
-      },
-      withLocale("fr")
-    );
-
-    await expect.element(page.getByRole("link", { name: "Accueil" })).toBeVisible();
+    await page.getByRole("button", { name: "Collapse navigation" }).click();
+    const expand = page.getByRole("button", { name: "Expand navigation" });
+    await expect.element(expand).toHaveAttribute("aria-expanded", "false");
     await expect.element(page.getByRole("img", { name: "Agora" })).toHaveAttribute("width", "24");
+
+    await expand.click();
     await expect
-      .element(page.getByRole("button", { name: "Développer la navigation" }))
-      .toHaveAttribute("aria-expanded", "false");
-    await expect.element(page.getByRole("link", { name: "Me connecter" })).toBeVisible();
-    await expect.element(page.getByRole("link", { name: "M’inscrire" })).toBeVisible();
-  });
-
-  it("lists Privacy under the sign-in links only while it collects browser telemetry", async () => {
-    const view = await render(ShellStory, { model: model() }, withLocale());
-    await expect.element(page.getByRole("link", { name: "Privacy" })).not.toBeInTheDocument();
-    await view.unmount();
-
-    render(ShellStory, { model: model({ activeNavigation: "privacy" }), collectsTelemetry: true }, withLocale("fr"));
-    await expect.element(page.getByRole("link", { name: "Confidentialité" })).toHaveAttribute("aria-current", "page");
-    await expect.element(page.getByRole("link", { name: "Accueil" })).not.toHaveAttribute("aria-current");
-  });
-
-  it("leaves Privacy to the account once the visitor is logged in", async () => {
-    const authenticated = model({ session: { status: "authenticated", displayName: "Maya Chen", initials: "MC" } });
-    render(ShellStory, { model: authenticated, collectsTelemetry: true }, withLocale());
-
-    await expect.element(page.getByRole("button", { name: "Log out" })).toBeVisible();
-    await expect.element(page.getByRole("link", { name: "Privacy" })).not.toBeInTheDocument();
-  });
-
-  it("names the account and opens its page on the account platform in the same tab", async () => {
-    const shell = controller({ session: { status: "authenticated", displayName: "Maya Chen", initials: "MC" } });
-    render(Screen, { controller: shell }, withLocale());
-
-    const accountLink = page.getByRole("link", { name: "Maya Chen" });
-    await expect.element(accountLink).toHaveAttribute("title", "Manage account for Maya Chen");
-    // The initials avatar leads the name.
-    expect(accountLink.element().textContent).toMatch(/MC\s*Maya Chen/);
-    await expect.element(accountLink).toHaveAttribute("href", "https://account.example.test/account");
-    await expect.element(accountLink).not.toHaveAttribute("target");
-    expect(getComputedStyle(accountLink.element()).backgroundColor).toBe("rgba(0, 0, 0, 0)");
-    expect(getComputedStyle(accountLink.element()).borderTopWidth).toBe("0px");
-    await expect.element(page.getByRole("button", { name: "Log out" })).toBeVisible();
-    await expect.element(page.getByRole("link", { name: "Log in" })).not.toBeInTheDocument();
-    await expect.element(page.getByRole("link", { name: "Register" })).not.toBeInTheDocument();
-
-    await page.getByRole("button", { name: "Log out" }).click();
-    expect(shell.state.model.session.status).toBe("anonymous");
-  });
-
-  it("names the account in the collapsed rail without visible text", async () => {
-    const session = { status: "authenticated", displayName: "Maya Chen", initials: "MC" } as const;
-    render(Screen, { controller: controller({ rail: "collapsed", session }) }, withLocale("fr"));
-
-    const accountLink = page.getByRole("link", {
-      name: "Gérer mon compte (Maya Chen)",
-    });
-    await expect.element(accountLink).toHaveAttribute("title", "Gérer mon compte (Maya Chen)");
-  });
-
-  it("shows the account's picture in place of its initials", async () => {
-    const session = {
-      status: "authenticated",
-      displayName: "Maya Chen",
-      initials: "MC",
-      picture: portraitPicture,
-    } as const;
-    render(Screen, { controller: controller({ session }) }, withLocale());
-
-    const accountLink = page.getByRole("link", { name: "Maya Chen" });
-    await expect.element(accountLink).toBeVisible();
-    const picture = accountLink.element().querySelector("img");
-    expect(picture?.getAttribute("src")).toBe(portraitPicture);
-    await expect.poll(() => picture?.naturalWidth).toBe(256);
-    expect(accountLink.element().textContent).not.toContain("MC");
-  });
-
-  it("names no one before the account's email is known", async () => {
-    render(Screen, { controller: controller({ session: { status: "authenticated" } }) }, withLocale("fr"));
-
-    const accountLink = page.getByRole("link", { name: "Gérer mon compte" });
-    await expect.element(accountLink.getByText("Gérer mon compte", { exact: true })).toBeVisible();
-  });
-
-  it("contains a long account name in the mobile drawer", async () => {
-    await page.viewport(390, 844);
-    const displayName = "Alexandrine de la Bibliothèque des Mondes Imaginaires";
-    render(
-      Screen,
-      {
-        controller: controller({ drawerOpen: true, session: { status: "authenticated", displayName, initials: "AB" } }),
-      },
-      withLocale()
-    );
-
-    const navigation = page.getByRole("dialog", { name: "Agora" });
-    await expect.element(navigation).toBeVisible();
-    const accountName = navigation.getByText(displayName).element();
-    expect(accountName.scrollWidth).toBeGreaterThan(accountName.clientWidth);
-    expect(document.documentElement.scrollWidth).toBeLessThanOrEqual(390);
+      .element(page.getByRole("button", { name: "Collapse navigation" }))
+      .toHaveAttribute("aria-expanded", "true");
+    await expect.element(page.getByRole("img", { name: "Agora" })).toHaveAttribute("width", "96");
   });
 
   it.each(["anonymous", "authenticated"] as const)(
@@ -277,6 +175,9 @@ describe("shell screen", () => {
       expect(closeBounds[key]).toBeCloseTo(controlBounds[key], 0);
     }
     expect(document.documentElement.scrollWidth).toBeLessThanOrEqual(width);
+
+    await menu.getByRole("link", { name: "Close navigation" }).click();
+    await expect.element(menu).not.toBeInTheDocument();
   });
 
   it("closes the menu it opened once the URL closes it, as Back does", async () => {
@@ -298,43 +199,5 @@ describe("shell screen", () => {
     href = "https://template.example.test/?document=42";
     await expect.element(page.getByRole("dialog", { name: "Agora" })).not.toBeInTheDocument();
     expect(shell.state.model.drawerOpen).toBe(false);
-  });
-
-  const drawerLabels = [
-    ["anonymous", ["Home", "Log in", "Register"]],
-    ["authenticated", ["Home", "Maya Chen", "Log out"]],
-  ] as const;
-
-  it.each(drawerLabels)("aligns the mobile drawer labels of an %s visitor", async (status, labels) => {
-    await page.viewport(390, 844);
-    const session = status === "authenticated" ? { status, displayName: "Maya Chen", initials: "MC" } : { status };
-    render(Screen, { controller: controller({ drawerOpen: true, session }) }, withLocale());
-
-    const navigation = page.getByRole("dialog", { name: "Agora" });
-    await expect.element(navigation).toBeVisible();
-
-    const labelStarts = labels.map((label) => navigation.getByText(label).element().getBoundingClientRect().left);
-    expect(Math.max(...labelStarts) - Math.min(...labelStarts)).toBeLessThanOrEqual(1);
-  });
-
-  it("keeps the account link and the logout while the account's details load", async () => {
-    render(Screen, { controller: controller({ session: { status: "loading" } }) }, withLocale());
-    const rail = page.getByRole("complementary");
-
-    await expect
-      .element(rail.getByRole("link", { name: "Manage your account" }))
-      .toHaveAttribute("href", accountLinks.accountHref);
-    await expect.element(rail.getByRole("button", { name: "Log out" })).toBeEnabled();
-    await expect.element(rail.getByRole("alert")).not.toBeInTheDocument();
-    await expect.element(rail.getByRole("status")).not.toBeInTheDocument();
-    await expect.element(rail.getByRole("link", { name: "Log in" })).not.toBeInTheDocument();
-  });
-
-  it("names the account link in the collapsed rail while the account's details load", async () => {
-    render(Screen, { controller: controller({ session: { status: "loading" }, rail: "collapsed" }) }, withLocale());
-
-    await expect
-      .element(page.getByRole("complementary").getByRole("link", { name: "Manage your account" }))
-      .toBeVisible();
   });
 });

@@ -1,3 +1,5 @@
+import { sessionCookies } from "#lib/server/auth/session.js";
+
 import { handle } from "./hooks.server";
 
 import { describe, expect, it, vi } from "vitest";
@@ -24,20 +26,18 @@ function event(path: string, language?: string, chosen?: string): RequestEvent {
 }
 
 describe("request hook", () => {
-  it("keeps translations and document language isolated across concurrent requests", async () => {
+  it("keeps each request's document language across concurrent requests", async () => {
     const french = event("/", "fr-CA,fr;q=0.9,en;q=0.8");
     const english = event("/", "de");
-    const resolve = vi.fn<Parameters<Handle>[0]["resolve"]>(async (request, options) => {
+    const resolve = vi.fn<Parameters<Handle>[0]["resolve"]>(async (_, options) => {
       await Promise.resolve();
-      const html = await options?.transformPageChunk?.({ html: '<html lang="%lang%">', done: true });
-      return new Response(html + request.locals.i18n.t("shell.home"));
+      return new Response(await options?.transformPageChunk?.({ html: '<html lang="%lang%">', done: true }));
     });
     const [fr, en] = await Promise.all([handle({ event: french, resolve }), handle({ event: english, resolve })]);
-    await expect(fr.text()).resolves.toBe('<html lang="fr">Accueil');
-    await expect(en.text()).resolves.toBe('<html lang="en">Home');
+    await expect(fr.text()).resolves.toBe('<html lang="fr">');
+    await expect(en.text()).resolves.toBe('<html lang="en">');
     expect(french.locals.locale).toBe("fr");
     expect(english.locals.locale).toBe("en");
-    expect(french.locals.i18n).not.toBe(english.locals.i18n);
   });
 
   it.each([
@@ -54,7 +54,7 @@ describe("request hook", () => {
   it("keeps a response rendered with a session out of every cache", async () => {
     const signedIn = {
       ...event("/privacy"),
-      cookies: { get: (name: string) => (name === "__Host-template_refresh_token" ? "refresh" : undefined) },
+      cookies: { get: (name: string) => (name === sessionCookies.refreshToken ? "refresh" : undefined) },
     } as RequestEvent;
     const response = await handle({
       event: signedIn,

@@ -68,8 +68,6 @@ export interface ShellController {
 export interface ShellControllerOptions extends Omit<ShellControllerState, "model" | "accountHref" | "invitationHref"> {
   /** The layout's load data, which each navigation may replace. */
   getData: () => ShellData;
-  /** Allows the browser to submit the logout form after the controller accepts it. */
-  allowNativeLogout?: boolean;
   /** Observes accepted navigation-rail changes. */
   onRailChange?: (rail: ShellViewModel["rail"]) => void;
   /** Current base-resolved route, including query and fragment state. It owns the mobile menu. */
@@ -85,20 +83,17 @@ export function createShellController({
   privacyHref,
   logoutAction,
   platformDowntime,
-  allowNativeLogout = true,
   onRailChange,
-  getUrl = () => new SvelteURL(homeHref, "https://template.invalid"),
+  getUrl = () => new SvelteURL(homeHref, "https://placeholder.invalid"),
   onDrawerChange,
 }: ShellControllerOptions): ShellController {
   // The rail the server read from the visitor's cookie, until they toggle it.
   let rail = $derived(getData().rail);
   // The URL owns the menu: a transition opens or closes it at once, and the next URL, such as Back's, decides again.
   let drawerOpen = $derived(readNavigationOpen(getUrl().searchParams));
-  // A logout the browser does not submit signs the shell out until the next load.
-  let session = $derived(getData().session);
 
   const state = $derived.by((): ShellControllerState => {
-    const { activeNavigation, accountHref, invitationHref } = getData();
+    const { activeNavigation, session, accountHref, invitationHref } = getData();
     return {
       model: { activeNavigation, rail, drawerOpen, session },
       homeHref,
@@ -143,10 +138,6 @@ export function createShellController({
       rail = rail === "expanded" ? "collapsed" : "expanded";
       onRailChange?.(rail);
     },
-    logout() {
-      if (session.status === "anonymous") return false;
-      if (!allowNativeLogout) session = { status: "anonymous" };
-      return allowNativeLogout;
-    },
+    logout: () => state.model.session.status !== "anonymous",
   };
 }

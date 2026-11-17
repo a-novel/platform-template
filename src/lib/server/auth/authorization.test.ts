@@ -14,11 +14,8 @@ vi.mock("./context", () => ({ getAuthenticationContext: vi.fn() }));
 
 const authenticated = vi.spyOn(AuthenticationSession.prototype, "authenticated");
 const cookies = { get: vi.fn(), set: vi.fn(), delete: vi.fn() } as unknown as RequestEvent["cookies"];
-const event = {
-  cookies,
-  getClientAddress: () => "192.0.2.1",
-  url: new URL("https://template.test/account?panel=email"),
-};
+const url = new URL("https://template.test/account?panel=email");
+const event = { cookies, getClientAddress: () => "192.0.2.1", request: new Request(url), url };
 const session = {
   status: "available",
   accessToken: "test-access",
@@ -40,10 +37,15 @@ describe("protected operations", () => {
     expect(authenticated).toHaveBeenCalledTimes(2);
   });
 
-  it("sends anonymous requests to sign in, then back to their page and query", async () => {
+  // A load's GET repeats at the sign-in (307); a form action's POST continues there as a GET (303).
+  it.each([
+    ["GET", 307],
+    ["HEAD", 307],
+    ["POST", 303],
+  ])("sends an anonymous %s to sign in, then back to its page and query", async (method, status) => {
     authenticated.mockResolvedValue(null);
-    await expect(requireAuthorization(event)).rejects.toMatchObject({
-      status: 303,
+    await expect(requireAuthorization({ ...event, request: new Request(url, { method }) })).rejects.toMatchObject({
+      status,
       location: "/auth/sign-in?returnTo=%2Faccount%3Fpanel%3Demail",
     });
   });

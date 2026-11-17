@@ -18,7 +18,6 @@ function platformServer(state: string, port: number) {
       PROFILE_SERVICE_URL: "http://127.0.0.1:14104",
       SERVICE_TOKEN_PATH: serviceTokenPath,
     },
-    screenshotStyle: "./tests/e2e/screenshots.css",
     // The account platform's image serves plain HTTP here, as a load balancer that ends TLS would.
     use: { extraHTTPHeaders: { "X-Forwarded-Proto": "http" } },
   });
