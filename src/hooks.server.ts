@@ -1,9 +1,8 @@
 import { resolveLocale, supportedLocales } from "#lib/i18n/config.js";
 
 import { LANGUAGE_COOKIE, parseLanguage } from "@a-novel-kit/nodelib-browser/preferences";
+import { traceResponse } from "@a-novel-kit/nodelib-server/telemetry";
 
-import { SpanStatusCode } from "@opentelemetry/api";
-import type { RequestEvent } from "@sveltejs/kit";
 import type { Handle } from "@sveltejs/kit/hooks";
 
 /**
@@ -34,13 +33,3 @@ export const handle: Handle = async ({ event, resolve }) => {
   traceResponse(event, response);
   return response;
 };
-
-// Names the request's span after its route, as `GET /(app)/privacy`, and records the response's
-// status, so span metrics split the traffic by page and tell a refusal from a fault. A request that
-// matched no route keeps its method alone, so no path names a span.
-function traceResponse({ request, route, tracing }: RequestEvent, { status }: Response): void {
-  tracing.root.updateName(route.id ? `${request.method} ${route.id}` : request.method);
-  tracing.root.setAttribute("http.response.status_code", status);
-
-  if (status >= 500) tracing.root.setStatus({ code: SpanStatusCode.ERROR });
-}

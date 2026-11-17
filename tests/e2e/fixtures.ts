@@ -1,9 +1,9 @@
-import { accountCaller, callerFetch } from "./service-token";
+import { accountCaller } from "./service-token";
 
 import { randomUUID } from "node:crypto";
 
 import { isHttpStatusError } from "@a-novel-kit/nodelib-browser/http";
-import { createCompose, emailLink as deliveredLink } from "@a-novel-kit/nodelib-test/playwright";
+import { callerFetch, createCompose, emailLink as deliveredLink } from "@a-novel-kit/nodelib-test/playwright";
 import {
   AuthenticationApi,
   Lang,

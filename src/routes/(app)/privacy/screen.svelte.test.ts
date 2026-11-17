@@ -1,5 +1,4 @@
 import { withLocale } from "#lib/i18n/provider.fixture.js";
-import type { TelemetryPreference } from "#lib/ui/telemetry-preference.js";
 
 import PrivacyScreen from "./screen.svelte";
 
@@ -8,6 +7,7 @@ import { render } from "vitest-browser-svelte";
 import { page } from "vitest/browser";
 
 import type { TelemetryChoice } from "@a-novel-kit/nodelib-browser/telemetry";
+import type { TelemetryPreference } from "@a-novel-kit/nodelib-svelte";
 
 function answer(choice: TelemetryChoice | undefined) {
   return { choice, choose: vi.fn<TelemetryPreference["choose"]>() };

@@ -44,7 +44,13 @@ const fetchProfile = vi.fn<typeof fetch>();
 /** The last authentication call as the service receives it, after the platform's fetch wrapper. */
 function sentRequest() {
   const [url, init] = fetchService.mock.lastCall ?? [];
-  return { url, method: init?.method, headers: Object.fromEntries(new Headers(init?.headers)), body: init?.body };
+  // A request without a method is a GET, as fetch sends it.
+  return {
+    url,
+    method: init?.method ?? "GET",
+    headers: Object.fromEntries(new Headers(init?.headers)),
+    body: init?.body,
+  };
 }
 
 const userId = "140f24ee-1531-4a9d-ace8-20b38e1b21bc";
@@ -130,14 +136,16 @@ describe("session at the request boundary", () => {
       authorization: "allowed",
     });
     expect(fetchService).toHaveBeenCalledOnce();
-    expect(sentRequest()).toEqual({
+    // A bodyless call's content type is the client's own; the platform owns who the call is for.
+    const {
+      url,
+      method,
+      headers: { "content-type": _, ...headers },
+    } = sentRequest();
+    expect({ url, method, headers }).toEqual({
       url: "https://authentication.test/v2/session",
       method: "GET",
-      headers: {
-        "content-type": "application/json",
-        authorization: "Bearer private-access",
-        "x-client-ip": "192.0.2.1",
-      },
+      headers: { authorization: "Bearer private-access", "x-client-ip": "192.0.2.1" },
     });
   });
 
@@ -212,8 +220,8 @@ describe("session at the request boundary", () => {
     });
     const [url, init] = fetchProfile.mock.calls[0] ?? [];
     expect(url).toBe("https://profile.test/v1/profile/self");
-    expect(Object.fromEntries(new Headers(init?.headers))).toEqual({
-      "content-type": "application/json",
+    const { "content-type": _, ...headers } = Object.fromEntries(new Headers(init?.headers));
+    expect(headers).toEqual({
       authorization: "Bearer private-access",
       "x-client-ip": "192.0.2.1",
       "x-service-authorization": "profile-service-token",

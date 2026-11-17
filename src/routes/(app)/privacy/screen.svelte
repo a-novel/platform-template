@@ -1,7 +1,6 @@
 <script lang="ts">
-  import type { TelemetryPreference } from "#lib/ui/telemetry-preference.js";
-
   import { getI18nContext } from "@a-novel-kit/nodelib-i18n/svelte";
+  import type { TelemetryPreference } from "@a-novel-kit/nodelib-svelte";
   import { Card, Container, PageHeader, Stack, Switch, type SwitchController } from "@a-novel-kit/uikit";
 
   let {

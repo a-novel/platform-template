@@ -48,6 +48,7 @@
     "@a-novel-kit/nodelib-browser": "2.13.0",
     "@a-novel-kit/nodelib-i18n": "2.13.0",
     "@a-novel-kit/nodelib-server": "2.13.0",
+    "@a-novel-kit/nodelib-svelte": "2.13.0",
     "@a-novel-kit/ui-images": "0.3.0",
     "@a-novel-kit/uikit": "0.23.0",
     "@a-novel-kit/uikit-fonts": "0.23.0",

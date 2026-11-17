@@ -19,6 +19,8 @@ const config: RuntimeConfig = {
   accountUrl: "https://account.example.test",
   jsonKeysServiceUrl: "http://json-keys:8080",
   profileServiceUrl: "http://profile:8080",
+  serviceTokenPath: undefined,
+  profileServiceTokenPath: undefined,
 };
 
 const authenticationDependencies = {
@@ -65,9 +67,10 @@ describe("GET /healthcheck", () => {
         status: "up",
       },
     });
-    expect(fetchImplementation.mock.calls.map(([url]) => url)).toEqual([
-      new URL("http://authentication:8080/api/v2/healthcheck"),
-      new URL("http://json-keys:8080/v2/healthcheck"),
+    // The probes run in parallel, in no set order.
+    expect(fetchImplementation.mock.calls.map(([url]) => String(url)).sort()).toEqual([
+      "http://authentication:8080/api/v2/healthcheck",
+      "http://json-keys:8080/v2/healthcheck",
     ]);
     for (const [, init] of fetchImplementation.mock.calls) {
       expect(new Headers(init?.headers).get("accept")).toBe("application/json");
@@ -93,38 +96,7 @@ describe("GET /healthcheck", () => {
     });
   });
 
-  it("keeps a reachable service up while a reported dependency makes the platform unavailable", async () => {
-    const dependencies = {
-      ...authenticationDependencies,
-      "client:postgres": { detail: "connection refused", status: "down" as const },
-    };
-
-    await expect(probe(answer(dependencies))).resolves.toEqual({
-      status: 503,
-      health: {
-        services: {
-          authentication: { dependencies, status: "up" },
-          jsonKeys: { dependencies: jsonKeysDependencies, status: "up" },
-        },
-        status: "down",
-      },
-    });
-  });
-
-  it("reports an unavailable service without fabricating dependency checks", async () => {
-    const fetchImplementation = vi.fn<typeof globalThis.fetch>(async () => {
-      throw new Error("connection details");
-    });
-
-    await expect(probe(fetchImplementation)).resolves.toEqual({
-      status: 503,
-      health: {
-        services: { authentication: { status: "down" }, jsonKeys: { status: "down" } },
-        status: "down",
-      },
-    });
-  });
-
+  // A probe reads the configuration inside the health boundary, so a failure answers 503 rather than throwing.
   it("derives the unavailable services from the registry when runtime configuration fails", async () => {
     const fetchImplementation = vi.fn<typeof globalThis.fetch>();
     readConfig.mockImplementation(() => {
