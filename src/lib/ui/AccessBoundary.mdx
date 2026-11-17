@@ -34,16 +34,15 @@ export const load: PageServerLoad = async (event) => {
 };
 ```
 
-Anonymous requests go straight to the sign-in, which lands on the account platform's login. The
-sign-in then returns them to a sanitized destination. Denied accounts receive HTTP 403. A failed
-verification receives HTTP 503 and keeps the session.
+A load sends a visitor without an account straight to the sign-in with a 307, and a form action with a
+303: the account platform's login, then back to a sanitized destination, with no page in between.
+Denied accounts receive HTTP 403. A failed verification receives HTTP 503 and keeps the session.
 
 A protected route wraps its UI in `AccessBoundary.svelte`. The wrapper inherits the
 provider. Its `when` prop further restricts access, and its `controller` prop supplies a fixed
 preview state. The load redirects an anonymous visitor before the page renders, so the wrapper shows
-nothing for an anonymous decision. Its `unavailable` snippet renders **public** content only.
-The account page uses it for the failed recap and its logout form, and the logout action does its own
-server work.
+nothing for an anonymous decision. Its `unavailable` snippet renders **public** content only, such as
+a blank form, and each submission still checks access on the server.
 
 ## Conditional content
 

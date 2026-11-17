@@ -10,7 +10,7 @@
 
   import { defineMeta } from "@storybook/addon-svelte-csf";
   import type { StoryContext } from "@storybook/sveltekit";
-  import { expect, userEvent, within } from "storybook/test";
+  import { expect, waitFor, within } from "storybook/test";
 
   const anonymous: ShellViewModel = {
     activeNavigation: "home",
@@ -31,13 +31,10 @@
     ...anonymous,
     session: { status: "authenticated" },
   };
+  const longName = "Alexandrine de la Bibliothèque des Mondes Imaginaires";
   const longAccountName: ShellViewModel = {
     ...anonymous,
-    session: {
-      status: "authenticated",
-      displayName: "Alexandrine de la Bibliothèque des Mondes Imaginaires",
-      initials: "AB",
-    },
+    session: { status: "authenticated", displayName: longName, initials: "AB" },
   };
   const loadingAccount: ShellViewModel = {
     ...anonymous,
@@ -60,31 +57,45 @@
 
   type PlayContext = Pick<StoryContext, "canvasElement" | "globals">;
 
-  function clearFocus() {
-    if (document.activeElement instanceof HTMLElement) document.activeElement.blur();
-  }
+  // Chrome 158 reports `justify-content: flex-start` as flow-start.
+  const startAligned = /^(flex|flow)-start$/;
 
   async function verifyAnonymousAuthentication({ canvasElement, globals }: PlayContext) {
     const canvas = within(canvasElement);
     const t = createStorybookTranslator(globals);
+    await expect(canvas.getByRole("main")).toBeVisible();
     await expect(canvas.getByRole("link", { name: t("shell.home") })).toHaveAttribute("aria-current", "page");
     await expect(canvas.getByRole("img", { name: t("shell.brand") })).toHaveAttribute("width", "96");
 
-    await expect(canvas.getByRole("link", { name: t("shell.signIn") })).toHaveAttribute("href", "#sign-in");
-    await expect(canvas.getByRole("link", { name: t("shell.register") })).toHaveAttribute("href", "#invitation");
+    const signIn = canvas.getByRole("link", { name: t("shell.signIn") });
+    await expect(signIn).toHaveAttribute("href", "#sign-in");
+    // The sign-in route redirects to the account platform, which the client router cannot render.
+    await expect(signIn).toHaveAttribute("data-sveltekit-reload", "true");
+    await expect(getComputedStyle(signIn).justifyContent).toMatch(startAligned);
+    const invitation = canvas.getByRole("link", { name: t("shell.register") });
+    await expect(invitation).toHaveAttribute("href", "#invitation");
+    await expect(getComputedStyle(invitation).justifyContent).toMatch(startAligned);
     await expect(canvas.queryByRole("button", { name: t("shell.logout") })).not.toBeInTheDocument();
+    // Only a platform that collects browser telemetry lists Privacy.
+    await expect(canvas.queryByRole("link", { name: t("shell.privacy") })).not.toBeInTheDocument();
   }
 
-  async function verifyRailToggle({ canvasElement, globals }: PlayContext) {
+  async function verifyWithoutAccountLinks({ canvasElement, globals }: PlayContext) {
+    const canvas = within(canvasElement);
+    const t = createStorybookTranslator(globals);
+    await expect(canvas.getByRole("link", { name: t("shell.signIn") })).toBeVisible();
+    await expect(canvas.queryByRole("link", { name: t("shell.register") })).not.toBeInTheDocument();
+  }
+
+  async function verifyCollapsedRail({ canvasElement, globals }: PlayContext) {
     const canvas = within(canvasElement);
     const t = createStorybookTranslator(globals);
     await expect(canvas.getByRole("img", { name: t("shell.brand") })).toHaveAttribute("width", "24");
     const toggle = canvas.getByRole("button", { name: t("shell.expandNavigation") });
     await expect(toggle).toHaveAttribute("aria-expanded", "false");
-
-    await userEvent.click(toggle);
-    await expect(toggle).toHaveAttribute("aria-expanded", "false");
-    clearFocus();
+    // The compact rail shows icons alone, which keep their names.
+    for (const name of [t("shell.home"), t("shell.signIn"), t("shell.register")])
+      await expect(canvas.getByRole("link", { name })).toBeVisible();
   }
 
   async function verifyExpandedMobileNavigation({ canvasElement, globals }: PlayContext) {
@@ -93,10 +104,6 @@
     const navigation = canvas.getByRole("dialog", { name: t("shell.brand") });
     await expect(navigation).toBeVisible();
     await expect(within(navigation).getByRole("img", { name: t("shell.brand") })).toHaveAttribute("width", "96");
-
-    await userEvent.click(within(navigation).getByRole("link", { name: t("shell.closeNavigation") }));
-    await expect(navigation).toBeVisible();
-    clearFocus();
   }
 
   async function verifyCollapsedMobileNavigation({ canvasElement, globals }: PlayContext) {
@@ -110,40 +117,122 @@
     await expect(openNavigation).toHaveAttribute("aria-expanded", "false");
     await expect(canvas.queryByRole("dialog", { name: t("shell.brand") })).not.toBeInTheDocument();
     await expect(getComputedStyle(mobileHeader).backgroundColor).toBe(getComputedStyle(navigationRail).backgroundColor);
-
-    await userEvent.click(openNavigation);
-    await expect(canvas.queryByRole("dialog", { name: t("shell.brand") })).not.toBeInTheDocument();
-    await expect(openNavigation).toHaveAttribute("aria-expanded", "false");
-    clearFocus();
   }
 
   async function verifyAuthenticatedActions({ canvasElement, globals }: PlayContext) {
     const canvas = within(canvasElement);
     const t = createStorybookTranslator(globals);
     const account = canvas.getByRole("link", { name: "Maya Chen" });
+    await expect(account).toHaveAttribute("title", t("shell.manageAccountFor", { name: "Maya Chen" }));
+    // The initials avatar leads the name.
+    await expect(account.textContent).toMatch(/MC\s*Maya Chen/);
+    // The account platform's page opens in this tab.
     await expect(account).toHaveAttribute("href", "#account");
     await expect(account).not.toHaveAttribute("target");
+    await expect(getComputedStyle(account).backgroundColor).toBe("rgba(0, 0, 0, 0)");
+    await expect(getComputedStyle(account).borderTopWidth).toBe("0px");
     await expect(canvas.getByRole("button", { name: t("shell.logout") })).toBeVisible();
-    await userEvent.click(canvas.getByRole("button", { name: t("shell.logout") }));
-    await expect(account).toBeVisible();
     await expect(canvas.queryByRole("link", { name: t("shell.signIn") })).not.toBeInTheDocument();
     await expect(canvas.queryByRole("link", { name: t("shell.register") })).not.toBeInTheDocument();
-    clearFocus();
+  }
+
+  async function verifyPrivacyDestination({ canvasElement, globals }: PlayContext) {
+    const canvas = within(canvasElement);
+    const t = createStorybookTranslator(globals);
+    await expect(canvas.getByRole("link", { name: t("shell.privacy") })).toHaveAttribute("aria-current", "page");
+    await expect(canvas.getByRole("link", { name: t("shell.home") })).not.toHaveAttribute("aria-current");
+  }
+
+  async function verifyCollapsedAuthenticated({ canvasElement, globals }: PlayContext) {
+    const canvas = within(canvasElement);
+    const t = createStorybookTranslator(globals);
+    const label = t("shell.manageAccountFor", { name: "Maya Chen" });
+    await expect(canvas.getByRole("link", { name: label })).toHaveAttribute("title", label);
+    // A logged-in visitor changes the telemetry answer from their account.
+    await expect(canvas.queryByRole("link", { name: t("shell.privacy") })).not.toBeInTheDocument();
+  }
+
+  /** Checks that the open menu starts every label on one line, as the given ones. */
+  async function verifyDrawerLabels(canvasElement: HTMLElement, globals: PlayContext["globals"], labels: string[]) {
+    const t = createStorybookTranslator(globals);
+    const navigation = within(canvasElement).getByRole("dialog", { name: t("shell.brand") });
+    const labelStarts = labels.map((label) => within(navigation).getByText(label).getBoundingClientRect().left);
+    await expect(Math.max(...labelStarts) - Math.min(...labelStarts)).toBeLessThanOrEqual(1);
+  }
+
+  async function verifyAnonymousMobileLayout({ canvasElement, globals }: PlayContext) {
+    await verifyExpandedMobileNavigation({ canvasElement, globals });
+    const t = createStorybookTranslator(globals);
+    await verifyDrawerLabels(canvasElement, globals, [t("shell.home"), t("shell.signIn"), t("shell.register")]);
   }
 
   async function verifyAuthenticatedMobileLayout({ canvasElement, globals }: PlayContext) {
     await verifyExpandedMobileNavigation({ canvasElement, globals });
-
-    const canvas = within(canvasElement);
     const t = createStorybookTranslator(globals);
-    const navigation = canvas.getByRole("dialog", { name: t("shell.brand") });
-    const labelStarts = [
-      within(navigation).getByText(t("shell.home")).getBoundingClientRect().left,
-      within(navigation).getByText("Maya Chen").getBoundingClientRect().left,
-      within(navigation).getByText(t("shell.logout")).getBoundingClientRect().left,
-    ];
+    await verifyDrawerLabels(canvasElement, globals, [t("shell.home"), "Maya Chen", t("shell.logout")]);
+  }
 
-    await expect(Math.max(...labelStarts) - Math.min(...labelStarts)).toBeLessThanOrEqual(1);
+  async function verifyPicture({ canvasElement }: PlayContext) {
+    const account = within(canvasElement).getByRole("link", { name: "Moonlit Maya 🌊" });
+    const picture = account.querySelector("img");
+    await expect(picture?.getAttribute("src")).toBe(portraitPicture);
+    await waitFor(() => expect(picture?.naturalWidth).toBe(256));
+    // The picture replaces the initials.
+    await expect(account.textContent).not.toContain("MC");
+  }
+
+  async function verifyUnnamedAccount({ canvasElement, globals }: PlayContext) {
+    const t = createStorybookTranslator(globals);
+    const account = within(canvasElement).getByRole("link", { name: t("shell.manageAccount") });
+    await expect(within(account).getByText(t("shell.manageAccount"), { exact: true })).toBeVisible();
+  }
+
+  async function verifyLongAccountNameMobile({ canvasElement, globals }: PlayContext) {
+    await verifyExpandedMobileNavigation({ canvasElement, globals });
+    const t = createStorybookTranslator(globals);
+    const navigation = within(canvasElement).getByRole("dialog", { name: t("shell.brand") });
+    const accountName = within(navigation).getByText(longName);
+    await expect(accountName.scrollWidth).toBeGreaterThan(accountName.clientWidth);
+    await expect(document.documentElement.scrollWidth).toBeLessThanOrEqual(window.innerWidth);
+  }
+
+  async function verifyLoadingAccount({ canvasElement, globals }: PlayContext) {
+    const t = createStorybookTranslator(globals);
+    const rail = within(within(canvasElement).getByRole("complementary"));
+    await expect(rail.getByRole("link", { name: t("shell.manageAccount") })).toHaveAttribute("href", "#account");
+    await expect(rail.getByRole("button", { name: t("shell.logout") })).toBeEnabled();
+    await expect(rail.queryByRole("alert")).not.toBeInTheDocument();
+    await expect(rail.queryByRole("status")).not.toBeInTheDocument();
+    await expect(rail.queryByRole("link", { name: t("shell.signIn") })).not.toBeInTheDocument();
+  }
+
+  /**
+   * Checks that the maintenance banner sits atop the workspace on a wide screen and at its foot on a phone, and
+   * that the shell hands its height to a page's sticky parts on that edge.
+   */
+  function verifyMaintenanceBanner(edge: "top" | "bottom") {
+    return async ({ canvasElement }: PlayContext) => {
+      const canvas = within(canvasElement);
+      const banner = canvas.getByRole("status");
+      const main = canvas.getByRole("main");
+      const bounds = banner.getBoundingClientRect();
+      if (edge === "top") await expect(bounds.bottom).toBeLessThanOrEqual(main.getBoundingClientRect().top + 1);
+      else await expect(bounds.top).toBeGreaterThan(main.getBoundingClientRect().top);
+
+      const workspace = main.parentElement;
+      if (!workspace) throw new Error("The main content must live in the shell workspace");
+      await waitFor(() =>
+        expect(getComputedStyle(workspace).getPropertyValue(`--shell-sticky-${edge}`).trim()).toBe(
+          `${banner.offsetHeight}px`
+        )
+      );
+    };
+  }
+
+  async function verifyCollapsedLoadingAccount({ canvasElement, globals }: PlayContext) {
+    const t = createStorybookTranslator(globals);
+    const rail = within(within(canvasElement).getByRole("complementary"));
+    await expect(rail.getByRole("link", { name: t("shell.manageAccount") })).toBeVisible();
   }
 </script>
 
@@ -162,16 +251,16 @@
   exportName="ExpandedAnonymousMobile"
   globals={reviewStoryGlobals.mobile}
   asChild
-  play={verifyExpandedMobileNavigation}
+  play={verifyAnonymousMobileLayout}
 >
   <StoryHarness model={withOpenMobileNavigation(anonymous)} collectsTelemetry />
 </Story>
 
-<Story name="Without account links" exportName="WithoutAccountLinks" asChild>
+<Story name="Without account links" exportName="WithoutAccountLinks" asChild play={verifyWithoutAccountLinks}>
   <StoryHarness model={anonymous} accountLinks={false} />
 </Story>
 
-<Story name="Collapsed anonymous" asChild play={verifyRailToggle}>
+<Story name="Collapsed anonymous" asChild play={verifyCollapsedRail}>
   <StoryHarness model={{ ...anonymous, rail: "collapsed" }} />
 </Story>
 
@@ -189,7 +278,7 @@
   <StoryHarness model={authenticated} />
 </Story>
 
-<Story name="Privacy destination" asChild>
+<Story name="Privacy destination" asChild play={verifyPrivacyDestination}>
   <StoryHarness model={{ ...anonymous, activeNavigation: "privacy" }} collectsTelemetry />
 </Story>
 
@@ -203,11 +292,11 @@
   <StoryHarness model={withOpenMobileNavigation(authenticated)} />
 </Story>
 
-<Story name="Collapsed authenticated" asChild>
+<Story name="Collapsed authenticated" asChild play={verifyCollapsedAuthenticated}>
   <StoryHarness model={{ ...authenticated, rail: "collapsed" }} collectsTelemetry />
 </Story>
 
-<Story name="Authenticated with a picture" exportName="AuthenticatedWithAPicture" asChild>
+<Story name="Authenticated with a picture" exportName="AuthenticatedWithAPicture" asChild play={verifyPicture}>
   <StoryHarness model={withPicture} />
 </Story>
 
@@ -225,7 +314,7 @@
   <StoryHarness model={withOpenMobileNavigation(withPicture)} />
 </Story>
 
-<Story name="Account without a name" exportName="AccountWithoutAName" asChild>
+<Story name="Account without a name" exportName="AccountWithoutAName" asChild play={verifyUnnamedAccount}>
   <StoryHarness model={unnamedAccount} />
 </Story>
 
@@ -238,16 +327,16 @@
   exportName="LongAccountNameMobile"
   globals={reviewStoryGlobals.mobile}
   asChild
-  play={verifyExpandedMobileNavigation}
+  play={verifyLongAccountNameMobile}
 >
   <StoryHarness model={withOpenMobileNavigation(longAccountName)} />
 </Story>
 
-<Story name="Loading account" asChild>
+<Story name="Loading account" asChild play={verifyLoadingAccount}>
   <StoryHarness model={loadingAccount} />
 </Story>
 
-<Story name="Collapsed loading account" asChild>
+<Story name="Collapsed loading account" asChild play={verifyCollapsedLoadingAccount}>
   <StoryHarness model={{ ...loadingAccount, rail: "collapsed" }} />
 </Story>
 
@@ -261,11 +350,17 @@
   <StoryHarness model={withOpenMobileNavigation(loadingAccount)} />
 </Story>
 
-<Story name="Maintenance" asChild>
+<Story name="Maintenance" asChild play={verifyMaintenanceBanner("top")}>
   <StoryHarness model={anonymous} {downtime}><ScrollPreview /></StoryHarness>
 </Story>
 
-<Story name="Maintenance — mobile" exportName="MaintenanceMobile" globals={reviewStoryGlobals.mobile} asChild>
+<Story
+  name="Maintenance — mobile"
+  exportName="MaintenanceMobile"
+  globals={reviewStoryGlobals.mobile}
+  asChild
+  play={verifyMaintenanceBanner("bottom")}
+>
   <StoryHarness model={anonymous} {downtime}><ScrollPreview /></StoryHarness>
 </Story>
 

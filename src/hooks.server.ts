@@ -1,6 +1,4 @@
 import { resolveLocale, supportedLocales } from "#lib/i18n/config.js";
-import { createI18n } from "#lib/i18n/instance.js";
-import { hasSession } from "#lib/server/auth/session.js";
 
 import { LANGUAGE_COOKIE, parseLanguage } from "@a-novel-kit/nodelib-browser/preferences";
 
@@ -9,15 +7,13 @@ import type { RequestEvent } from "@sveltejs/kit";
 import type { Handle } from "@sveltejs/kit/hooks";
 
 /**
- * Gives each request its own locale and translations, in the language the visitor chose or else their
- * browser's, refuses framing, keeps signed-in pages out of
- * caches, and traces the response.
+ * Gives each request its locale, the language the visitor chose or else their browser's, refuses framing,
+ * keeps personal responses out of caches, and traces the response.
  */
 export const handle: Handle = async ({ event, resolve }) => {
   const chosen = parseLanguage(event.cookies.get(LANGUAGE_COOKIE), supportedLocales);
   const locale = resolveLocale(chosen, event.request.headers.get("accept-language"));
 
-  event.locals.i18n = createI18n(locale);
   event.locals.locale = locale;
 
   const response = await resolve(event, {
@@ -28,14 +24,18 @@ export const handle: Handle = async ({ event, resolve }) => {
   // carry `frame-ancestors 'none'` in the CSP that nodelib's SvelteKit preset sends; this header also covers
   // the responses without one.
   response.headers.set("x-frame-options", "DENY");
-  // A response rendered with a session is the visitor's alone, so no cache may keep it (RFC 9111 §5.2.2.5).
-  if (hasSession(event.cookies)) response.headers.set("cache-control", "private, no-store");
+  // A response that sets cookies, or states no cache policy of its own, is the visitor's alone, so no cache
+  // may keep it (RFC 9111 §5.2.2.5). Any other keeps its route's policy, as an image whose address names its
+  // version keeps it for a year.
+  if (response.headers.has("set-cookie") || !response.headers.has("cache-control")) {
+    response.headers.set("cache-control", "private, no-store");
+  }
 
   traceResponse(event, response);
   return response;
 };
 
-// Names the request's span after its route, as `GET /(app)/account`, and records the response's
+// Names the request's span after its route, as `GET /(app)/privacy`, and records the response's
 // status, so span metrics split the traffic by page and tell a refusal from a fault. A request that
 // matched no route keeps its method alone, so no path names a span.
 function traceResponse({ request, route, tracing }: RequestEvent, { status }: Response): void {

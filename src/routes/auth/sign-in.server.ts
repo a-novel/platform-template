@@ -20,7 +20,7 @@ const callbackPath = "/auth/callback";
  * The cookie that keeps a started sign-in until the account platform answers it, for ten minutes. Its
  * `__Host-` prefix pins it to this host on `/`, so a sibling host cannot plant one.
  */
-const pendingCookie = "__Host-template_sign_in";
+export const pendingCookie = "__Host-template_sign_in";
 const pendingLifetimeSeconds = 10 * 60;
 const PendingSignInSchema = z.object({ state: z.string(), verifier: z.string(), returnTo: z.string() });
 

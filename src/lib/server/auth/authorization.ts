@@ -17,9 +17,14 @@ export async function requireAuthorization(
   await refuseDuringDowntime();
 
   const { authentication, session } = await authenticate(event);
-  if (!session) redirect(303, signInHref(event.url.pathname + event.url.search));
+  // A load repeats its GET at the sign-in with a 307; a form action's POST becomes a GET with a 303.
+  if (!session) redirect(isRead(event.request) ? 307 : 303, signInHref(event.url.pathname + event.url.search));
   if (!when(session)) error(403, "Access denied");
   return { authentication, session };
+}
+
+function isRead({ method }: Request): boolean {
+  return method === "GET" || method === "HEAD";
 }
 
 /** Resolves the visitor's session, or fails with the 503 an unreachable authentication service warrants. */

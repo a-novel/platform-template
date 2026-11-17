@@ -24,20 +24,18 @@ function event(path: string, language?: string, chosen?: string): RequestEvent {
 }
 
 describe("request hook", () => {
-  it("keeps translations and document language isolated across concurrent requests", async () => {
+  it("keeps each request's document language across concurrent requests", async () => {
     const french = event("/", "fr-CA,fr;q=0.9,en;q=0.8");
     const english = event("/", "de");
-    const resolve = vi.fn<Parameters<Handle>[0]["resolve"]>(async (request, options) => {
+    const resolve = vi.fn<Parameters<Handle>[0]["resolve"]>(async (_, options) => {
       await Promise.resolve();
-      const html = await options?.transformPageChunk?.({ html: '<html lang="%lang%">', done: true });
-      return new Response(html + request.locals.i18n.t("shell.home"));
+      return new Response(await options?.transformPageChunk?.({ html: '<html lang="%lang%">', done: true }));
     });
     const [fr, en] = await Promise.all([handle({ event: french, resolve }), handle({ event: english, resolve })]);
-    await expect(fr.text()).resolves.toBe('<html lang="fr">Accueil');
-    await expect(en.text()).resolves.toBe('<html lang="en">Home');
+    await expect(fr.text()).resolves.toBe('<html lang="fr">');
+    await expect(en.text()).resolves.toBe('<html lang="en">');
     expect(french.locals.locale).toBe("fr");
     expect(english.locals.locale).toBe("en");
-    expect(french.locals.i18n).not.toBe(english.locals.i18n);
   });
 
   it.each([
@@ -51,16 +49,24 @@ describe("request hook", () => {
     expect(request.locals.locale).toBe(want);
   });
 
-  it("keeps a response rendered with a session out of every cache", async () => {
-    const signedIn = {
-      ...event("/privacy"),
-      cookies: { get: (name: string) => (name === "__Host-template_refresh_token" ? "refresh" : undefined) },
-    } as RequestEvent;
+  it.each<{ name: string; headers: Record<string, string>; want: string }>([
+    { name: "a page without a policy of its own", headers: {}, want: "private, no-store" },
+    {
+      name: "a route's own policy",
+      headers: { "cache-control": "private, max-age=31536000, immutable" },
+      want: "private, max-age=31536000, immutable",
+    },
+    {
+      name: "a response that sets cookies, as a session refresh or a started sign-in does",
+      headers: { "cache-control": "private, max-age=31536000, immutable", "set-cookie": "pending=1" },
+      want: "private, no-store",
+    },
+  ])("sends $want for $name", async ({ headers, want }) => {
     const response = await handle({
-      event: signedIn,
-      resolve: vi.fn().mockResolvedValue(new Response("page", { headers: { "cache-control": "public, max-age=60" } })),
+      event: event("/privacy"),
+      resolve: vi.fn().mockResolvedValue(new Response("page", { headers })),
     });
-    expect(response.headers.get("cache-control")).toBe("private, no-store");
+    expect(response.headers.get("cache-control")).toBe(want);
   });
 
   it.each([200, 303, 400])("refuses framing of every response with status %s", async (status) => {

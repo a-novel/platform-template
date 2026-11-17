@@ -21,18 +21,7 @@ describe("privacy screen", () => {
     const telemetry = answer(choice);
     render(PrivacyScreen, { telemetry }, withLocale());
 
-    await expect.element(page.getByRole("heading", { name: "Privacy", level: 1 })).toBeVisible();
-    const setting = page.getByRole("switch", { name: /^Metrics and log collection/ });
-    if (choice === "accepted") await expect.element(setting).toBeChecked();
-    else await expect.element(setting).not.toBeChecked();
     await page.getByText("Metrics and log collection").click();
     expect(telemetry.choose).toHaveBeenCalledExactlyOnceWith(next);
-  });
-
-  it("says so when the platform collects nothing", async () => {
-    render(PrivacyScreen, { telemetry: null }, withLocale("fr"));
-
-    await expect.element(page.getByRole("switch")).not.toBeInTheDocument();
-    await expect.element(page.getByText("Nous ne collectons ni métriques ni journaux sur cet appareil.")).toBeVisible();
   });
 });

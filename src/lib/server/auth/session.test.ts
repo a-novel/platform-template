@@ -4,6 +4,7 @@ import {
   type SessionClient,
   type SessionCookies,
   createSessionClient,
+  sessionCookies,
 } from "./session";
 
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
@@ -46,8 +47,6 @@ function createClient(): {
   };
 }
 
-const checkedCookie = "__Host-template_session_checked";
-
 /** A token response of Authentication's token endpoint. A refresh carries no refresh token. */
 function tokenResponse(accessToken: string, refreshToken?: string) {
   return { access_token: accessToken, token_type: "Bearer", expires_in: 3600, refresh_token: refreshToken };
@@ -60,6 +59,16 @@ function oauthError(error: string) {
 const grant = { code: "code", code_verifier: "verifier", redirect_uri: "https://template.test/auth/callback" };
 
 describe("AuthenticationSession", () => {
+  // Renaming a cookie signs everyone out, so the names change only on purpose.
+  it("keeps the platform's cookie names", () => {
+    expect(sessionCookies).toEqual({
+      accessToken: "__Host-template_access_token",
+      refreshToken: "__Host-template_refresh_token",
+      identityHandle: "__Host-template_identity_handle",
+      sessionChecked: "__Host-template_session_checked",
+    });
+  });
+
   let client: ReturnType<typeof createClient>;
   let cookies: MemoryCookies;
 
@@ -76,9 +85,9 @@ describe("AuthenticationSession", () => {
   });
 
   it("returns verified authenticated claims without exposing cookies to the browser", async () => {
-    cookies.values.set("__Host-template_access_token", "access");
-    cookies.values.set("__Host-template_refresh_token", "refresh");
-    cookies.values.set("__Host-template_identity_handle", "maya.chen");
+    cookies.values.set(sessionCookies.accessToken, "access");
+    cookies.values.set(sessionCookies.refreshToken, "refresh");
+    cookies.values.set(sessionCookies.identityHandle, "maya.chen");
     client.claims.mockResolvedValue({
       userID: "140f24ee-1531-4a9d-ace8-20b38e1b21bc",
       roles: [Role.User],
@@ -106,19 +115,19 @@ describe("AuthenticationSession", () => {
     expect(client.exchange).toHaveBeenCalledExactlyOnceWith(grant);
     expect(client.email).toHaveBeenCalledExactlyOnceWith("access");
     expect(Object.fromEntries(cookies.values)).toEqual({
-      "__Host-template_access_token": "access",
-      "__Host-template_refresh_token": "refresh",
-      "__Host-template_identity_handle": "maya.chen",
-      [checkedCookie]: "1",
+      [sessionCookies.accessToken]: "access",
+      [sessionCookies.refreshToken]: "refresh",
+      [sessionCookies.identityHandle]: "maya.chen",
+      [sessionCookies.sessionChecked]: "1",
     });
     for (const { name, options } of cookies.writes) {
-      const lifetime = name === checkedCookie ? { maxAge: 300 } : {};
+      const lifetime = name === sessionCookies.sessionChecked ? { maxAge: 300 } : {};
       expect(options).toEqual({ httpOnly: true, path: "/", sameSite: "lax", secure: true, ...lifetime });
     }
   });
 
   it("signs in without a name, and forgets a former one, when the email cannot be read", async () => {
-    cookies.values.set("__Host-template_identity_handle", "former.visitor");
+    cookies.values.set(sessionCookies.identityHandle, "former.visitor");
     client.exchange.mockResolvedValue(tokenResponse("access", "refresh"));
     client.email.mockRejectedValue(new HttpError(403, "client token"));
     const session = new AuthenticationSession(client, cookies);
@@ -126,14 +135,14 @@ describe("AuthenticationSession", () => {
     await session.signIn(grant);
 
     expect(Object.fromEntries(cookies.values)).toEqual({
-      "__Host-template_access_token": "access",
-      "__Host-template_refresh_token": "refresh",
-      [checkedCookie]: "1",
+      [sessionCookies.accessToken]: "access",
+      [sessionCookies.refreshToken]: "refresh",
+      [sessionCookies.sessionChecked]: "1",
     });
   });
 
   it("keeps the cookies as they were when Authentication refuses the code", async () => {
-    cookies.values.set("__Host-template_access_token", "previous-access");
+    cookies.values.set(sessionCookies.accessToken, "previous-access");
     client.exchange.mockRejectedValue(oauthError("invalid_grant"));
     const session = new AuthenticationSession(client, cookies);
 
@@ -143,7 +152,7 @@ describe("AuthenticationSession", () => {
   });
 
   it("shares one session check between the concurrent loads of a request", async () => {
-    cookies.values.set("__Host-template_access_token", "access");
+    cookies.values.set(sessionCookies.accessToken, "access");
     client.claims.mockResolvedValue({ roles: [Role.User], userID: "test-user" });
     const session = new AuthenticationSession(client, cookies);
 
@@ -155,7 +164,7 @@ describe("AuthenticationSession", () => {
   });
 
   it("checks the session again once its cookies change", async () => {
-    cookies.values.set("__Host-template_access_token", "access");
+    cookies.values.set(sessionCookies.accessToken, "access");
     client.claims.mockResolvedValue({ roles: [Role.User], userID: "test-user" });
     client.exchange.mockResolvedValue(tokenResponse("new-access", "new-refresh"));
     client.email.mockResolvedValue("maya.chen@example.com");
@@ -169,17 +178,17 @@ describe("AuthenticationSession", () => {
   });
 
   it("does not treat anonymous claims as an authenticated identity", async () => {
-    cookies.values.set("__Host-template_access_token", "anonymous-access");
+    cookies.values.set(sessionCookies.accessToken, "anonymous-access");
     client.claims.mockResolvedValue({ roles: [] });
     const session = new AuthenticationSession(client, cookies);
 
     await expect(session.authenticated()).resolves.toBeNull();
-    expect(cookies.values.get("__Host-template_access_token")).toBe("anonymous-access");
+    expect(cookies.values.get(sessionCookies.accessToken)).toBe("anonymous-access");
   });
 
   it("refreshes a rejected access token at the token endpoint and keeps the refresh token", async () => {
-    cookies.values.set("__Host-template_access_token", "expired-access");
-    cookies.values.set("__Host-template_refresh_token", "refresh");
+    cookies.values.set(sessionCookies.accessToken, "expired-access");
+    cookies.values.set(sessionCookies.refreshToken, "refresh");
     client.claims.mockRejectedValueOnce(new HttpError(401, "expired")).mockResolvedValueOnce({
       userID: "140f24ee-1531-4a9d-ace8-20b38e1b21bc",
       roles: [Role.User],
@@ -194,15 +203,15 @@ describe("AuthenticationSession", () => {
     });
     expect(client.refresh).toHaveBeenCalledExactlyOnceWith("refresh");
     expect(Object.fromEntries(cookies.values)).toEqual({
-      "__Host-template_access_token": "fresh-access",
-      "__Host-template_refresh_token": "refresh",
-      [checkedCookie]: "1",
+      [sessionCookies.accessToken]: "fresh-access",
+      [sessionCookies.refreshToken]: "refresh",
+      [sessionCookies.sessionChecked]: "1",
     });
   });
 
   it("reads a refreshed token's claims offline, since the refresh checked the session", async () => {
-    cookies.values.set("__Host-template_access_token", "expired-access");
-    cookies.values.set("__Host-template_refresh_token", "refresh");
+    cookies.values.set(sessionCookies.accessToken, "expired-access");
+    cookies.values.set(sessionCookies.refreshToken, "refresh");
     client.claims.mockRejectedValue(new HttpError(401, "expired"));
     client.refresh.mockResolvedValue(tokenResponse("fresh-access"));
     client.verify.mockResolvedValue({ roles: [Role.User], userID: "test-user" });
@@ -214,8 +223,8 @@ describe("AuthenticationSession", () => {
   });
 
   it("signs the visitor out once the session ended or was signed out on another platform", async () => {
-    cookies.values.set("__Host-template_access_token", "expired-access");
-    cookies.values.set("__Host-template_refresh_token", "revoked-refresh");
+    cookies.values.set(sessionCookies.accessToken, "expired-access");
+    cookies.values.set(sessionCookies.refreshToken, "revoked-refresh");
     client.claims.mockRejectedValue(new HttpError(401, "signed out"));
     client.refresh.mockRejectedValue(oauthError("invalid_grant"));
     const session = new AuthenticationSession(client, cookies);
@@ -227,8 +236,8 @@ describe("AuthenticationSession", () => {
   it.each(["invalid_client", "invalid_request", "unsupported_grant_type"])(
     "keeps the cookies when the token endpoint refuses the platform with %s",
     async (error) => {
-      cookies.values.set("__Host-template_access_token", "expired-access");
-      cookies.values.set("__Host-template_refresh_token", "refresh");
+      cookies.values.set(sessionCookies.accessToken, "expired-access");
+      cookies.values.set(sessionCookies.refreshToken, "refresh");
       client.claims.mockRejectedValue(new HttpError(401, "expired"));
       client.refresh.mockRejectedValue(oauthError(error));
       const session = new AuthenticationSession(client, cookies);
@@ -238,7 +247,7 @@ describe("AuthenticationSession", () => {
     }
   );
 
-  it.each(["__Host-template_refresh_token", "__Host-template_identity_handle"])(
+  it.each([sessionCookies.refreshToken, sessionCookies.identityHandle])(
     "clears a stale %s when the access token is missing",
     async (name) => {
       cookies.values.set(name, "stale-cookie");
@@ -252,8 +261,8 @@ describe("AuthenticationSession", () => {
   );
 
   it.each(["maya.chen@example.com", "a".repeat(65)])("shows no name for the malformed handle %s", async (handle) => {
-    cookies.values.set("__Host-template_access_token", "access");
-    cookies.values.set("__Host-template_identity_handle", handle);
+    cookies.values.set(sessionCookies.accessToken, "access");
+    cookies.values.set(sessionCookies.identityHandle, handle);
     client.claims.mockResolvedValue({ roles: [Role.User], userID: "test-user" });
     const session = new AuthenticationSession(client, cookies);
 
@@ -261,7 +270,7 @@ describe("AuthenticationSession", () => {
   });
 
   it.each([401, 403])("clears an access token rejected with %s when it cannot be refreshed", async (status) => {
-    cookies.values.set("__Host-template_access_token", "expired-access");
+    cookies.values.set(sessionCookies.accessToken, "expired-access");
     client.claims.mockRejectedValue(new HttpError(status, "expired"));
     const session = new AuthenticationSession(client, cookies);
 
@@ -271,8 +280,8 @@ describe("AuthenticationSession", () => {
   });
 
   it("does not store a refreshed token whose claims cannot be verified", async () => {
-    cookies.values.set("__Host-template_access_token", "expired-access");
-    cookies.values.set("__Host-template_refresh_token", "refresh");
+    cookies.values.set(sessionCookies.accessToken, "expired-access");
+    cookies.values.set(sessionCookies.refreshToken, "refresh");
     client.claims.mockRejectedValue(new HttpError(401, "invalid claims"));
     client.refresh.mockResolvedValue(tokenResponse("unverified-access"));
     const session = new AuthenticationSession(client, cookies);
@@ -284,19 +293,19 @@ describe("AuthenticationSession", () => {
   });
 
   it("does not turn an authentication outage into an anonymous session", async () => {
-    cookies.values.set("__Host-template_access_token", "access");
+    cookies.values.set(sessionCookies.accessToken, "access");
     client.claims.mockRejectedValue(new Error("network unavailable"));
     const session = new AuthenticationSession(client, cookies);
 
     await expect(session.authenticated()).rejects.toBeInstanceOf(AuthenticationUnavailableError);
-    expect(cookies.values.get("__Host-template_access_token")).toBe("access");
+    expect(cookies.values.get(sessionCookies.accessToken)).toBe("access");
   });
 
   it("ends the session on every platform before removing every cookie on logout", async () => {
-    cookies.values.set("__Host-template_access_token", "access");
-    cookies.values.set("__Host-template_refresh_token", "refresh");
-    cookies.values.set("__Host-template_identity_handle", "maya.chen");
-    cookies.values.set(checkedCookie, "1");
+    cookies.values.set(sessionCookies.accessToken, "access");
+    cookies.values.set(sessionCookies.refreshToken, "refresh");
+    cookies.values.set(sessionCookies.identityHandle, "maya.chen");
+    cookies.values.set(sessionCookies.sessionChecked, "1");
     client.claims.mockResolvedValue({ roles: [Role.User], userID: "test-user" });
     client.revoke.mockResolvedValue();
     const session = new AuthenticationSession(client, cookies);
@@ -308,8 +317,8 @@ describe("AuthenticationSession", () => {
   });
 
   it("refreshes an expired session before revoking it on logout", async () => {
-    cookies.values.set("__Host-template_access_token", "expired-access");
-    cookies.values.set("__Host-template_refresh_token", "refresh");
+    cookies.values.set(sessionCookies.accessToken, "expired-access");
+    cookies.values.set(sessionCookies.refreshToken, "refresh");
     client.claims
       .mockRejectedValueOnce(new HttpError(401, "expired"))
       .mockResolvedValueOnce({ roles: [Role.User], userID: "test-user" });
@@ -327,8 +336,8 @@ describe("AuthenticationSession", () => {
     ["the revocation fails", new HttpError(503, "unavailable")],
     ["authentication is unreachable", new Error("network unavailable")],
   ])("still signs out of the browser when %s", async (_, error) => {
-    cookies.values.set("__Host-template_access_token", "access");
-    cookies.values.set("__Host-template_refresh_token", "refresh");
+    cookies.values.set(sessionCookies.accessToken, "access");
+    cookies.values.set(sessionCookies.refreshToken, "refresh");
     client.claims.mockResolvedValue({ roles: [Role.User], userID: "test-user" });
     client.revoke.mockRejectedValue(error);
     const session = new AuthenticationSession(client, cookies);
@@ -342,7 +351,7 @@ describe("AuthenticationSession", () => {
     ["an anonymous session", () => client.claims.mockResolvedValue({ roles: [Role.Anon] })],
     ["an unverifiable session", () => client.claims.mockRejectedValue(new Error("network unavailable"))],
   ])("clears %s on logout without revoking it", async (_, arrange) => {
-    cookies.values.set("__Host-template_access_token", "access");
+    cookies.values.set(sessionCookies.accessToken, "access");
     arrange();
     const session = new AuthenticationSession(client, cookies);
 
@@ -353,8 +362,8 @@ describe("AuthenticationSession", () => {
   });
 
   it("trusts a verified token without asking Authentication within five minutes of its last check", async () => {
-    cookies.values.set("__Host-template_access_token", "access");
-    cookies.values.set(checkedCookie, "1");
+    cookies.values.set(sessionCookies.accessToken, "access");
+    cookies.values.set(sessionCookies.sessionChecked, "1");
     client.verify.mockResolvedValue({ roles: [Role.User], userID: "test-user" });
     const session = new AuthenticationSession(client, cookies);
 
@@ -368,7 +377,7 @@ describe("AuthenticationSession", () => {
   });
 
   it("asks Authentication, and remembers its answer for five minutes, once the last check is older", async () => {
-    cookies.values.set("__Host-template_access_token", "access");
+    cookies.values.set(sessionCookies.accessToken, "access");
     client.claims.mockResolvedValue({ roles: [Role.User], userID: "test-user" });
     const session = new AuthenticationSession(client, cookies);
 
@@ -376,7 +385,7 @@ describe("AuthenticationSession", () => {
     expect(client.verify).not.toHaveBeenCalled();
     expect(cookies.writes).toEqual([
       {
-        name: checkedCookie,
+        name: sessionCookies.sessionChecked,
         value: "1",
         options: { httpOnly: true, path: "/", sameSite: "lax", secure: true, maxAge: 300 },
       },
@@ -384,8 +393,8 @@ describe("AuthenticationSession", () => {
   });
 
   it("asks Authentication when the token cannot be verified offline", async () => {
-    cookies.values.set("__Host-template_access_token", "access");
-    cookies.values.set(checkedCookie, "1");
+    cookies.values.set(sessionCookies.accessToken, "access");
+    cookies.values.set(sessionCookies.sessionChecked, "1");
     client.verify.mockRejectedValue(new Error("keys unavailable"));
     client.claims.mockResolvedValue({ roles: [Role.User], userID: "test-user" });
     const session = new AuthenticationSession(client, cookies);
@@ -395,9 +404,9 @@ describe("AuthenticationSession", () => {
   });
 
   it("signs the visitor out at the first check after the session ended elsewhere", async () => {
-    cookies.values.set("__Host-template_access_token", "access");
-    cookies.values.set("__Host-template_refresh_token", "revoked-refresh");
-    cookies.values.set(checkedCookie, "1");
+    cookies.values.set(sessionCookies.accessToken, "access");
+    cookies.values.set(sessionCookies.refreshToken, "revoked-refresh");
+    cookies.values.set(sessionCookies.sessionChecked, "1");
     client.verify.mockRejectedValue(new Error("expired"));
     client.claims.mockRejectedValue(new HttpError(401, "signed out"));
     client.refresh.mockRejectedValue(oauthError("invalid_grant"));

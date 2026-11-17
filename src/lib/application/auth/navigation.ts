@@ -1,4 +1,4 @@
-const placeholderOrigin = "https://template.invalid";
+const placeholderOrigin = "https://placeholder.invalid";
 
 /** Tells whether a decoded path could reach another origin or inject a header line. */
 function isUnsafePath(decoded: string): boolean {

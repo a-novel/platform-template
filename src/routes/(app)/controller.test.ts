@@ -17,7 +17,6 @@ function shell(options: Partial<ShellControllerOptions> = {}) {
   return createShellController({
     getData: () => ({ activeNavigation: "home", rail: "expanded", session: { status: "anonymous" }, ...accountLinks }),
     ...links,
-    allowNativeLogout: false,
     ...options,
   });
 }
@@ -26,13 +25,7 @@ describe("createShellController", () => {
   it("accepts semantic shell transitions", () => {
     const onRailChange = vi.fn();
     const onDrawerChange = vi.fn();
-    let data: ShellData = {
-      activeNavigation: "home",
-      rail: "expanded",
-      session: { status: "anonymous" },
-      ...accountLinks,
-    };
-    const controller = shell({ getData: () => data, onRailChange, onDrawerChange });
+    const controller = shell({ onRailChange, onDrawerChange });
 
     controller.navigationDialog.open();
     expect(onDrawerChange).toHaveBeenCalledExactlyOnceWith(true);
@@ -49,10 +42,6 @@ describe("createShellController", () => {
     controller.navigationDialog.toggle();
     expect(controller.navigationDialog.state.open).toBe(false);
     expect(onDrawerChange.mock.calls).toEqual([[true], [false], [true], [false]]);
-
-    data = { ...data, session: { status: "anonymous" } };
-    expect(controller.logout()).toBe(false);
-    expect(controller.state.model.session).toEqual({ status: "anonymous" });
   });
 
   it("links the menu and a sign-in that returns to the current page without the open menu", () => {
@@ -99,23 +88,5 @@ describe("createShellController", () => {
       invitationHref: null,
       platformDowntime: undefined,
     });
-
-    expect(controller.logout()).toBe(false);
-    expect(controller.state.model.session.status).toBe("anonymous");
-  });
-
-  it.each(["authenticated", "loading"] as const)("allows native logout without replacing the %s session", (status) => {
-    const controller = shell({
-      getData: () => ({
-        activeNavigation: "home",
-        rail: "expanded",
-        session: { status },
-        ...accountLinks,
-      }),
-      allowNativeLogout: true,
-    });
-
-    expect(controller.logout()).toBe(true);
-    expect(controller.state.model.session.status).toBe(status);
   });
 });

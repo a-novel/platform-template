@@ -53,11 +53,11 @@
     navigationHref: (open) => (open ? "#navigation" : "#home"),
     signInHref: () => "#sign-in",
     toggleRail: () => {},
-    logout: () => false,
   };
 </script>
 
-<div class="story-frame">
+<!-- A fixed scenario: the logout form never leaves the story. -->
+<div class="story-frame" onsubmit={(event) => event.preventDefault()}>
   <Screen {controller}>
     <HomeScreen />
     {@render children?.()}

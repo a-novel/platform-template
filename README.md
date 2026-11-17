@@ -31,14 +31,13 @@ placeholder below. This command lists every `template` occurrence:
 git grep -n -i template -- . ':!pnpm-lock.yaml'
 ```
 
-| What                | Where                                                               | Why it changes                                                                         |
-| ------------------- | ------------------------------------------------------------------- | -------------------------------------------------------------------------------------- |
-| Session cookies     | `src/lib/server/auth/session.ts`                                    | Platforms share one origin behind the gateway, so each names its cookies after itself. |
-| Client ID           | `src/routes/auth/sign-in.server.ts`                                 | Infra registers each platform with the authentication service under its own name.      |
-| Rail preference key | `src/routes/(app)/rail-preference.ts`                               | Local storage is shared across that origin too.                                        |
-| Product name        | `src/lib/i18n/locales/*/common.yaml`                                | `pageTitles.brand`, `shell.brand` and `shell.navigation` name the product users see.   |
-| Test placeholders   | `builds/compose.e2e.yaml`, the tests, `.github/workflows/main.yaml` | Test accounts, project names and report names follow the platform name.                |
-| Product logo        | `src/routes/+layout.svelte`, `src/routes/(app)/screen.svelte`       | The favicon, banner and icon show the Agora logo until the product has its own.        |
+| What              | Where                                                               | Why it changes                                                                         |
+| ----------------- | ------------------------------------------------------------------- | -------------------------------------------------------------------------------------- |
+| Session cookies   | `src/lib/server/auth/session.ts`                                    | Platforms share one origin behind the gateway, so each names its cookies after itself. |
+| Client ID         | `src/routes/auth/sign-in.server.ts`                                 | Infra registers each platform with the authentication service under its own name.      |
+| Product name      | `src/lib/i18n/locales/*/common.yaml`                                | `pageTitles.brand`, `shell.brand` and `shell.navigation` name the product users see.   |
+| Test placeholders | `builds/compose.e2e.yaml`, the tests, `.github/workflows/main.yaml` | Test accounts, project names and report names follow the platform name.                |
+| Product logo      | `src/routes/+layout.svelte`, `src/routes/(app)/screen.svelte`       | The favicon, banner and icon show the Agora logo until the product has its own.        |
 
 **3. Add your screens.** The home page under `src/routes/(app)/(home)/` is empty. Build your first
 screen beside it, in the shape of the shell in `src/routes/(app)`. A route that needs an account calls
