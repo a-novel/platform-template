@@ -95,4 +95,21 @@ describe("GET /healthcheck", () => {
       "http://json-keys:8080/v2/healthcheck": null,
     });
   });
+
+  // A probe reads the configuration inside the health boundary, so a failure answers 503 rather than throwing.
+  it("derives the unavailable services from the registry when runtime configuration fails", async () => {
+    const fetchImplementation = vi.fn<typeof globalThis.fetch>();
+    readConfig.mockImplementation(() => {
+      throw new Error("private configuration detail");
+    });
+
+    await expect(probe(fetchImplementation)).resolves.toEqual({
+      status: 503,
+      health: {
+        services: { authentication: { status: "down" }, jsonKeys: { status: "down" } },
+        status: "down",
+      },
+    });
+    expect(fetchImplementation).not.toHaveBeenCalled();
+  });
 });

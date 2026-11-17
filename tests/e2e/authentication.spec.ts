@@ -2,12 +2,11 @@ import { sessionCookies } from "../../src/lib/server/auth/session";
 import { accountOrigin, compose, expect, test } from "./fixtures";
 import { platformCaller } from "./service-token";
 
-import { callerFetch, downtimeOrigin, screenshot } from "@a-novel-kit/nodelib-test/playwright";
+import { callerFetch, screenshot } from "@a-novel-kit/nodelib-test/playwright";
 import { AuthenticationApi, refreshTokenGrant } from "@a-novel/service-authentication-rest";
 
 import type { BrowserContext, Page } from "playwright/test";
 
-const platformOrigin = downtimeOrigin("none");
 const platformApi = new AuthenticationApi("http://127.0.0.1:14100", callerFetch(platformCaller));
 
 interface Account {
@@ -82,8 +81,9 @@ test("signs in from signed out through the account platform and returns to the p
   context,
   account,
   isMobile,
+  baseURL,
 }, info) => {
-  const callback = page.waitForRequest((request) => request.url().startsWith(`${platformOrigin}/auth/callback?`));
+  const callback = page.waitForRequest((request) => request.url().startsWith(`${baseURL}/auth/callback?`));
   await signIn(page, account, isMobile);
 
   // The callback strips the code from the address bar and from any referrer.

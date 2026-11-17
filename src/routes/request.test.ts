@@ -136,8 +136,13 @@ describe("session at the request boundary", () => {
       authorization: "allowed",
     });
     expect(fetchService).toHaveBeenCalledOnce();
-    // A bodyless call's content headers are the client's own; the platform owns who the call is for.
-    expect(sentRequest()).toMatchObject({
+    // A bodyless call's content type is the client's own; the platform owns who the call is for.
+    const {
+      url,
+      method,
+      headers: { "content-type": _, ...headers },
+    } = sentRequest();
+    expect({ url, method, headers }).toEqual({
       url: "https://authentication.test/v2/session",
       method: "GET",
       headers: { authorization: "Bearer private-access", "x-client-ip": "192.0.2.1" },
@@ -215,7 +220,8 @@ describe("session at the request boundary", () => {
     });
     const [url, init] = fetchProfile.mock.calls[0] ?? [];
     expect(url).toBe("https://profile.test/v1/profile/self");
-    expect(Object.fromEntries(new Headers(init?.headers))).toMatchObject({
+    const { "content-type": _, ...headers } = Object.fromEntries(new Headers(init?.headers));
+    expect(headers).toEqual({
       authorization: "Bearer private-access",
       "x-client-ip": "192.0.2.1",
       "x-service-authorization": "profile-service-token",
