@@ -216,8 +216,8 @@ importers:
         specifier: 2.14.0
         version: 2.14.0
       '@lucide/svelte':
-        specifier: 1.72.0
-        version: 1.72.0(svelte@5.57.3(@typescript-eslint/types@8.72.2))
+        specifier: 1.73.0
+        version: 1.73.0(svelte@5.57.3(@typescript-eslint/types@8.72.2))
       '@opentelemetry/api':
         specifier: 1.10.0
         version: 1.10.0
@@ -940,8 +940,8 @@ packages:
   '@keyv/serialize@1.1.1':
     resolution: {integrity: sha512-dXn3FZhPv0US+7dtJsIi2R+c7qWYiReoEh5zUntWCf4oSpMNib8FDhSoed6m3QyZdx5hK7iLFkYk3rNxwt8vTA==}
 
-  '@lucide/svelte@1.72.0':
-    resolution: {integrity: sha512-DRwtZ5p/m5ZRsNlfCzELJRDzd2z19mc76eMs8rwllx/JWfvykmLoTFs3RyzFN519ldQxHt8Jxum/LKukgzuTLQ==}
+  '@lucide/svelte@1.73.0':
+    resolution: {integrity: sha512-Rz1uA9aTJ7HA/j2Hf9Dm2OVM8NtkzHnNeIQvVWoUkpf1ZD/7dR9cB4ftjbOiWAeJrKkEAVvTDrcVtITFdx6KAA==}
     peerDependencies:
       svelte: ^5
 
@@ -3561,7 +3561,7 @@ snapshots:
       '@a-novel-kit/nodelib-i18n': 2.12.0(i18next@27.1.1(typescript@6.0.3))(svelte@5.57.3(@typescript-eslint/types@8.72.2))
       '@a-novel-kit/uikit-fonts': 0.23.0
       '@a-novel-kit/uikit-tokens': 0.23.0
-      '@lucide/svelte': 1.72.0(svelte@5.57.3(@typescript-eslint/types@8.72.2))
+      '@lucide/svelte': 1.73.0(svelte@5.57.3(@typescript-eslint/types@8.72.2))
       i18next: 27.1.1(typescript@6.0.3)
       svelte: 5.57.3(@typescript-eslint/types@8.72.2)
 
@@ -3952,7 +3952,7 @@ snapshots:
 
   '@keyv/serialize@1.1.1': {}
 
-  '@lucide/svelte@1.72.0(svelte@5.57.3(@typescript-eslint/types@8.72.2))':
+  '@lucide/svelte@1.73.0(svelte@5.57.3(@typescript-eslint/types@8.72.2))':
     dependencies:
       svelte: 5.57.3(@typescript-eslint/types@8.72.2)
 
