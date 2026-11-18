@@ -240,7 +240,7 @@
 </script>
 
 <Story
-  name="Expanded anonymous — desktop"
+  name="Expanded anonymous on desktop"
   exportName="ExpandedAnonymousDesktop"
   globals={reviewStoryGlobals.desktop}
   asChild
@@ -250,7 +250,7 @@
 </Story>
 
 <Story
-  name="Expanded anonymous — mobile"
+  name="Expanded anonymous on mobile"
   exportName="ExpandedAnonymousMobile"
   globals={reviewStoryGlobals.mobile}
   asChild
@@ -268,7 +268,7 @@
 </Story>
 
 <Story
-  name="Collapsed anonymous — mobile"
+  name="Collapsed anonymous on mobile"
   exportName="CollapsedAnonymousMobile"
   globals={reviewStoryGlobals.mobile}
   asChild
@@ -286,7 +286,7 @@
 </Story>
 
 <Story
-  name="Authenticated — mobile"
+  name="Authenticated on mobile"
   exportName="AuthenticatedMobile"
   globals={reviewStoryGlobals.mobile}
   asChild
@@ -344,7 +344,7 @@
 </Story>
 
 <Story
-  name="Loading account — mobile"
+  name="Loading account on mobile"
   exportName="LoadingAccountMobile"
   globals={reviewStoryGlobals.mobile}
   asChild
@@ -358,7 +358,7 @@
 </Story>
 
 <Story
-  name="Maintenance — mobile"
+  name="Maintenance on mobile"
   exportName="MaintenanceMobile"
   globals={reviewStoryGlobals.mobile}
   asChild

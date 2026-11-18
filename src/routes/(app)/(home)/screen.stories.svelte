@@ -29,6 +29,6 @@
   }
 </script>
 
-<Story name="Default — desktop" exportName="DefaultDesktop" globals={reviewStoryGlobals.desktop} play={verifyTitle} />
+<Story name="Default on desktop" exportName="DefaultDesktop" globals={reviewStoryGlobals.desktop} play={verifyTitle} />
 
-<Story name="Default — mobile" exportName="DefaultMobile" globals={reviewStoryGlobals.mobile} />
+<Story name="Default on mobile" exportName="DefaultMobile" globals={reviewStoryGlobals.mobile} />
