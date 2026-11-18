@@ -156,7 +156,7 @@ services:
 
   # The account platform, where the platform signs people in.
   profile:
-    image: ghcr.io/a-novel/service-profile/standalone-rest:v1.1.0@sha256:bc24e03176999fb8f5ef62079fb07fd44fe478ec35972027ebb5049f145b63f5
+    image: ghcr.io/a-novel/service-profile/standalone-rest:v1.2.0@sha256:15368431439560e3a55ba9be1dd56dd583bc9d793e7167fa38a21ba2a9a79fc7
     ports:
       - "127.0.0.1:14104:8080"
     # Podman ignores the image's own check, so the journeys' wait needs this one.
