@@ -235,7 +235,7 @@ test("navigation controls keep the rail from the first paint, and the drawer foc
 
   // The server renders the rail the visitor left, so the page never shows it expanded first.
   const html = await (await page.request.get("/")).text();
-  expect(html).toContain('data-rail="collapsed"');
+  expect(html).toContain('aria-label="Expand navigation"');
   await page.reload();
   await expect(page.getByRole("button", { name: "Expand navigation", exact: true })).toBeVisible();
   await page.getByRole("button", { name: "Expand navigation", exact: true }).click();

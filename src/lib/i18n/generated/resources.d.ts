@@ -4,27 +4,6 @@ export default interface Resources {
     "access": {
       "downtime": {
         "title": "Maintenance in progress"
-      },
-      "error": {
-        "description": "This page could not be displayed.",
-        "title": "Page unavailable"
-      },
-      "forbidden": {
-        "description": "Your account does not have permission to view this page.",
-        "title": "Access denied"
-      },
-      "home": "Return home",
-      "notFound": {
-        "description": "This address doesn’t match any page.",
-        "title": "Page not found"
-      },
-      "pending": {
-        "title": "Checking access"
-      },
-      "retry": "Reload page",
-      "unavailable": {
-        "description": "Your session has been kept. Please reload this page in a few minutes.",
-        "title": "Access temporarily unavailable"
       }
     },
     "pageTitles": {

@@ -25,6 +25,7 @@
     IconButton,
     NavList,
     Separator,
+    ShellLayout,
     Skeleton,
     SkipLink,
     VisuallyHidden,
@@ -53,9 +54,6 @@
   const logoutAction = $derived(controller.state.logoutAction);
   const privacyHref = $derived(controller.state.privacyHref);
   const platformDowntime = $derived(controller.state.platformDowntime);
-
-  /** The height of the maintenance banner that sticks above the content, which a page's sticky part sits under. */
-  let bannerBlockSize = $state(0);
 
   const componentId = $props.id();
   const desktopNavigationId = `${componentId}-desktop-navigation`;
@@ -208,42 +206,55 @@
   </div>
 {/snippet}
 
+{#snippet downtimeBanner()}
+  {#if platformDowntime?.downtime}
+    <DowntimeBanner
+      start={platformDowntime.downtime.start}
+      end={platformDowntime.downtime.end}
+      started={platformDowntime.started}
+      timeZone={platformDowntime.timeZone}
+    />
+  {/if}
+{/snippet}
+
 <div class="shell-viewport">
   <SkipLink href="#main-content">{t("shell.skipToContent")}</SkipLink>
 
-  <div class="shell" data-rail={model.rail}>
-    <aside class="rail" class:collapsed={compactRail} aria-label={t("shell.navigation")}>
-      <div class="rail-header">
-        {@render brand(compactRail)}
-        <IconButton
-          label={compactRail ? t("shell.expandNavigation") : t("shell.collapseNavigation")}
-          variant="ghost"
-          tone="neutral"
-          size="sm"
-          aria-controls={desktopNavigationId}
-          aria-expanded={!compactRail}
-          onclick={() => controller.toggleRail()}
-        >
-          {#if compactRail}
-            <PanelLeftOpen size="var(--icon-size-sm)" aria-hidden="true" />
-          {:else}
-            <PanelLeftClose size="var(--icon-size-sm)" aria-hidden="true" />
-          {/if}
-        </IconButton>
-      </div>
-
-      <div class="rail-body">
-        <div id={desktopNavigationId} class="rail-navigation">
-          {@render primaryNavigation(compactRail)}
+  <ShellLayout collapsed={compactRail} banner={platformDowntime?.downtime ? downtimeBanner : undefined}>
+    {#snippet rail()}
+      <aside class="rail" class:collapsed={compactRail} aria-label={t("shell.navigation")}>
+        <div class="rail-header">
+          {@render brand(compactRail)}
+          <IconButton
+            label={compactRail ? t("shell.expandNavigation") : t("shell.collapseNavigation")}
+            variant="ghost"
+            tone="neutral"
+            size="sm"
+            aria-controls={desktopNavigationId}
+            aria-expanded={!compactRail}
+            onclick={() => controller.toggleRail()}
+          >
+            {#if compactRail}
+              <PanelLeftOpen size="var(--icon-size-sm)" aria-hidden="true" />
+            {:else}
+              <PanelLeftClose size="var(--icon-size-sm)" aria-hidden="true" />
+            {/if}
+          </IconButton>
         </div>
 
-        <div class="rail-account">
-          {@render accountWidget(compactRail)}
-        </div>
-      </div>
-    </aside>
+        <div class="rail-body">
+          <div id={desktopNavigationId} class="rail-navigation">
+            {@render primaryNavigation(compactRail)}
+          </div>
 
-    <div class="workspace" style:--shell-banner-block-size="{bannerBlockSize}px">
+          <div class="rail-account">
+            {@render accountWidget(compactRail)}
+          </div>
+        </div>
+      </aside>
+    {/snippet}
+
+    {#snippet header()}
       <header class="mobile-header">
         {@render brand(false)}
         <IconButton
@@ -259,23 +270,12 @@
           <Menu size="var(--icon-size-sm)" aria-hidden="true" />
         </IconButton>
       </header>
+    {/snippet}
 
-      {#if platformDowntime?.downtime}
-        <div class="downtime" bind:offsetHeight={bannerBlockSize}>
-          <DowntimeBanner
-            start={platformDowntime.downtime.start}
-            end={platformDowntime.downtime.end}
-            started={platformDowntime.started}
-            timeZone={platformDowntime.timeZone}
-          />
-        </div>
-      {/if}
-
-      <main id="main-content" class="main-content" tabindex="-1">
-        {@render children?.()}
-      </main>
-    </div>
-  </div>
+    <main id="main-content" class="main-content" tabindex="-1">
+      {@render children?.()}
+    </main>
+  </ShellLayout>
 
   <Dialog id={drawerId} controller={controller.navigationDialog} title={navigationTitle} presentation="fullscreen">
     {#snippet headerActions()}
@@ -301,43 +301,14 @@
 
 <style>
   .shell-viewport {
-    container: app-shell / inline-size;
-    min-block-size: 100dvb;
     color: var(--color-text-primary);
-  }
-
-  .shell {
-    --shell-rail-width: var(--layout-sidebar);
-
-    display: grid;
-    grid-template-columns: var(--shell-rail-width) minmax(0, 1fr);
-    transition: grid-template-columns var(--duration-normal) var(--easing-standard);
-    min-block-size: 100dvb;
-  }
-
-  .shell[data-rail="collapsed"] {
-    --shell-rail-width: calc(var(--control-height-sm) + var(--space-4));
   }
 
   .rail {
     display: grid;
-    position: sticky;
     grid-template-rows: auto minmax(0, 1fr);
     gap: var(--space-4);
-    z-index: var(--layer-sticky);
-    transition: inline-size var(--duration-normal) var(--easing-standard);
-    box-sizing: border-box;
-    inset-block-start: 0;
-    padding: var(--space-2);
-    inline-size: var(--shell-rail-width);
-    block-size: 100dvb;
-    overflow: hidden;
-  }
-
-  /* The app's lamp lights the navigation where it crosses it, in line with the canvas. */
-  .rail,
-  .mobile-header {
-    background: var(--fill-navigation);
+    min-block-size: 0;
   }
 
   .rail-header {
@@ -472,82 +443,18 @@
     text-align: start;
   }
 
-  /* A column, so the sticky header and banner can stay in view across the whole content. A page sticks its own
-     parts under them at --shell-sticky-top, and its bottom bars above a bottom banner at --shell-sticky-bottom. */
-  .workspace {
-    --shell-header-block-size: calc(var(--control-height-sm) + var(--space-2));
-    --shell-sticky-top: var(--shell-banner-block-size);
-
-    display: flex;
-    flex-direction: column;
-    box-sizing: border-box;
-    min-inline-size: 0;
-    min-block-size: 100dvb;
-  }
-
-  /* The maintenance banner stays above the content while it scrolls. */
-  .downtime {
-    position: sticky;
-    z-index: var(--layer-sticky);
-    inset-block-start: 0;
-  }
-
+  /* One control tall on narrow screens, where the shell shows it. */
   .mobile-header {
-    display: none;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--space-2);
   }
 
   /* The skip link's target takes focus without a ring, so a click or a scrolling key never outlines the whole
      page; the next Tab reaches a control, which shows its own. */
   .main-content {
-    flex: 1;
     outline: none;
     min-inline-size: 0;
-  }
-
-  @container app-shell (width < 48rem) {
-    .shell {
-      grid-template-columns: minmax(0, 1fr);
-    }
-
-    .rail {
-      display: none;
-    }
-
-    .workspace {
-      --shell-sticky-top: var(--shell-header-block-size);
-      --shell-sticky-bottom: var(--shell-banner-block-size);
-
-      padding-block-start: var(--shell-header-block-size);
-    }
-
-    /* On narrow screens it waits at the bottom, away from where reading starts, and never covers the end. */
-    .downtime {
-      order: 1;
-      inset-block-end: 0;
-      inset-block-start: auto;
-    }
-
-    /* One control tall, so a phone keeps its height for the page. Fixed to the screen rather than sticky,
-       so iOS stretches the page under it past the top while the header and its light stay in place. */
-    .mobile-header {
-      display: flex;
-      position: fixed;
-      justify-content: space-between;
-      align-items: center;
-      gap: var(--space-2);
-      z-index: var(--layer-sticky);
-      box-sizing: border-box;
-      inset-block-start: 0;
-      inset-inline: 0;
-      padding-inline: var(--space-2);
-      block-size: var(--shell-header-block-size);
-    }
-  }
-
-  @media (forced-colors: active) {
-    .rail,
-    .mobile-header {
-      border: var(--border-width-thin) solid CanvasText;
-    }
   }
 </style>

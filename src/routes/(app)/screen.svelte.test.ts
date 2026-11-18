@@ -55,6 +55,15 @@ function blockSubmissions(): string[] {
   return actions;
 }
 
+/** Reads the color painted behind an element: its own, or else its nearest ancestor's, as the shell's surface. */
+function paintedBackground(element: Element | null): string {
+  for (; element; element = element.parentElement) {
+    const color = getComputedStyle(element).backgroundColor;
+    if (color !== "rgba(0, 0, 0, 0)") return color;
+  }
+  return "rgba(0, 0, 0, 0)";
+}
+
 /** Reads the styles that tell a control's states apart, once its transitions have settled. */
 async function settledStyle(element: Element) {
   await new Promise(requestAnimationFrame);
@@ -135,8 +144,9 @@ describe("shell screen", () => {
         }
         expect(hovered[1]?.background).toBe(hovered[2]?.background);
         expect(hovered[1]?.background).not.toBe(resting[1]?.background);
-        expect(hovered[1]?.background).not.toBe(getComputedStyle(surface.element()).backgroundColor);
-        presentations.push({ background: getComputedStyle(surface.element()).backgroundColor, resting, hovered });
+        const background = paintedBackground(surface.element());
+        expect(hovered[1]?.background).not.toBe(background);
+        presentations.push({ background, resting, hovered });
         await view.unmount();
       }
       expect(presentations[1]).toEqual(presentations[0]);

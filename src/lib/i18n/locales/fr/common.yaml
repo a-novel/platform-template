@@ -1,22 +1,6 @@
 access:
   downtime:
     title: Maintenance en cours
-  error:
-    description: Cette page n’a pas pu être affichée.
-    title: Page indisponible
-  forbidden:
-    description: Votre compte ne permet pas de consulter cette page.
-    title: Accès refusé
-  home: Revenir à l’accueil
-  notFound:
-    description: Cette adresse ne correspond à aucune page.
-    title: Page introuvable
-  pending:
-    title: Vérification de l’accès
-  retry: Recharger la page
-  unavailable:
-    description: Votre session est conservée. Veuillez recharger cette page dans quelques minutes.
-    title: Accès temporairement indisponible
 pageTitles:
   brand: Agora
   privacy: Confidentialité

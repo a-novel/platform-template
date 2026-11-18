@@ -23,6 +23,7 @@
   import touchIcon from "@a-novel-kit/ui-images/files/icon/192x192/agora-icon-black.png?no-inline";
   import type { ConsentController } from "@a-novel-kit/uikit";
   import "@a-novel-kit/uikit-fonts/fonts.css";
+  import "@a-novel-kit/uikit-tokens/canvas.css";
   import "@a-novel-kit/uikit-tokens/tokens.css";
 
   let { children, data } = $props();
@@ -66,38 +67,3 @@
   <TelemetryConsent controller={consent} />
   {@render children()}
 </I18nProvider>
-
-<style>
-  /* The root keeps the canvas color contrast checks read, and the lamp hangs on a layer fixed behind
-     the page: iOS ignores a fixed background and would scroll the lamp away. The layer asks for a
-     compositing layer of its own, without which iOS drops it from the screen once the page scrolls far. */
-  :global(html) {
-    background: var(--color-surface-canvas);
-    /* WCAG 1.4.10 reflows content down to 320 CSS pixels; a narrower window scrolls instead. */
-    min-inline-size: 20rem;
-    color-scheme: dark;
-  }
-
-  :global(body)::before {
-    position: fixed;
-    z-index: -1;
-    will-change: transform;
-    inset: 0;
-    background: var(--gradient-lamp);
-    pointer-events: none;
-    content: "";
-  }
-
-  /* iOS links an email address or a date it finds in the text, underlined: the text reads as it does on
-     a desktop. */
-  :global(a[x-apple-data-detectors]) {
-    color: inherit;
-    text-decoration: none;
-  }
-
-  :global(body) {
-    margin: 0;
-    min-block-size: 100dvb;
-    font-family: var(--font-family-interface);
-  }
-</style>
