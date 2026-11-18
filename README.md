@@ -41,7 +41,7 @@ git grep -n -i template -- . ':!pnpm-lock.yaml'
 
 **3. Add your screens.** The home page under `src/routes/(app)/(home)/` is empty. Build your first
 screen beside it, in the shape of the shell in `src/routes/(app)`. A route that needs an account calls
-`requireAuthorization`, as the access boundary's documentation in `src/lib/ui/AccessBoundary.mdx` shows. Sign-in, invitations and the account page stay on the account platform.
+`requireAuthorization` (`src/lib/server/auth/authorization.ts`) in each of its loads and actions, and wraps its screen in uikit's `ProtectedPage`. Sign-in, invitations and the account page stay on the account platform.
 
 **4. Keep the foundations.** The foundations every platform shares stay as they are, along with the
 container, CI and the test setup. The [contribution guide](./CONTRIBUTING.md#where-code-goes) names

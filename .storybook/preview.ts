@@ -25,14 +25,6 @@ const preview: Preview = {
       props: { locale: storybookLocale(context.globals) },
     }),
   ],
-  parameters: {
-    controls: {
-      matchers: {
-        color: /(background|color)$/i,
-        date: /Date$/i,
-      },
-    },
-  },
 };
 
 export default preview;

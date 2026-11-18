@@ -24,6 +24,8 @@
   import type { ShellController } from "./controller.svelte";
   import Screen from "./screen.svelte";
 
+  import { fixedOpen } from "@a-novel-kit/uikit-storybook";
+
   let { model, collectsTelemetry, accountLinks = true, downtime, started = true, children }: ShellStoryProps = $props();
 
   const controller: ShellController = {
@@ -42,13 +44,8 @@
         },
       };
     },
-    navigationDialog: {
-      get state() {
-        return { open: model.drawerOpen };
-      },
-      open: () => {},
-      close: () => {},
-      toggle: () => {},
+    get navigationDialog() {
+      return fixedOpen(model.drawerOpen);
     },
     navigationHref: (open) => (open ? "#navigation" : "#home"),
     signInHref: () => "#sign-in",

@@ -1,8 +1,7 @@
 <script module lang="ts">
   import TelemetryConsent from "./TelemetryConsent.svelte";
 
-  import type { ConsentController } from "@a-novel-kit/uikit";
-  import { reviewStoryGlobals } from "@a-novel-kit/uikit-storybook";
+  import { fixedConsent, reviewStoryGlobals } from "@a-novel-kit/uikit-storybook";
 
   import { defineMeta } from "@storybook/addon-svelte-csf";
 
@@ -13,8 +12,7 @@
   });
 
   // The request as a visitor who has not answered sees it; answers leave it in place for review.
-  const ignore = () => {};
-  const unanswered: ConsentController = { state: { open: true }, open: ignore, accept: ignore, decline: ignore };
+  const unanswered = fixedConsent();
 </script>
 
 <Story name="Request — desktop" exportName="RequestDesktop" globals={reviewStoryGlobals.desktop} asChild>

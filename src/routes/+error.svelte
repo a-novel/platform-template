@@ -8,8 +8,10 @@
 
   import { getI18nContext } from "@a-novel-kit/nodelib-i18n/svelte";
   import { getPlatformDowntime } from "@a-novel-kit/nodelib-svelte";
+  import { useMessages } from "@a-novel-kit/uikit";
 
   const { t } = getI18nContext();
+  const uikitText = useMessages().t;
   const platformDowntime = getPlatformDowntime();
   const downtime = $derived(
     page.error?.downtime && platformDowntime.downtime
@@ -19,6 +21,6 @@
   const currentPath = $derived(page.url.pathname + page.url.search);
 </script>
 
-<PageTitle title={errorPageTitle(t, page.status, downtime !== undefined)} />
+<PageTitle title={errorPageTitle(t, uikitText, page.status, downtime !== undefined)} />
 
 <Screen status={page.status} homeHref={resolve("")} retryHref={currentPath} {downtime} />
