@@ -53,7 +53,7 @@
 </script>
 
 <Story
-  name="Accepted — desktop"
+  name="Accepted on desktop"
   exportName="AcceptedDesktop"
   args={{ telemetry: answer("accepted") }}
   globals={reviewStoryGlobals.desktop}
@@ -61,7 +61,7 @@
 />
 
 <Story
-  name="Accepted — mobile"
+  name="Accepted on mobile"
   exportName="AcceptedMobile"
   args={{ telemetry: answer("accepted") }}
   globals={reviewStoryGlobals.mobile}

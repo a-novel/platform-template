@@ -15,11 +15,11 @@
   const unanswered = fixedConsent();
 </script>
 
-<Story name="Request — desktop" exportName="RequestDesktop" globals={reviewStoryGlobals.desktop} asChild>
+<Story name="Request on desktop" exportName="RequestDesktop" globals={reviewStoryGlobals.desktop} asChild>
   <div class="page"><TelemetryConsent controller={unanswered} /></div>
 </Story>
 
-<Story name="Request — mobile" exportName="RequestMobile" globals={reviewStoryGlobals.mobile} asChild>
+<Story name="Request on mobile" exportName="RequestMobile" globals={reviewStoryGlobals.mobile} asChild>
   <div class="page"><TelemetryConsent controller={unanswered} /></div>
 </Story>
 
