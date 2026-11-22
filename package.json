@@ -96,7 +96,7 @@
     "eslint-plugin-svelte": "3.24.1",
     "estree-walker": "3.0.3",
     "globals": "17.14.0",
-    "i18next-cli": "1.91.0",
+    "i18next-cli": "1.91.3",
     "i18next-cli-plugin-svelte": "2.5.0",
     "jsdom": "31.0.1",
     "playwright": "1.65.1",
