@@ -55,6 +55,6 @@
   p {
     margin: 0;
     color: var(--color-text-secondary);
-    line-height: var(--line-height-normal);
+    font: var(--text-body);
   }
 </style>

@@ -343,6 +343,7 @@
   }
 
   .brand-banner {
+    /* off-scale: the banner is three times as wide as it is tall. */
     inline-size: calc(var(--control-height-sm) * 3);
     max-inline-size: 100%;
     block-size: var(--control-height-sm);
@@ -401,8 +402,8 @@
 
   /* The picture stays muted until the pointer or the keyboard reaches its button. */
   .account-picture {
-    filter: saturate(50%) brightness(75%);
-    transition: filter var(--duration-fast) var(--easing-standard);
+    filter: var(--filter-dim);
+    transition: filter var(--motion-state);
   }
 
   :global(.shell-account-button:is(:hover, :focus-visible)) .account-picture {

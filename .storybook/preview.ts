@@ -3,6 +3,9 @@ import { defaultLocale, localeNames, supportedLocales } from "../src/lib/i18n/co
 import { storybookLocale } from "../src/lib/i18n/storybook";
 import "../src/lib/ui/lamp.css";
 
+// The page canvas the application paints: the lamp behind every screen and the root text style.
+import "@a-novel-kit/uikit-tokens/canvas.css";
+
 import type { Preview } from "@storybook/sveltekit";
 
 const preview: Preview = {
