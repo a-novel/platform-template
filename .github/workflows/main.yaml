@@ -24,7 +24,7 @@ jobs:
       contents: read
       packages: read
     steps:
-      - uses: a-novel-kit/workflows/node-actions/lint-node@v1.87.1
+      - uses: a-novel-kit/workflows/node-actions/lint-node@v1.87.2
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           lint_action: "lint:eslint"
@@ -35,7 +35,7 @@ jobs:
       contents: read
       packages: read
     steps:
-      - uses: a-novel-kit/workflows/node-actions/lint-node@v1.87.1
+      - uses: a-novel-kit/workflows/node-actions/lint-node@v1.87.2
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           lint_action: "lint:stylecheck"
@@ -46,7 +46,7 @@ jobs:
       contents: read
       packages: read
     steps:
-      - uses: a-novel-kit/workflows/node-actions/lint-node@v1.87.1
+      - uses: a-novel-kit/workflows/node-actions/lint-node@v1.87.2
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           lint_action: "lint:tokens"
@@ -57,7 +57,7 @@ jobs:
       contents: read
       packages: read
     steps:
-      - uses: a-novel-kit/workflows/node-actions/lint-node@v1.87.1
+      - uses: a-novel-kit/workflows/node-actions/lint-node@v1.87.2
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           lint_action: "lint:typecheck"
@@ -71,7 +71,7 @@ jobs:
       packages: read
       pull-requests: read
     steps:
-      - uses: a-novel-kit/workflows/node-actions/lint-translations@v1.87.1
+      - uses: a-novel-kit/workflows/node-actions/lint-translations@v1.87.2
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
 
@@ -80,14 +80,14 @@ jobs:
     permissions:
       contents: read
     steps:
-      - uses: a-novel-kit/workflows/generic-actions/lint-dockerfile@v1.87.1
+      - uses: a-novel-kit/workflows/generic-actions/lint-dockerfile@v1.87.2
 
   scan-secrets:
     runs-on: ubuntu-latest
     permissions:
       contents: read
     steps:
-      - uses: a-novel-kit/workflows/security-actions/scan-secrets@v1.87.1
+      - uses: a-novel-kit/workflows/security-actions/scan-secrets@v1.87.2
         with:
           config: .gitleaks.toml
 
@@ -96,7 +96,7 @@ jobs:
     permissions:
       contents: read
     steps:
-      - uses: a-novel-kit/workflows/security-actions/lint-workflows@v1.87.1
+      - uses: a-novel-kit/workflows/security-actions/lint-workflows@v1.87.2
 
   test-unit:
     needs: [build-js, lint-types]
@@ -107,7 +107,7 @@ jobs:
     outputs:
       artifact-id: ${{ steps.test.outputs.artifact-id }}
     steps:
-      - uses: a-novel-kit/workflows/node-actions/test-node@v1.87.1
+      - uses: a-novel-kit/workflows/node-actions/test-node@v1.87.2
         id: test
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
@@ -131,7 +131,7 @@ jobs:
     outputs:
       artifact-id: ${{ steps.test.outputs.artifact-id }}
     steps:
-      - uses: a-novel-kit/workflows/node-actions/test-playwright@v1.87.1
+      - uses: a-novel-kit/workflows/node-actions/test-playwright@v1.87.2
         id: test
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
@@ -157,7 +157,7 @@ jobs:
     outputs:
       artifact-id: ${{ steps.test.outputs.artifact-id }}
     steps:
-      - uses: a-novel-kit/workflows/node-actions/test-node@v1.87.1
+      - uses: a-novel-kit/workflows/node-actions/test-node@v1.87.2
         id: test
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
@@ -171,7 +171,7 @@ jobs:
     permissions:
       contents: read
     steps:
-      - uses: a-novel-kit/workflows/generic-actions/codecov@v1.87.1
+      - uses: a-novel-kit/workflows/generic-actions/codecov@v1.87.2
         with:
           codecov_token: ${{ secrets.CODECOV_TOKEN }}
           coverage_files: unitcover/lcov.info,browsercover/lcov.info,storybookcover/lcov.info
@@ -183,7 +183,7 @@ jobs:
       contents: read
       packages: read
     steps:
-      - uses: a-novel-kit/workflows/node-actions/setup-node@v1.87.1
+      - uses: a-novel-kit/workflows/node-actions/setup-node@v1.87.2
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
       - name: Audit production and development dependencies
@@ -195,7 +195,7 @@ jobs:
       contents: read
       packages: read
     steps:
-      - uses: a-novel-kit/workflows/node-actions/build-node@v1.87.1
+      - uses: a-novel-kit/workflows/node-actions/build-node@v1.87.2
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           build_action: "build:ci"
@@ -209,7 +209,7 @@ jobs:
       id-token: write
       packages: write
     steps:
-      - uses: a-novel-kit/workflows/build-actions/docker@v1.87.1
+      - uses: a-novel-kit/workflows/build-actions/docker@v1.87.2
         with:
           file: Dockerfile
           image_name: ${{ github.repository }}
