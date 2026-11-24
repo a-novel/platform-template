@@ -40,6 +40,17 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           lint_action: "lint:stylecheck"
 
+  lint-tokens:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: read
+    steps:
+      - uses: a-novel-kit/workflows/node-actions/lint-node@v1.87.1
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          lint_action: "lint:tokens"
+
   lint-types:
     runs-on: ubuntu-latest
     permissions:
