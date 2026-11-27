@@ -194,7 +194,7 @@ importers:
         version: 2.15.1(@grafana/faro-web-sdk@2.15.0)(@grafana/faro-web-tracing@2.15.0)(zod@4.6.7)
       '@a-novel-kit/nodelib-i18n':
         specifier: 2.15.1
-        version: 2.15.1(i18next@27.2.6(typescript@6.0.3))(svelte@5.59.1(@typescript-eslint/types@8.74.0))
+        version: 2.15.1(i18next@27.2.7(typescript@6.0.3))(svelte@5.59.1(@typescript-eslint/types@8.74.0))
       '@a-novel-kit/nodelib-server':
         specifier: 2.15.1
         version: 2.15.1(@opentelemetry/api@1.10.0)(@opentelemetry/context-async-hooks@3.1.1(@opentelemetry/api@1.10.0))(@opentelemetry/core@3.1.1(@opentelemetry/api@1.10.0))(@opentelemetry/exporter-trace-otlp-proto@0.301.2(@opentelemetry/api@1.10.0))(@opentelemetry/instrumentation-undici@0.35.1(@opentelemetry/api@1.10.0))(@opentelemetry/instrumentation@0.301.2(@opentelemetry/api@1.10.0))(@opentelemetry/resources@3.1.1(@opentelemetry/api@1.10.0))(@opentelemetry/sdk-trace@3.1.1(@opentelemetry/api@1.10.0))
@@ -206,7 +206,7 @@ importers:
         version: 0.3.0
       '@a-novel-kit/uikit':
         specifier: 0.28.0
-        version: 0.28.0(@a-novel-kit/nodelib-i18n@2.15.1(i18next@27.2.6(typescript@6.0.3))(svelte@5.59.1(@typescript-eslint/types@8.74.0)))(i18next@27.2.6(typescript@6.0.3))(svelte@5.59.1(@typescript-eslint/types@8.74.0))
+        version: 0.28.0(@a-novel-kit/nodelib-i18n@2.15.1(i18next@27.2.7(typescript@6.0.3))(svelte@5.59.1(@typescript-eslint/types@8.74.0)))(i18next@27.2.7(typescript@6.0.3))(svelte@5.59.1(@typescript-eslint/types@8.74.0))
       '@a-novel-kit/uikit-fonts':
         specifier: 0.28.0
         version: 0.28.0
@@ -229,8 +229,8 @@ importers:
         specifier: 2.15.0
         version: 2.15.0
       '@lucide/svelte':
-        specifier: 1.78.0
-        version: 1.78.0(svelte@5.59.1(@typescript-eslint/types@8.74.0))
+        specifier: 1.79.0
+        version: 1.79.0(svelte@5.59.1(@typescript-eslint/types@8.74.0))
       '@opentelemetry/api':
         specifier: 1.10.0
         version: 1.10.0
@@ -256,15 +256,15 @@ importers:
         specifier: 3.1.1
         version: 3.1.1(@opentelemetry/api@1.10.0)
       i18next:
-        specifier: 27.2.6
-        version: 27.2.6(typescript@6.0.3)
+        specifier: 27.2.7
+        version: 27.2.7(typescript@6.0.3)
       zod:
         specifier: 4.6.7
         version: 4.6.7
     devDependencies:
       '@a-novel-kit/nodelib-config':
         specifier: 2.15.1
-        version: 2.15.1(db5fc33b0b051f043b54be98e8a49378)
+        version: 2.15.1(62332a08cd1764620179fdaab4758a7c)
       '@a-novel-kit/nodelib-test':
         specifier: 2.15.1
         version: 2.15.1(@a-novel-kit/nodelib-browser@2.15.1(@grafana/faro-web-sdk@2.15.0)(@grafana/faro-web-tracing@2.15.0)(zod@4.6.7))(jsdom@31.0.1)(playwright@1.65.1)
@@ -338,11 +338,11 @@ importers:
         specifier: 17.14.0
         version: 17.14.0
       i18next-cli:
-        specifier: 1.94.2
-        version: 1.94.2(@types/node@26.6.6)(react@19.3.1)(typescript@6.0.3)
+        specifier: 1.95.1
+        version: 1.95.1(@types/node@26.6.6)(react@19.3.1)(typescript@6.0.3)
       i18next-cli-plugin-svelte:
         specifier: 2.5.0
-        version: 2.5.0(estree-walker@3.0.3)(i18next-cli@1.94.2(@types/node@26.6.6)(react@19.3.1)(typescript@6.0.3))(svelte@5.59.1(@typescript-eslint/types@8.74.0))
+        version: 2.5.0(estree-walker@3.0.3)(i18next-cli@1.95.1(@types/node@26.6.6)(react@19.3.1)(typescript@6.0.3))(svelte@5.59.1(@typescript-eslint/types@8.74.0))
       jsdom:
         specifier: 31.0.1
         version: 31.0.1
@@ -959,8 +959,8 @@ packages:
   '@keyv/serialize@1.1.1':
     resolution: {integrity: sha512-dXn3FZhPv0US+7dtJsIi2R+c7qWYiReoEh5zUntWCf4oSpMNib8FDhSoed6m3QyZdx5hK7iLFkYk3rNxwt8vTA==}
 
-  '@lucide/svelte@1.78.0':
-    resolution: {integrity: sha512-j/UQMuE3o/JU4oq3DAUlQpmTCG5JsLi4LxEpNS7mIGqVxfmV8wozq3MeOSNHcsk07dHC0RZtUfpBrxyEMelOHA==}
+  '@lucide/svelte@1.79.0':
+    resolution: {integrity: sha512-GT1yl6pbDLFYq/FBsVJX27HE3T+T/J35+OqZL+jimaj1oJfm9s63wCzVwPRbgWuhkS0vPMg76eEF4dMymZgbgA==}
     peerDependencies:
       svelte: ^5
 
@@ -2370,8 +2370,8 @@ packages:
       i18next-cli: ^1.51.6
       svelte: ^5.53.11
 
-  i18next-cli@1.94.2:
-    resolution: {integrity: sha512-Cgij4Y+ofJlbhb0VJYIFZfc0fw2oilcYbI4kyOBvhmo8qxg0FQvW+cPOHMJnMZhKvcDCct99sHHRa8y7Z5NoDA==}
+  i18next-cli@1.95.1:
+    resolution: {integrity: sha512-B7BNaukqAd3HtQzQ0zWyslSfwvOZGySd6zhOmT2U7xAhCS8+MqBN1h7wDIhrXwy0goqhNv+Qo8ToZdtN+JeAcQ==}
     engines: {node: '>=22'}
     hasBin: true
 
@@ -2388,8 +2388,8 @@ packages:
       typescript:
         optional: true
 
-  i18next@27.2.6:
-    resolution: {integrity: sha512-ScRHHL/oAHaEgi78K770XIDQmOiq3BLjD4zxEoDeva4NLXXLPb83mzeSjFw7SefkwCEpLNC+560Pg0Q3BnCLsA==}
+  i18next@27.2.7:
+    resolution: {integrity: sha512-q3XlM8YSo6Nmomd+MQ4JPGJGvhgHwfCRXNeFrM8l0F4TuIuoJBqhCxQrdGDHNMjObRuw5O0ReuU968ZeMVlfnw==}
     engines: {node: '>=22'}
     peerDependencies:
       typescript: ^5 || ^6 || ^7
@@ -3461,7 +3461,7 @@ snapshots:
       '@grafana/faro-web-tracing': 2.15.0
       zod: 4.6.7
 
-  '@a-novel-kit/nodelib-config@2.15.1(db5fc33b0b051f043b54be98e8a49378)':
+  '@a-novel-kit/nodelib-config@2.15.1(62332a08cd1764620179fdaab4758a7c)':
     dependencies:
       '@eslint/compat': 2.1.1(eslint@10.15.0(jiti@2.7.0))
       '@eslint/config-helpers': 0.7.0
@@ -3479,8 +3479,8 @@ snapshots:
       eslint-plugin-svelte: 3.24.1(eslint@10.15.0(jiti@2.7.0))(svelte@5.59.1(@typescript-eslint/types@8.74.0))
       estree-walker: 3.0.3
       globals: 17.14.0
-      i18next-cli: 1.94.2(@types/node@26.6.6)(react@19.3.1)(typescript@6.0.3)
-      i18next-cli-plugin-svelte: 2.5.0(estree-walker@3.0.3)(i18next-cli@1.94.2(@types/node@26.6.6)(react@19.3.1)(typescript@6.0.3))(svelte@5.59.1(@typescript-eslint/types@8.74.0))
+      i18next-cli: 1.95.1(@types/node@26.6.6)(react@19.3.1)(typescript@6.0.3)
+      i18next-cli-plugin-svelte: 2.5.0(estree-walker@3.0.3)(i18next-cli@1.95.1(@types/node@26.6.6)(react@19.3.1)(typescript@6.0.3))(svelte@5.59.1(@typescript-eslint/types@8.74.0))
       playwright: 1.65.1
       prettier: 3.10.1
       prettier-plugin-css-order: 2.2.0(postcss@8.5.33)(prettier@3.10.1)
@@ -3494,9 +3494,9 @@ snapshots:
       vitest: 5.1.1(@opentelemetry/api@1.10.0)(@types/node@26.6.6)(@vitest/browser-playwright@5.1.1)(@vitest/coverage-v8@5.1.1)(@vitest/ui@5.1.1)(jsdom@31.0.1)(vite@8.3.8(@types/node@26.6.6)(esbuild@0.28.2)(jiti@2.7.0)(yaml@2.9.1))
       yaml: 2.9.1
 
-  '@a-novel-kit/nodelib-i18n@2.15.1(i18next@27.2.6(typescript@6.0.3))(svelte@5.59.1(@typescript-eslint/types@8.74.0))':
+  '@a-novel-kit/nodelib-i18n@2.15.1(i18next@27.2.7(typescript@6.0.3))(svelte@5.59.1(@typescript-eslint/types@8.74.0))':
     dependencies:
-      i18next: 27.2.6(typescript@6.0.3)
+      i18next: 27.2.7(typescript@6.0.3)
       svelte: 5.59.1(@typescript-eslint/types@8.74.0)
 
   '@a-novel-kit/nodelib-server@2.15.1(@opentelemetry/api@1.10.0)(@opentelemetry/context-async-hooks@3.1.1(@opentelemetry/api@1.10.0))(@opentelemetry/core@3.1.1(@opentelemetry/api@1.10.0))(@opentelemetry/exporter-trace-otlp-proto@0.301.2(@opentelemetry/api@1.10.0))(@opentelemetry/instrumentation-undici@0.35.1(@opentelemetry/api@1.10.0))(@opentelemetry/instrumentation@0.301.2(@opentelemetry/api@1.10.0))(@opentelemetry/resources@3.1.1(@opentelemetry/api@1.10.0))(@opentelemetry/sdk-trace@3.1.1(@opentelemetry/api@1.10.0))':
@@ -3543,13 +3543,13 @@ snapshots:
 
   '@a-novel-kit/uikit-tokens@0.28.0': {}
 
-  '@a-novel-kit/uikit@0.28.0(@a-novel-kit/nodelib-i18n@2.15.1(i18next@27.2.6(typescript@6.0.3))(svelte@5.59.1(@typescript-eslint/types@8.74.0)))(i18next@27.2.6(typescript@6.0.3))(svelte@5.59.1(@typescript-eslint/types@8.74.0))':
+  '@a-novel-kit/uikit@0.28.0(@a-novel-kit/nodelib-i18n@2.15.1(i18next@27.2.7(typescript@6.0.3))(svelte@5.59.1(@typescript-eslint/types@8.74.0)))(i18next@27.2.7(typescript@6.0.3))(svelte@5.59.1(@typescript-eslint/types@8.74.0))':
     dependencies:
-      '@a-novel-kit/nodelib-i18n': 2.15.1(i18next@27.2.6(typescript@6.0.3))(svelte@5.59.1(@typescript-eslint/types@8.74.0))
+      '@a-novel-kit/nodelib-i18n': 2.15.1(i18next@27.2.7(typescript@6.0.3))(svelte@5.59.1(@typescript-eslint/types@8.74.0))
       '@a-novel-kit/uikit-fonts': 0.28.0
       '@a-novel-kit/uikit-tokens': 0.28.0
-      '@lucide/svelte': 1.78.0(svelte@5.59.1(@typescript-eslint/types@8.74.0))
-      i18next: 27.2.6(typescript@6.0.3)
+      '@lucide/svelte': 1.79.0(svelte@5.59.1(@typescript-eslint/types@8.74.0))
+      i18next: 27.2.7(typescript@6.0.3)
       svelte: 5.59.1(@typescript-eslint/types@8.74.0)
 
   '@a-novel/service-authentication-rest@2.29.0(@a-novel-kit/nodelib-browser@2.15.1(@grafana/faro-web-sdk@2.15.0)(@grafana/faro-web-tracing@2.15.0)(zod@4.6.7))(zod@4.6.7)':
@@ -3942,7 +3942,7 @@ snapshots:
 
   '@keyv/serialize@1.1.1': {}
 
-  '@lucide/svelte@1.78.0(svelte@5.59.1(@typescript-eslint/types@8.74.0))':
+  '@lucide/svelte@1.79.0(svelte@5.59.1(@typescript-eslint/types@8.74.0))':
     dependencies:
       svelte: 5.59.1(@typescript-eslint/types@8.74.0)
 
@@ -5258,14 +5258,14 @@ snapshots:
 
   html-parse-stringify@4.0.1: {}
 
-  i18next-cli-plugin-svelte@2.5.0(estree-walker@3.0.3)(i18next-cli@1.94.2(@types/node@26.6.6)(react@19.3.1)(typescript@6.0.3))(svelte@5.59.1(@typescript-eslint/types@8.74.0)):
+  i18next-cli-plugin-svelte@2.5.0(estree-walker@3.0.3)(i18next-cli@1.95.1(@types/node@26.6.6)(react@19.3.1)(typescript@6.0.3))(svelte@5.59.1(@typescript-eslint/types@8.74.0)):
     dependencies:
       estree-walker: 3.0.3
-      i18next-cli: 1.94.2(@types/node@26.6.6)(react@19.3.1)(typescript@6.0.3)
+      i18next-cli: 1.95.1(@types/node@26.6.6)(react@19.3.1)(typescript@6.0.3)
       recast: 0.23.21
       svelte: 5.59.1(@typescript-eslint/types@8.74.0)
 
-  i18next-cli@1.94.2(@types/node@26.6.6)(react@19.3.1)(typescript@6.0.3):
+  i18next-cli@1.95.1(@types/node@26.6.6)(react@19.3.1)(typescript@6.0.3):
     dependencies:
       '@croct/json5-parser': 0.2.2
       '@formatjs/icu-messageformat-parser': 3.5.23
@@ -5309,7 +5309,7 @@ snapshots:
     optionalDependencies:
       typescript: 6.0.3
 
-  i18next@27.2.6(typescript@6.0.3):
+  i18next@27.2.7(typescript@6.0.3):
     optionalDependencies:
       typescript: 6.0.3
 
